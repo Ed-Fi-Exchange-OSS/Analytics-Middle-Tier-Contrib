@@ -1,6 +1,3 @@
-USE [EdFi_Ods_Glendale]
-GO
-
 SET ANSI_NULLS ON
 GO
 
