@@ -65,7 +65,7 @@ SELECT [Description]
 	  ,sd.SchoolKey
 	  ,sch.SchoolName
       ,sd.[LimitedEnglishProficiency]
-      ,sd.[IsEconomicallyDisadvantaged]
+      --,sd.[IsEconomicallyDisadvantaged]
       ,sd.[IsHispanic]
 
 	  ,CASE WHEN sd.IsHispanic = '1' THEN 'Hispanic'
@@ -89,7 +89,7 @@ SELECT [Description]
 			ELSE  'On-Track'
 		END  as Overall_Indicator,
 		rank() OVER(PARTITION BY sd.StudentKey ORDER BY AttendanceRate) RNK
-  FROM [analytics].[StudentDim] sd				
+  FROM [analytics].[StudentSchoolDim] sd				
   INNER JOIN [edfi].[Student] stu on sd.StudentKey = stu.StudentUniqueId
   LEFT JOIN analytics_data.AtRiskGPA gpa on sd.StudentKey = gpa.StudentKey
   LEFT JOIN analytics_data.AtRiskMarks marks on sd.StudentKey = marks.StudentKey
@@ -146,5 +146,4 @@ AS
          FROM [dbo].[OnTrackReport]
      )
      GROUP BY BehaviorIndicator;
-GO
 GO
