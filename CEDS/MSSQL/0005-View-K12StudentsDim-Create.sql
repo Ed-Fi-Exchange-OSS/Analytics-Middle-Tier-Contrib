@@ -15,13 +15,14 @@ GO
 
 CREATE OR ALTER VIEW xref.K12StudentsDim AS
 (
-    SELECT 
-        CONCAT(Student.StudentUniqueId, '-', StudentSchoolAssociation.SchoolId) AS StudentKey,
+    SELECT
+        CONCAT(Student.StudentUniqueId, '-', StudentSchoolAssociation.SchoolId, '-', StudentSchoolAssociation.ClassOfSchoolYear) as K12StudentsKey,
+        CONCAT(Student.StudentUniqueId, '-', StudentSchoolAssociation.SchoolId) AS StudentSchoolKey,
         Student.BirthDate,
         StudentSchoolAssociation.ClassOfSchoolYear AS Cohort,
         Student.FirstName,
         Student.LastSurname,
-        Student.MiddleName,
+        COALESCE(Student.MiddleName, '') AS MiddleName,
         Student.StudentUniqueId AS StudentIdentifierState,
         '' AS RecordStartDateTime,
         '' AS RecordEndDateTime
@@ -32,12 +33,13 @@ CREATE OR ALTER VIEW xref.K12StudentsDim AS
     ON 
         Student.StudentUSI = StudentSchoolAssociation.StudentUSI
     WHERE 
-        StudentSchoolAssociation.PrimarySchool = 1
+        StudentSchoolAssociation.PrimarySchool = '1'
     GROUP BY 
             Student.BirthDate,
             Student.FirstName, 
             Student.LastSurname, 
             Student.MiddleName, 
             Student.StudentUniqueId,
+            StudentSchoolAssociation.SchoolId,
             StudentSchoolAssociation.ClassOfSchoolYear
 )
