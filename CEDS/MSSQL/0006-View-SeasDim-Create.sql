@@ -2,10 +2,17 @@
 -- Licensed to the Ed-Fi Alliance under one or more agreements.
 -- The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 -- See the LICENSE and NOTICES files in the project root for more information.
-DROP VIEW IF EXISTS xref.ceds_SeasDim;
+IF EXISTS (
+        SELECT 1
+        FROM INFORMATION_SCHEMA.VIEWS
+        WHERE TABLE_SCHEMA = 'xref' AND TABLE_NAME = 'ceds_SeasDim'
+        )
+BEGIN
+    DROP VIEW xref.ceds_SeasDim;
+END;
+GO
 
-CREATE VIEW xref.ceds_SeasDim
-AS
+CREATE VIEW xref.ceds_SeasDim AS
 	WITH StateOrgEducationAddress AS (
         SELECT
 			EducationOrganizationAddress.EducationOrganizationId,
@@ -45,7 +52,7 @@ AS
 		) AS SeasDimKey,
 		EducationOrganization.NameOfInstitution AS SeaOrganizationName,
 		StateEducationAgency.StateEducationAgencyId AS SeaIdentifierSea,
-		CAST(NULL AS VARCHAR) AS StateAnciCode,
+		'' AS StateAnsiCode,
 		COALESCE(StateAbbreviationDesc.CodeValue, '') AS StateAbbreviationCode,
 		COALESCE(StateAbbreviationDesc.Description, '') AS StateAbbreviationDescription,
 		--
