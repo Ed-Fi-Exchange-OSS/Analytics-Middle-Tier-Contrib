@@ -57,7 +57,12 @@ CREATE VIEW xref.ceds_LeusDim AS
 		COALESCE(MailingAddress.StreetNumberName, '') AS MailingAddressStreetNumberAndName,
 		'' AS MailingAddressCountyAnsiCode,
 		--
-		--'' as OutOfStateIndicator ???
+		CASE 
+			WHEN PhysicalAddress.StateAbbreviation = StateAbbreviationDesc.CodeValue
+				THEN 'true'
+			ELSE
+				'false'
+		END AS OutOfStateIndicator,
 		OperationalStatusDescriptor.CodeValue AS OrganizationOperationalStatus,
 		'' as OperationalStatusEffectiveDate,
 		--
@@ -103,6 +108,7 @@ CREATE VIEW xref.ceds_LeusDim AS
 	LEFT JOIN
 		edfi.Descriptor StateAbbreviationDesc
 			ON StateAbbreviationDescriptor.StateAbbreviationDescriptorId = StateAbbreviationDesc.DescriptorId
+	--
 	LEFT JOIN
 		edfi.Descriptor OperationalStatusDescriptor
 			ON EducationOrganization.OperationalStatusDescriptorId = OperationalStatusDescriptor.DescriptorId

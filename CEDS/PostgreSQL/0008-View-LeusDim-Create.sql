@@ -49,7 +49,13 @@ CREATE VIEW xref.ceds_LeusDim AS
 		COALESCE(MailingAddress.StreetNumberName, '') AS MailingAddressStreetNumberAndName,
 		'' AS MailingAddressCountyAnsiCode,
 		--
-		--'' as OutOfStateIndicator ???
+		CASE 
+			WHEN PhysicalAddress.StateAbbreviation = StateAbbreviationDesc.CodeValue
+				THEN 'true'
+			ELSE
+				'false'
+		END AS OutOfStateIndicator,
+		--
 		OperationalStatusDescriptor.CodeValue AS OrganizationOperationalStatus,
 		'' as OperationalStatusEffectiveDate,
 		--
