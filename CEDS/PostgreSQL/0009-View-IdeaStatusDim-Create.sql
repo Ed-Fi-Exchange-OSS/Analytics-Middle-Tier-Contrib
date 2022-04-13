@@ -22,9 +22,9 @@ CREATE VIEW xref.ceds_IdeaStatusDim
     SELECT DISTINCT CONCAT (
             COALESCE(ReferenceBasisOfExitDescriptor.EdFactsCode, '')
             ,'-'
-            ,COALESCE(ReferenceDisabilityDescriptor.CodeValue, '')
+            ,COALESCE(ReferenceDisabilityDescriptor.EdFactsCode, '')
             ,'-'
-            ,COALESCE(ReferenceEducationalEnvironmentDescriptor.CodeValue, '')
+            ,COALESCE(ReferenceEducationalEnvironmentDescriptor.EdFactsCode, '')
             ) AS IdeaStatusesKey
         ,COALESCE(ReferenceBasisOfExitDescriptor.CodeValue, '') AS BasisOfExitCode
         ,COALESCE(ReferenceBasisOfExitDescriptor.Description, '') AS BasisOfExitDescription
