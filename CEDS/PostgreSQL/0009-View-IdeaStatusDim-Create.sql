@@ -39,7 +39,7 @@ CREATE VIEW xref.ceds_IdeaStatusDim
         ,COALESCE(ReferenceEducationalEnvironmentDescriptor.EdFactsCode, '') AS EducEnvEdFactsCode
         ,'' AS EducEnvId
     FROM edfi.ReasonExitedDescriptor
-    INNER JOIN MapReferenceDescriptor ReferenceBasisOfExitDescriptor
+    LEFT JOIN MapReferenceDescriptor ReferenceBasisOfExitDescriptor
         ON ReasonExitedDescriptor.ReasonExitedDescriptorId = ReferenceBasisOfExitDescriptor.DescriptorId
             AND ReferenceBasisOfExitDescriptor.EdFiTableName = 'xref.BasisOfExit'
     LEFT JOIN LATERAL(SELECT ReferenceDisabilityDescriptor.CodeValue, ReferenceDisabilityDescriptor.Description, ReferenceDisabilityDescriptor.EdFactsCode 

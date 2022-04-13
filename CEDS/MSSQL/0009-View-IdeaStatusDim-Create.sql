@@ -48,11 +48,11 @@ SELECT CONCAT (
     ,COALESCE(ReferenceEducationalEnvironmentDescriptor.EdFactsCode, '') AS EducEnvEdFactsCode
     ,'' AS EducEnvId
 FROM edfi.ReasonExitedDescriptor
-INNER JOIN MapReferenceDescriptor ReferenceBasisOfExitDescriptor
+LEFT JOIN MapReferenceDescriptor ReferenceBasisOfExitDescriptor
     ON ReasonExitedDescriptor.ReasonExitedDescriptorId = ReferenceBasisOfExitDescriptor.DescriptorId
 OUTER APPLY edfi.DisabilityDescriptor
-INNER JOIN MapReferenceDescriptor ReferenceDisabilityDescriptor
+LEFT JOIN MapReferenceDescriptor ReferenceDisabilityDescriptor
     ON DisabilityDescriptor.DisabilityDescriptorId = ReferenceDisabilityDescriptor.DescriptorId
 OUTER APPLY edfi.EducationalEnvironmentDescriptor
-INNER JOIN MapReferenceDescriptor ReferenceEducationalEnvironmentDescriptor
+LEFT JOIN MapReferenceDescriptor ReferenceEducationalEnvironmentDescriptor
     ON EducationalEnvironmentDescriptor.EducationalEnvironmentDescriptorId = ReferenceEducationalEnvironmentDescriptor.DescriptorId;
