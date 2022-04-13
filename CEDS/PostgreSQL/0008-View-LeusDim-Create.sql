@@ -13,7 +13,6 @@ CREATE VIEW xref.ceds_LeusDim AS
 			StateAbbreviationDesc.CodeValue AS StateAbbreviation,
 			EducationOrganizationAddress.StreetNumberName,
 			EducationOrganizationAddress.ApartmentRoomSuiteNumber,
-			--
 			DescriptorConstant.ConstantName
         FROM
             edfi.EducationOrganizationAddress
@@ -47,33 +46,27 @@ CREATE VIEW xref.ceds_LeusDim AS
 		StateEducationOrganization.NameOfInstitution AS SeaOrganizationName,
 		EducationServiceCenter.StateEducationAgencyId AS SeaIdentifierSea,
 		'' AS StateANSICode,
-		--
 		COALESCE(StateAbbreviationDesc.CodeValue, '') AS StateAbbreviationCode,
 		COALESCE(StateAbbreviationDesc.Description, '') AS StateAbbreviationDescription,
-		--
 		COALESCE(MailingAddress.City, '') AS MailingAddressCity,
 		COALESCE(MailingAddress.PostalCode, '') AS MailingAddressPostalCode,
 		COALESCE(MailingAddress.StateAbbreviation, '') AS MailingAddressStateAbbreviation,
 		COALESCE(MailingAddress.StreetNumberName, '') AS MailingAddressStreetNumberAndName,
 		'' AS MailingAddressCountyAnsiCode,
-		--
 		CASE 
 			WHEN PhysicalAddress.StateAbbreviation = StateAbbreviationDesc.CodeValue
 				THEN 'true'
 			ELSE
 				'false'
 		END AS OutOfStateIndicator,
-		--
 		OperationalStatusDescriptor.CodeValue AS OrganizationOperationalStatus,
 		'' as OperationalStatusEffectiveDate,
-		--
 		COALESCE(PhysicalAddress.City, '') AS PhysicalAddressCity,
 		COALESCE(PhysicalAddress.PostalCode, '') AS PhysicalAddressPostalCode,
 		COALESCE(PhysicalAddress.StateAbbreviation, '') AS PhysicalAddressStateAbbreviation,
 		COALESCE(PhysicalAddress.StreetNumberName, '') AS PhysicalAddressStreetNumberAndName,
 		COALESCE(PhysicalAddress.ApartmentRoomSuiteNumber, '') AS PhysicalAddressApartmentRoomOrSuiteNumber,
 		'' AS PhysicalAddressCountyAnsiCode,
-		--
 		COALESCE(EducationOrganizationInstitutionTelephone.TelephoneNumber, '') AS TelephoneNumber,
 		COALESCE(EducationOrganization.WebSite, '') AS WebSiteAddress,
 		'' AS OrganizationRegionGeoJson,
@@ -112,17 +105,14 @@ CREATE VIEW xref.ceds_LeusDim AS
 	LEFT JOIN
 		edfi.Descriptor OperationalStatusDescriptor
 			ON EducationOrganization.OperationalStatusDescriptorId = OperationalStatusDescriptor.DescriptorId
-	-- Mailing
 	LEFT OUTER JOIN
         OrgEducationAddress AS MailingAddress
 			ON EducationOrganization.EducationOrganizationId = MailingAddress.EducationOrganizationId
 				AND MailingAddress.ConstantName = 'Address.Mailing'
-	-- Physical
 	LEFT OUTER JOIN
         OrgEducationAddress AS PhysicalAddress
 			ON EducationOrganization.EducationOrganizationId = PhysicalAddress.EducationOrganizationId
 				AND PhysicalAddress.ConstantName = 'Address.Physical'
-	-- Telephone
 	LEFT JOIN
 		edfi.EducationOrganizationInstitutionTelephone
 			ON EducationOrganization.EducationOrganizationId = EducationOrganizationInstitutionTelephone.EducationOrganizationId
