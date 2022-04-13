@@ -6,14 +6,14 @@ IF EXISTS (
         SELECT 1
         FROM INFORMATION_SCHEMA.VIEWS
         WHERE TABLE_SCHEMA = 'xref'
-            AND TABLE_NAME = 'IdeaStatusDim'
+            AND TABLE_NAME = 'ceds_IdeaStatusDim'
         )
 BEGIN
-    DROP VIEW xref.IdeaStatusDim;
+    DROP VIEW xref.ceds_IdeaStatusDim;
 END;
 GO
 
-CREATE OR ALTER VIEW xref.IdeaStatusDim
+CREATE OR ALTER VIEW xref.ceds_IdeaStatusDim
 AS
 WITH MapReferenceDescriptor
 AS (
@@ -50,9 +50,9 @@ SELECT CONCAT (
 FROM edfi.ReasonExitedDescriptor
 INNER JOIN MapReferenceDescriptor ReferenceBasisOfExitDescriptor
     ON ReasonExitedDescriptor.ReasonExitedDescriptorId = ReferenceBasisOfExitDescriptor.DescriptorId
-CROSS JOIN edfi.DisabilityDescriptor
+OUTER APPLY edfi.DisabilityDescriptor
 INNER JOIN MapReferenceDescriptor ReferenceDisabilityDescriptor
     ON DisabilityDescriptor.DisabilityDescriptorId = ReferenceDisabilityDescriptor.DescriptorId
-CROSS JOIN edfi.EducationalEnvironmentDescriptor
+OUTER APPLY edfi.EducationalEnvironmentDescriptor
 INNER JOIN MapReferenceDescriptor ReferenceEducationalEnvironmentDescriptor
     ON EducationalEnvironmentDescriptor.EducationalEnvironmentDescriptorId = ReferenceEducationalEnvironmentDescriptor.DescriptorId;
