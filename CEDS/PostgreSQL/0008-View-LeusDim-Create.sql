@@ -34,6 +34,14 @@ CREATE VIEW xref.ceds_LeusDim AS
 				ON StateAbbreviationDescriptor.StateAbbreviationDescriptorId = StateAbbreviationDesc.DescriptorId
     )
 	SELECT
+		CONCAT(
+			EducationOrganization.EducationOrganizationId, 
+			'-', EducationOrganizationAddress.AddressTypeDescriptorId,
+			'-', EducationOrganizationAddress.City,
+			'-', EducationOrganizationAddress.PostalCode,
+			'-', EducationOrganizationAddress.StateAbbreviationDescriptorId,
+			'-', EducationOrganizationAddress.StreetNumberName
+		) AS LeusDimKey,
 		EducationOrganization.NameOfInstitution AS IeuOrganizationName,
 		EducationServiceCenter.EducationServiceCenterId AS IeuOrganizationIdentifierSea,
 		StateEducationOrganization.NameOfInstitution AS SeaOrganizationName,
