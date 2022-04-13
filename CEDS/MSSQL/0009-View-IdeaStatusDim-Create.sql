@@ -28,7 +28,7 @@ AS (
     INNER JOIN edfi.Descriptor
         ON Descriptor.DescriptorId = EdFiTableInformation.EdFiDescriptorId
     )
-SELECT CONCAT (
+SELECT DISTINCT CONCAT (
         COALESCE(ReferenceBasisOfExitDescriptor.EdFactsCode, '')
         ,'-'
         ,COALESCE(ReferenceDisabilityDescriptor.CodeValue, '')
@@ -50,9 +50,12 @@ SELECT CONCAT (
 FROM edfi.ReasonExitedDescriptor
 LEFT JOIN MapReferenceDescriptor ReferenceBasisOfExitDescriptor
     ON ReasonExitedDescriptor.ReasonExitedDescriptorId = ReferenceBasisOfExitDescriptor.DescriptorId
-OUTER APPLY edfi.DisabilityDescriptor
+	AND ReferenceBasisOfExitDescriptor.EdFiTableName = 'xref.BasisOfExit'
+CROSS JOIN edfi.DisabilityDescriptor
 LEFT JOIN MapReferenceDescriptor ReferenceDisabilityDescriptor
     ON DisabilityDescriptor.DisabilityDescriptorId = ReferenceDisabilityDescriptor.DescriptorId
-OUTER APPLY edfi.EducationalEnvironmentDescriptor
+	AND ReferenceDisabilityDescriptor.EdFiTableName = 'xref.DisabilityDescriptor'
+CROSS JOIN  edfi.EducationalEnvironmentDescriptor
 LEFT JOIN MapReferenceDescriptor ReferenceEducationalEnvironmentDescriptor
-    ON EducationalEnvironmentDescriptor.EducationalEnvironmentDescriptorId = ReferenceEducationalEnvironmentDescriptor.DescriptorId;
+    ON EducationalEnvironmentDescriptor.EducationalEnvironmentDescriptorId = ReferenceEducationalEnvironmentDescriptor.DescriptorId
+    AND ReferenceEducationalEnvironmentDescriptor.EdFiTableName = 'xref.EducationalEnvironmentType';
