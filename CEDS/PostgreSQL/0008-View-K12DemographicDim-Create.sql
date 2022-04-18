@@ -14,27 +14,29 @@ AS (
         ,EdFiTableReference.EdFiTableName
         ,EdFiTableInformation.EdFactsCode
     FROM xref.EdFiTableInformation
-    INNER JOIN xref.EdFiTableReference
-        ON EdFiTableInformation.EdFiTableId = EdFiTableReference.EdFiTableId
-    INNER JOIN edfi.Descriptor
-        ON Descriptor.DescriptorId = EdFiTableInformation.EdFiDescriptorId
+    INNER JOIN 
+        xref.EdFiTableReference
+            ON EdFiTableInformation.EdFiTableId = EdFiTableReference.EdFiTableId
+    INNER JOIN 
+        edfi.Descriptor
+            ON Descriptor.DescriptorId = EdFiTableInformation.EdFiDescriptorId
     )
 SELECT DISTINCT CONCAT (
-        COALESCE(ReferenceEconomicDisadvantageStatusDescriptor.EdFactsCode, '')
+        ReferenceEconomicDisadvantageStatusDescriptor.EdFactsCode
         ,'-'
-        ,COALESCE(ReferenceHomelessnessStatusDescriptor.EdFactsCode, '')
+        ,ReferenceHomelessnessStatusDescriptor.EdFactsCode
         ,'-'
-        ,COALESCE(ReferenceEnglishLearnerStatusDescriptor.EdFactsCode, '')
+        ,ReferenceEnglishLearnerStatusDescriptor.EdFactsCode
         ,'-'
-        ,COALESCE(ReferenceMigrantStatusDescriptor.EdFactsCode, '')
+        ,ReferenceMigrantStatusDescriptor.EdFactsCode
         ,'-'
-        ,COALESCE(ReferenceMilitaryConnectedStudentIndicatorDescriptor.EdFactsCode, '')
+        ,ReferenceMilitaryConnectedStudentIndicatorDescriptor.EdFactsCode
         ,'-'
-        ,COALESCE(ReferenceHomelessPrimaryNighttimeResidenceDescriptor.EdFactsCode, '')
+        ,ReferenceHomelessPrimaryNighttimeResidenceDescriptor.EdFactsCode
         ,'-'
-        ,COALESCE(ReferenceHomelessUnaccompaniedYouthStatusDescriptor.EdFactsCode, '')
+        ,ReferenceHomelessUnaccompaniedYouthStatusDescriptor.EdFactsCode
         ,'-'
-        ,COALESCE(ReferenceSexDescriptor.EdFactsCode, '')
+        ,ReferenceSexDescriptor.EdFactsCode
         ) AS K12DemographicsKey
     ,COALESCE(ReferenceEconomicDisadvantageStatusDescriptor.CodeValue, '') AS EconomicDisadvantageStatusCode
     ,COALESCE(ReferenceEconomicDisadvantageStatusDescriptor.Description, '') AS EconomicDisadvantageStatusDescription
@@ -61,34 +63,48 @@ SELECT DISTINCT CONCAT (
     ,COALESCE(ReferenceSexDescriptor.Description, '') AS SexDescription
     ,COALESCE(ReferenceSexDescriptor.EdFactsCode, '') AS SexEdFactsCode
 FROM edfi.StudentCharacteristicDescriptor AS EconomicDisadvantageStatusDescriptor
-LEFT JOIN MapReferenceDescriptor ReferenceEconomicDisadvantageStatusDescriptor
-    ON EconomicDisadvantageStatusDescriptor.StudentCharacteristicDescriptorId = ReferenceEconomicDisadvantageStatusDescriptor.DescriptorId
-        AND ReferenceEconomicDisadvantageStatusDescriptor.EdFiTableName = 'xref.EconomicDisadvantageStatus'
-CROSS JOIN edfi.StudentCharacteristicDescriptor AS HomelessnessStatusDescriptor
-LEFT JOIN MapReferenceDescriptor ReferenceHomelessnessStatusDescriptor
-    ON HomelessnessStatusDescriptor.StudentCharacteristicDescriptorId = ReferenceHomelessnessStatusDescriptor.DescriptorId
-        AND ReferenceHomelessnessStatusDescriptor.EdFiTableName = 'xref.HomelessnessStatus'
-CROSS JOIN MapReferenceDescriptor ReferenceEnglishLearnerStatusDescriptor
-CROSS JOIN edfi.StudentCharacteristicDescriptor AS MigrantStatusDescriptor
-LEFT JOIN MapReferenceDescriptor ReferenceMigrantStatusDescriptor
-    ON MigrantStatusDescriptor.StudentCharacteristicDescriptorId = ReferenceMigrantStatusDescriptor.DescriptorId
-        AND ReferenceMigrantStatusDescriptor.EdFiTableName = 'xref.MigrantStatus'
-CROSS JOIN edfi.StudentCharacteristicDescriptor AS MilitaryConnectedStudentIndicator
-LEFT JOIN MapReferenceDescriptor ReferenceMilitaryConnectedStudentIndicatorDescriptor
-    ON MilitaryConnectedStudentIndicator.StudentCharacteristicDescriptorId = ReferenceMilitaryConnectedStudentIndicatorDescriptor.DescriptorId
-        AND ReferenceMilitaryConnectedStudentIndicatorDescriptor.EdFiTableName = 'xref.MigrantStatus'
-CROSS JOIN edfi.StudentCharacteristicDescriptor AS HomelessPrimaryNighttimeResidence
-LEFT JOIN MapReferenceDescriptor ReferenceHomelessPrimaryNighttimeResidenceDescriptor
-    ON HomelessPrimaryNighttimeResidence.StudentCharacteristicDescriptorId = ReferenceHomelessPrimaryNighttimeResidenceDescriptor.DescriptorId
-        AND ReferenceHomelessPrimaryNighttimeResidenceDescriptor.EdFiTableName = 'xref.HomelessPrimaryNighttimeResidence'
-CROSS JOIN edfi.StudentCharacteristicDescriptor AS HomelessUnaccompaniedYouthStatusCode
-LEFT JOIN MapReferenceDescriptor ReferenceHomelessUnaccompaniedYouthStatusDescriptor
-    ON HomelessUnaccompaniedYouthStatusCode.StudentCharacteristicDescriptorId = ReferenceHomelessUnaccompaniedYouthStatusDescriptor.DescriptorId
-        AND ReferenceHomelessUnaccompaniedYouthStatusDescriptor.EdFiTableName = 'xref.HomelessUnaccompaniedYouthStatus'
-CROSS JOIN edfi.StudentCharacteristicDescriptor AS SexDescriptor
-LEFT JOIN MapReferenceDescriptor ReferenceSexDescriptor
-    ON SexDescriptor.StudentCharacteristicDescriptorId = ReferenceSexDescriptor.DescriptorId
-        AND ReferenceSexDescriptor.EdFiTableName = 'xref.HomelessUnaccompaniedYouthStatus'
+LEFT JOIN 
+    MapReferenceDescriptor ReferenceEconomicDisadvantageStatusDescriptor
+        ON EconomicDisadvantageStatusDescriptor.StudentCharacteristicDescriptorId = ReferenceEconomicDisadvantageStatusDescriptor.DescriptorId
+            AND ReferenceEconomicDisadvantageStatusDescriptor.EdFiTableName = 'xref.EconomicDisadvantageStatus'
+CROSS JOIN 
+    edfi.StudentCharacteristicDescriptor AS HomelessnessStatusDescriptor
+LEFT JOIN 
+    MapReferenceDescriptor ReferenceHomelessnessStatusDescriptor
+        ON HomelessnessStatusDescriptor.StudentCharacteristicDescriptorId = ReferenceHomelessnessStatusDescriptor.DescriptorId
+            AND ReferenceHomelessnessStatusDescriptor.EdFiTableName = 'xref.HomelessnessStatus'
+CROSS JOIN 
+    MapReferenceDescriptor ReferenceEnglishLearnerStatusDescriptor
+CROSS JOIN 
+    edfi.StudentCharacteristicDescriptor AS MigrantStatusDescriptor
+LEFT JOIN 
+    MapReferenceDescriptor ReferenceMigrantStatusDescriptor
+        ON MigrantStatusDescriptor.StudentCharacteristicDescriptorId = ReferenceMigrantStatusDescriptor.DescriptorId
+            AND ReferenceMigrantStatusDescriptor.EdFiTableName = 'xref.MigrantStatus'
+CROSS JOIN 
+    edfi.StudentCharacteristicDescriptor AS MilitaryConnectedStudentIndicator
+LEFT JOIN 
+    MapReferenceDescriptor ReferenceMilitaryConnectedStudentIndicatorDescriptor
+        ON MilitaryConnectedStudentIndicator.StudentCharacteristicDescriptorId = ReferenceMilitaryConnectedStudentIndicatorDescriptor.DescriptorId
+            AND ReferenceMilitaryConnectedStudentIndicatorDescriptor.EdFiTableName = 'xref.MigrantStatus'
+CROSS JOIN
+    edfi.StudentCharacteristicDescriptor AS HomelessPrimaryNighttimeResidence
+LEFT JOIN 
+    MapReferenceDescriptor ReferenceHomelessPrimaryNighttimeResidenceDescriptor
+        ON HomelessPrimaryNighttimeResidence.StudentCharacteristicDescriptorId = ReferenceHomelessPrimaryNighttimeResidenceDescriptor.DescriptorId
+            AND ReferenceHomelessPrimaryNighttimeResidenceDescriptor.EdFiTableName = 'xref.HomelessPrimaryNighttimeResidence'
+CROSS JOIN 
+    edfi.StudentCharacteristicDescriptor AS HomelessUnaccompaniedYouthStatusCode
+LEFT JOIN 
+    MapReferenceDescriptor ReferenceHomelessUnaccompaniedYouthStatusDescriptor
+        ON HomelessUnaccompaniedYouthStatusCode.StudentCharacteristicDescriptorId = ReferenceHomelessUnaccompaniedYouthStatusDescriptor.DescriptorId
+            AND ReferenceHomelessUnaccompaniedYouthStatusDescriptor.EdFiTableName = 'xref.HomelessUnaccompaniedYouthStatus'
+CROSS JOIN 
+    edfi.StudentCharacteristicDescriptor AS SexDescriptor
+LEFT JOIN 
+    MapReferenceDescriptor ReferenceSexDescriptor
+        ON SexDescriptor.StudentCharacteristicDescriptorId = ReferenceSexDescriptor.DescriptorId
+            AND ReferenceSexDescriptor.EdFiTableName = 'xref.HomelessUnaccompaniedYouthStatus'
 WHERE (
         ReferenceEnglishLearnerStatusDescriptor.EdFiTableName IS NULL
         OR ReferenceEnglishLearnerStatusDescriptor.EdFiTableName = 'xref.EnglishLearnerStatus'
