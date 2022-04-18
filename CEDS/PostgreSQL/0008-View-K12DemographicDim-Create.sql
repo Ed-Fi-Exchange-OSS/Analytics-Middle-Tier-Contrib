@@ -37,7 +37,7 @@ SELECT DISTINCT CONCAT (
         ,COALESCE(ReferenceSexDescriptor.EdFactsCode, '')
         ) AS K12DemographicsKey
     ,COALESCE(ReferenceEconomicDisadvantageStatusDescriptor.CodeValue, '') AS EconomicDisadvantageStatusCode
-    ,COALESCE(ReferenceEconomicDisadvantageStatusDescriptor.Description, '') AS Description
+    ,COALESCE(ReferenceEconomicDisadvantageStatusDescriptor.Description, '') AS EconomicDisadvantageStatusDescription
     ,COALESCE(ReferenceEconomicDisadvantageStatusDescriptor.EdFactsCode, '') AS EconomicDisadvantageStatusEdFactsCode
     ,COALESCE(ReferenceHomelessnessStatusDescriptor.CodeValue, '') AS HomelessnessStatusCode
     ,COALESCE(ReferenceHomelessnessStatusDescriptor.Description, '') AS HomelessnessStatusDescription
