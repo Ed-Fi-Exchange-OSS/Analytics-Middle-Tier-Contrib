@@ -2,19 +2,10 @@
 -- Licensed to the Ed-Fi Alliance under one or more agreements.
 -- The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 -- See the LICENSE and NOTICES files in the project root for more information.
-IF EXISTS (
-        SELECT 1
-        FROM INFORMATION_SCHEMA.VIEWS
-        WHERE TABLE_SCHEMA = 'xref'
-            AND TABLE_NAME = 'ceds_GradeLevelDim'
-        )
-BEGIN
-    DROP VIEW xref.ceds_GradeLevelDim;
-END;
-GO
+DROP VIEW IF EXISTS xref.ceds_GradeLevelDim;
 
-CREATE OR ALTER VIEW xref.ceds_GradeLevelDim
-AS 
+CREATE OR REPLACE VIEW xref.ceds_GradeLevelDim
+AS
 WITH MapReferenceDescriptor
 AS (
     SELECT 
@@ -47,7 +38,7 @@ SELECT DISTINCT
     ,COALESCE(MapReferenceDescriptor.CodeValue, '') AS GradeLevelCode
     ,COALESCE(MapReferenceDescriptor.Description, '') AS GradeLevelDescription
     ,COALESCE(MapReferenceDescriptor.EdFactsCode, '') AS GradeLevelEdFactsCode
-    ,COALESCE(MapReferenceDescriptor.LastModifiedDate, '') AS LastModifiedDate
+    ,COALESCE(MapReferenceDescriptor.LastModifiedDate::TEXT, '') AS LastModifiedDate
 FROM 
     edfi.GradeLevelDescriptor
 LEFT JOIN 
