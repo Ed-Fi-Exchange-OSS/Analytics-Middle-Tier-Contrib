@@ -47,6 +47,4 @@ WHERE
     GradeLevelDescriptor.GradeLevelDescriptorId IS NOT NULL
     AND ReferenceBasisOfExitDescriptor.EdFiTableName IS NOT NULL
     AND ReferenceBasisOfExitDescriptor.EdFactsCode IS NOT NULL
-ORDER BY
-    GradeLevelKey
 GO
