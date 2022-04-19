@@ -54,4 +54,3 @@ LEFT JOIN
     MapReferenceDescriptor
     ON GradeLevelDescriptor.GradeLevelDescriptorId = MapReferenceDescriptor.DescriptorId
 	AND MapReferenceDescriptor.EdFiTableName = 'xref.GradeLevels'
-GO

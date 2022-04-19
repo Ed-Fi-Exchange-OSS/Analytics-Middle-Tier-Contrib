@@ -5,7 +5,7 @@
 DROP VIEW IF EXISTS xref.ceds_GradeLevelDim;
 
 CREATE OR REPLACE VIEW xref.ceds_GradeLevelDim
-AS 
+AS
 WITH MapReferenceDescriptor
 AS (
     SELECT 
@@ -38,11 +38,10 @@ SELECT DISTINCT
     ,COALESCE(MapReferenceDescriptor.CodeValue, '') AS GradeLevelCode
     ,COALESCE(MapReferenceDescriptor.Description, '') AS GradeLevelDescription
     ,COALESCE(MapReferenceDescriptor.EdFactsCode, '') AS GradeLevelEdFactsCode
-    ,COALESCE(MapReferenceDescriptor.LastModifiedDate, '') AS LastModifiedDate
+    ,COALESCE(MapReferenceDescriptor.LastModifiedDate::TEXT, '') AS LastModifiedDate
 FROM 
     edfi.GradeLevelDescriptor
 LEFT JOIN 
     MapReferenceDescriptor
     ON GradeLevelDescriptor.GradeLevelDescriptorId = MapReferenceDescriptor.DescriptorId
 	AND MapReferenceDescriptor.EdFiTableName = 'xref.GradeLevels'
-GO
