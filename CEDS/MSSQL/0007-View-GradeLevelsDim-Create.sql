@@ -37,18 +37,25 @@ AS (
     )
 SELECT DISTINCT 
     CONCAT (
-        COALESCE(ReferenceBasisOfExitDescriptor.EdFactsCode, '')
-        ,'-'
-        ,COALESCE(ReferenceBasisOfExitDescriptor.CodeValue, '')
-        ,'-'
-        ,COALESCE(ReferenceBasisOfExitDescriptor.Description, '')
+            ReferenceBasisOfExitDescriptor.EdFactsCode, 
+            '-', 
+            ReferenceBasisOfExitDescriptor.CodeValue,
+            '-',
+            ReferenceBasisOfExitDescriptor.Description
         ) AS GradeLevelKey
     ,COALESCE(ReferenceBasisOfExitDescriptor.CodeValue, '') AS GradeLevelCode
     ,COALESCE(ReferenceBasisOfExitDescriptor.Description, '') AS GradeLevelDescription
     ,COALESCE(ReferenceBasisOfExitDescriptor.EdFactsCode, '') AS GradeLevelEdFactsCode
 FROM 
-    edfi.ReasonExitedDescriptor
+    edfi.GradeLevelDescriptor
 LEFT JOIN 
-    MapReferenceDescriptor ReferenceBasisOfExitDescriptor
-    ON ReasonExitedDescriptor.ReasonExitedDescriptorId = ReferenceBasisOfExitDescriptor.DescriptorId
+    MapReferenceDescriptor AS ReferenceBasisOfExitDescriptor
+    ON GradeLevelDescriptor.GradeLevelDescriptorId = ReferenceBasisOfExitDescriptor.DescriptorId
 	AND ReferenceBasisOfExitDescriptor.EdFiTableName = 'xref.GradeLevels'
+WHERE 
+    GradeLevelDescriptor.GradeLevelDescriptorId IS NOT NULL
+    AND ReferenceBasisOfExitDescriptor.EdFiTableName IS NOT NULL
+    AND ReferenceBasisOfExitDescriptor.EdFactsCode IS NOT NULL
+ORDER BY
+    GradeLevelKey
+GO
