@@ -29,20 +29,20 @@ AS (
     )
 SELECT DISTINCT 
     CONCAT (
-            ReferenceBasisOfExitDescriptor.EdFactsCode, 
+            MapReferenceDescriptor.EdFactsCode, 
             '-', 
-            ReferenceBasisOfExitDescriptor.CodeValue,
+            MapReferenceDescriptor.CodeValue,
             '-',
-            ReferenceBasisOfExitDescriptor.Description
+            MapReferenceDescriptor.Description
         ) AS GradeLevelKey
-    ,COALESCE(ReferenceBasisOfExitDescriptor.CodeValue, '') AS GradeLevelCode
-    ,COALESCE(ReferenceBasisOfExitDescriptor.Description, '') AS GradeLevelDescription
-    ,COALESCE(ReferenceBasisOfExitDescriptor.EdFactsCode, '') AS GradeLevelEdFactsCode
-    ,COALESCE(ReferenceBasisOfExitDescriptor.LastModifiedDate, '') AS LastModifiedDate
+    ,COALESCE(MapReferenceDescriptor.CodeValue, '') AS GradeLevelCode
+    ,COALESCE(MapReferenceDescriptor.Description, '') AS GradeLevelDescription
+    ,COALESCE(MapReferenceDescriptor.EdFactsCode, '') AS GradeLevelEdFactsCode
+    ,COALESCE(MapReferenceDescriptor.LastModifiedDate, '') AS LastModifiedDate
 FROM 
     edfi.GradeLevelDescriptor
 LEFT JOIN 
-    MapReferenceDescriptor ReferenceBasisOfExitDescriptor
-    ON GradeLevelDescriptor.GradeLevelDescriptorId = ReferenceBasisOfExitDescriptor.DescriptorId
-	AND ReferenceBasisOfExitDescriptor.EdFiTableName = 'xref.GradeLevels'
+    MapReferenceDescriptor
+    ON GradeLevelDescriptor.GradeLevelDescriptorId = MapReferenceDescriptor.DescriptorId
+	AND MapReferenceDescriptor.EdFiTableName = 'xref.GradeLevels'
 GO
