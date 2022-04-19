@@ -14,6 +14,7 @@ AS (
         ,Descriptor.Description
         ,EdFiTableReference.EdFiTableName
         ,EdFiTableInformation.EdFactsCode
+        ,Descriptor.LastModifiedDate
     FROM 
         xref.EdFiTableInformation
     INNER JOIN 
@@ -37,14 +38,11 @@ SELECT DISTINCT
     ,COALESCE(ReferenceBasisOfExitDescriptor.CodeValue, '') AS GradeLevelCode
     ,COALESCE(ReferenceBasisOfExitDescriptor.Description, '') AS GradeLevelDescription
     ,COALESCE(ReferenceBasisOfExitDescriptor.EdFactsCode, '') AS GradeLevelEdFactsCode
+    ,COALESCE(ReferenceBasisOfExitDescriptor.LastModifiedDate, '') AS LastModifiedDate
 FROM 
     edfi.GradeLevelDescriptor
 LEFT JOIN 
-    MapReferenceDescriptor AS ReferenceBasisOfExitDescriptor
+    MapReferenceDescriptor ReferenceBasisOfExitDescriptor
     ON GradeLevelDescriptor.GradeLevelDescriptorId = ReferenceBasisOfExitDescriptor.DescriptorId
 	AND ReferenceBasisOfExitDescriptor.EdFiTableName = 'xref.GradeLevels'
-WHERE 
-    GradeLevelDescriptor.GradeLevelDescriptorId IS NOT NULL
-    AND ReferenceBasisOfExitDescriptor.EdFiTableName IS NOT NULL
-    AND ReferenceBasisOfExitDescriptor.EdFactsCode IS NOT NULL
 GO
