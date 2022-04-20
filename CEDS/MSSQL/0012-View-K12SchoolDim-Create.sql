@@ -5,10 +5,10 @@
 IF EXISTS (
         SELECT 1
         FROM INFORMATION_SCHEMA.VIEWS
-        WHERE TABLE_SCHEMA = 'xref' AND TABLE_NAME = 'K12SchoolDim'
+        WHERE TABLE_SCHEMA = 'xref' AND TABLE_NAME = 'ceds_K12SchoolDim'
         )
 BEGIN
-    DROP VIEW xref.K12SchoolDim;
+    DROP VIEW xref.ceds_K12SchoolDim;
 END;
 GO
 

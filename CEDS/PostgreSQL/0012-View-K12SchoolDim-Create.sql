@@ -2,9 +2,9 @@
 -- Licensed to the Ed-Fi Alliance under one or more agreements.
 -- The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 -- See the LICENSE and NOTICES files in the project root for more information.
-DROP VIEW IF EXISTS xref.K12SchoolDim;
+DROP VIEW IF EXISTS xref.ceds_K12SchoolDim;
 
-CREATE VIEW xref.K12SchoolDim
+CREATE VIEW xref.ceds_K12SchoolDim
 AS
 WITH OrganizationAddress
 AS (
