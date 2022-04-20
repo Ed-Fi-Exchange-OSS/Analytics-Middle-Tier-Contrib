@@ -18,15 +18,20 @@ AS (
         ,COALESCE(EducationOrganizationAddress.Latitude, '') AS Latitude
         ,COALESCE(EducationOrganizationAddress.Longitude, '') AS Longitude
         ,EducationOrganizationAddress.StateAbbreviationDescriptorId
-    FROM edfi.LocalEducationAgency
-    INNER JOIN edfi.EducationOrganizationAddress
-        ON LocalEducationAgency.LocalEducationAgencyId = EducationOrganizationAddress.EducationOrganizationId
-    INNER JOIN edfi.Descriptor
-        ON AddressTypeDescriptorId = DescriptorId
-    INNER JOIN analytics_config.DescriptorMap
-        ON Descriptor.DescriptorId = DescriptorMap.DescriptorId
-    INNER JOIN analytics_config.DescriptorConstant
-        ON DescriptorConstant.DescriptorConstantId = DescriptorMap.DescriptorConstantId
+    FROM 
+        edfi.LocalEducationAgency
+    INNER JOIN 
+        edfi.EducationOrganizationAddress
+            ON LocalEducationAgency.LocalEducationAgencyId = EducationOrganizationAddress.EducationOrganizationId
+    INNER JOIN 
+        edfi.Descriptor
+            ON AddressTypeDescriptorId = DescriptorId
+    INNER JOIN 
+        analytics_config.DescriptorMap
+            ON Descriptor.DescriptorId = DescriptorMap.DescriptorId
+    INNER JOIN 
+        analytics_config.DescriptorConstant
+            ON DescriptorConstant.DescriptorConstantId = DescriptorMap.DescriptorConstantId
     )
     ,MapReferenceDescriptor
 AS (
@@ -35,18 +40,21 @@ AS (
         ,Descriptor.Description
         ,EdFiTableReference.EdFiTableName
         ,EdFiTableInformation.EdFactsCode
-    FROM xref.EdFiTableInformation
-    INNER JOIN xref.EdFiTableReference
-        ON EdFiTableInformation.EdFiTableId = EdFiTableReference.EdFiTableId
-    INNER JOIN edfi.Descriptor
-        ON Descriptor.DescriptorId = EdFiTableInformation.EdFiDescriptorId
+    FROM 
+        xref.EdFiTableInformation
+    INNER JOIN 
+        xref.EdFiTableReference
+            ON EdFiTableInformation.EdFiTableId = EdFiTableReference.EdFiTableId
+    INNER JOIN 
+        edfi.Descriptor
+            ON Descriptor.DescriptorId = EdFiTableInformation.EdFiDescriptorId
     )
 SELECT 
     CONCAT(
 	    EducationOrganizationLEA.EducationOrganizationId
 		,'-',EducationOrganizationSEA.EducationOrganizationId
 	) as K12SchoolKey
-    ,EducationOrganizationLEA.EducationOrganizationId as LocalEducationAgencyKey
+    ,CAST(EducationOrganizationLEA.EducationOrganizationId AS VARCHAR) as LocalEducationAgencyKey
     ,'' AS OperationalStatusEffectiveDate
     ,EducationOrganizationLEA.NameOfInstitution AS LeaName
     ,'' AS LeaIdentifierNces

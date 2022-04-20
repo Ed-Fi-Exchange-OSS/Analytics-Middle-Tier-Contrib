@@ -15,46 +15,51 @@ GO
 
 CREATE VIEW xref.ceds_LeaDim AS
 WITH OrganizationAddress
-AS (
-    SELECT LocalEducationAgency.LocalEducationAgencyId
-        ,EducationOrganizationAddress.City AS AddressCity
-        ,EducationOrganizationAddress.PostalCode AS AddressPostalCode
-        ,Descriptor.CodeValue AS AddressStateAbbreviation
-        ,EducationOrganizationAddress.StreetNumberName AS AddressStreetNumberAndName
-        ,EducationOrganizationAddress.BuildingSiteNumber AS AddressApartmentRoomOrSuiteNumber
-        ,DescriptorConstant.ConstantName AS AddressType
-        ,COALESCE(EducationOrganizationAddress.Latitude, '') AS Latitude
-        ,COALESCE(EducationOrganizationAddress.Longitude, '') AS Longitude
-        ,EducationOrganizationAddress.StateAbbreviationDescriptorId
-    FROM edfi.LocalEducationAgency
-    INNER JOIN edfi.EducationOrganizationAddress
-        ON LocalEducationAgency.LocalEducationAgencyId = EducationOrganizationAddress.EducationOrganizationId
-    INNER JOIN edfi.Descriptor
-        ON AddressTypeDescriptorId = DescriptorId
-    INNER JOIN analytics_config.DescriptorMap
-        ON Descriptor.DescriptorId = DescriptorMap.DescriptorId
-    INNER JOIN analytics_config.DescriptorConstant
-        ON DescriptorConstant.DescriptorConstantId = DescriptorMap.DescriptorConstantId
+    AS (
+        SELECT LocalEducationAgency.LocalEducationAgencyId
+            ,EducationOrganizationAddress.City AS AddressCity
+            ,EducationOrganizationAddress.PostalCode AS AddressPostalCode
+            ,Descriptor.CodeValue AS AddressStateAbbreviation
+            ,EducationOrganizationAddress.StreetNumberName AS AddressStreetNumberAndName
+            ,EducationOrganizationAddress.BuildingSiteNumber AS AddressApartmentRoomOrSuiteNumber
+            ,DescriptorConstant.ConstantName AS AddressType
+            ,COALESCE(EducationOrganizationAddress.Latitude, '') AS Latitude
+            ,COALESCE(EducationOrganizationAddress.Longitude, '') AS Longitude
+            ,EducationOrganizationAddress.StateAbbreviationDescriptorId
+        FROM 
+            edfi.LocalEducationAgency
+        INNER JOIN 
+            edfi.EducationOrganizationAddress
+                ON LocalEducationAgency.LocalEducationAgencyId = EducationOrganizationAddress.EducationOrganizationId
+        INNER JOIN 
+            edfi.Descriptor
+                ON AddressTypeDescriptorId = DescriptorId
+        INNER JOIN 
+            analytics_config.DescriptorMap
+                ON Descriptor.DescriptorId = DescriptorMap.DescriptorId
+        INNER JOIN 
+            analytics_config.DescriptorConstant
+                ON DescriptorConstant.DescriptorConstantId = DescriptorMap.DescriptorConstantId
     )
     ,MapReferenceDescriptor
-AS (
-    SELECT Descriptor.DescriptorId
-        ,Descriptor.CodeValue
-        ,Descriptor.Description
-        ,EdFiTableReference.EdFiTableName
-        ,EdFiTableInformation.EdFactsCode
-    FROM xref.EdFiTableInformation
-    INNER JOIN xref.EdFiTableReference
-        ON EdFiTableInformation.EdFiTableId = EdFiTableReference.EdFiTableId
-    INNER JOIN edfi.Descriptor
-        ON Descriptor.DescriptorId = EdFiTableInformation.EdFiDescriptorId
+    AS (
+        SELECT Descriptor.DescriptorId
+            ,Descriptor.CodeValue
+            ,Descriptor.Description
+            ,EdFiTableReference.EdFiTableName
+            ,EdFiTableInformation.EdFactsCode
+        FROM xref.EdFiTableInformation
+        INNER JOIN xref.EdFiTableReference
+            ON EdFiTableInformation.EdFiTableId = EdFiTableReference.EdFiTableId
+        INNER JOIN edfi.Descriptor
+            ON Descriptor.DescriptorId = EdFiTableInformation.EdFiDescriptorId
     )
 SELECT 
     CONCAT(
 	    EducationOrganizationLEA.EducationOrganizationId
 		,'-',EducationOrganizationSEA.EducationOrganizationId
 	) as K12SchoolKey
-    ,EducationOrganizationLEA.EducationOrganizationId as LocalEducationAgencyKey
+    ,CAST(EducationOrganizationLEA.EducationOrganizationId AS VARCHAR) as LocalEducationAgencyKey
     ,'' AS OperationalStatusEffectiveDate
     ,EducationOrganizationLEA.NameOfInstitution AS LeaName
     ,'' AS LeaIdentifierNces
@@ -104,7 +109,8 @@ SELECT
     ,COALESCE(PhysicalAddress.Latitude, '') AS Latitude
     ,COALESCE(PhysicalAddress.Longitude, '') AS Longitude
     ,'' AS EffectiveDate
-FROM edfi.LocalEducationAgency
+FROM 
+    edfi.LocalEducationAgency
 INNER JOIN 
     edfi.EducationOrganization AS EducationOrganizationLEA
         ON LocalEducationAgency.LocalEducationAgencyId = EducationOrganizationLEA.EducationOrganizationId
