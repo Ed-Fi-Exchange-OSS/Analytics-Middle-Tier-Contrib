@@ -12,6 +12,7 @@ BEGIN
 END;
 GO
 
+CREATE VIEW xref.ceds_K12SchoolDim AS
 WITH OrganizationAddress
 AS (
     SELECT School.SchoolId
