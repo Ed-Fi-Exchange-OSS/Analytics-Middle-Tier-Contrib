@@ -96,7 +96,7 @@ SELECT
     ,'' AS RecordEndDateTime
     ,COALESCE(LEAOperationStatusDescriptor.CodeValue, '') AS LEAOperationalStatus
     ,COALESCE(CAST(MapReferenceLEAOperationStatusDescriptor.EdFactsCode AS INT), 0) AS LEAOperationalStatusEdFactsCode
-    ,COALESCE(CharterSchoolStatusDescriptor.CodeValue, '') AS CharterLEAStatus
+    ,COALESCE(CharterLEAStatusDescriptor.CodeValue, '') AS CharterLEAStatus
     ,'' AS ReconstitutedStatus
     ,'' AS McKinneyVentoSubgrantRecipient
     ,COALESCE(IeuOrganization.NameOfInstitution, '') AS IeuOrganizationName
