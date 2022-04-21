@@ -15,7 +15,14 @@ CREATE OR REPLACE VIEW analytics.ceds_K12StudentDim AS
         COALESCE(Student.MiddleName, '') AS MiddleName,
         Student.StudentUniqueId AS StudentIdentifierState,
         '' AS RecordStartDateTime,
-        '' AS RecordEndDateTime
+        '' AS RecordEndDateTime,
+        (
+		SELECT MAX(MaxLastModifiedDate)
+		FROM (
+			VALUES (Student.LastModifiedDate)
+				,(StudentSchoolAssociation.LastModifiedDate)
+			) AS VALUE(MaxLastModifiedDate)
+		) AS LastModifiedDate
     FROM 
         edfi.Student
     LEFT JOIN 

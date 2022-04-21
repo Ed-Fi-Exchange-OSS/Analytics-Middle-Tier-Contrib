@@ -81,4 +81,3 @@ FROM
 				ON ExitWithdrawDescriptor.DescriptorId = MapReferenceExitWithdrawDescriptor.DescriptorId
 		WHERE MapReferenceExitWithdrawDescriptor.EdFiTableName = 'xref.ExitWithdrawType'
 	) as ExitWithdrawDescriptor;
-
