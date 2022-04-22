@@ -50,9 +50,9 @@ CREATE VIEW analytics.ceds_IeuDim AS
 			'-', EducationOrganizationAddress.StreetNumberName
 		) AS IeuDimKey,
 		EducationOrganization.NameOfInstitution AS IeuOrganizationName,
-		EducationServiceCenter.EducationServiceCenterId AS IeuOrganizationIdentifierSea,
+		CAST(EducationServiceCenter.EducationServiceCenterId AS VARCHAR) AS IeuOrganizationIdentifierSea,
 		StateEducationOrganization.NameOfInstitution AS SeaOrganizationName,
-		EducationServiceCenter.StateEducationAgencyId AS SeaIdentifierSea,
+		CAST(EducationServiceCenter.StateEducationAgencyId AS VARCHAR) AS SeaIdentifierSea,
 		'' AS StateANSICode,
 		COALESCE(StateAbbreviationDesc.CodeValue, '') AS StateAbbreviationCode,
 		COALESCE(StateAbbreviationDesc.Description, '') AS StateAbbreviationDescription,

@@ -116,7 +116,7 @@ SELECT CONCAT(
     ,COALESCE(CharterSchoolStatusDescriptor.CodeValue,'') AS CharterSchoolStatus
     ,'' AS ReconstitutedStatus
     ,COALESCE(IeuOrganization.NameOfInstitution,'') AS IeuOrganizationName
-	,COALESCE(LocalEducationAgency.EducationServiceCenterId,0) AS IeuOrganizationIdentifierSea
+	,COALESCE(CAST(LocalEducationAgency.EducationServiceCenterId AS VARCHAR),'') AS IeuOrganizationIdentifierSea
 	,COALESCE(PhysicalAddress.Latitude,'') AS Latitude
     ,COALESCE(PhysicalAddress.Longitude,'') AS Longitude
     ,'' AS SchoolOperationalStatusEffectiveDate

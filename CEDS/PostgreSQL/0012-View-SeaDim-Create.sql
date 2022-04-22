@@ -43,7 +43,7 @@ AS
 			'-', EducationOrganizationAddress.StreetNumberName
 		) AS SeaDimKey,
 		EducationOrganization.NameOfInstitution AS SeaOrganizationName,
-		StateEducationAgency.StateEducationAgencyId AS SeaIdentifierSea,
+		CAST(StateEducationAgency.StateEducationAgencyId AS VARCHAR) AS SeaIdentifierSea,
 		'' AS StateAnsiCode,
 		COALESCE(StateAbbreviationDesc.CodeValue, '') AS StateAbbreviationCode,
 		COALESCE(StateAbbreviationDesc.Description, '') AS StateAbbreviationDescription,

@@ -4,7 +4,7 @@
 -- See the LICENSE and NOTICES files in the project root for more information.
 IF NOT EXISTS (
         SELECT 1
-        FROM INFORMATION_SCHEMA.VIEWS
+        FROM INFORMATION_SCHEMA.TABLES
         WHERE TABLE_SCHEMA = 'analytics_config'
             AND TABLE_NAME = 'ceds_TableReference'
         )

@@ -100,7 +100,7 @@ SELECT
     ,'' AS ReconstitutedStatus
     ,'' AS McKinneyVentoSubgrantRecipient
     ,COALESCE(IeuOrganization.NameOfInstitution, '') AS IeuOrganizationName
-    ,COALESCE(LocalEducationAgency.EducationServiceCenterId, 0) AS IeuOrganizationIdentifierSea
+    ,COALESCE(CAST(LocalEducationAgency.EducationServiceCenterId as VARCHAR), '') AS IeuOrganizationIdentifierSea
     ,COALESCE(PhysicalAddress.Latitude, '') AS Latitude
     ,COALESCE(PhysicalAddress.Longitude, '') AS Longitude
     ,'' AS EffectiveDate
