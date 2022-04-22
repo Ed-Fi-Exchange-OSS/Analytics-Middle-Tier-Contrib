@@ -2,11 +2,10 @@
 -- Licensed to the Ed-Fi Alliance under one or more agreements.
 -- The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 -- See the LICENSE and NOTICES files in the project root for more information.
-DROP VIEW IF EXISTS xref.ceds_SeaDim;
+DROP VIEW IF EXISTS analytics.ceds_IeuDim;
 
-CREATE VIEW xref.ceds_SeaDim
-AS
-	WITH StateOrgEducationAddress AS (
+CREATE VIEW analytics.ceds_IeuDim AS
+	WITH OrgEducationAddress AS (
         SELECT
 			EducationOrganizationAddress.EducationOrganizationId,
             EducationOrganizationAddress.City,
@@ -41,29 +40,36 @@ AS
 			'-', EducationOrganizationAddress.PostalCode,
 			'-', EducationOrganizationAddress.StateAbbreviationDescriptorId,
 			'-', EducationOrganizationAddress.StreetNumberName
-		) AS SeaDimKey,
-		EducationOrganization.NameOfInstitution AS SeaOrganizationName,
-		StateEducationAgency.StateEducationAgencyId AS SeaIdentifierSea,
-		'' AS StateAnsiCode,
+		) AS IeuDimKey,
+		EducationOrganization.NameOfInstitution AS IeuOrganizationName,
+		EducationServiceCenter.EducationServiceCenterId AS IeuOrganizationIdentifierSea,
+		StateEducationOrganization.NameOfInstitution AS SeaOrganizationName,
+		EducationServiceCenter.StateEducationAgencyId AS SeaIdentifierSea,
+		'' AS StateANSICode,
 		COALESCE(StateAbbreviationDesc.CodeValue, '') AS StateAbbreviationCode,
 		COALESCE(StateAbbreviationDesc.Description, '') AS StateAbbreviationDescription,
-		--
 		COALESCE(MailingAddress.City, '') AS MailingAddressCity,
 		COALESCE(MailingAddress.PostalCode, '') AS MailingAddressPostalCode,
 		COALESCE(MailingAddress.StateAbbreviation, '') AS MailingAddressStateAbbreviation,
 		COALESCE(MailingAddress.StreetNumberName, '') AS MailingAddressStreetNumberAndName,
-		COALESCE(MailingAddress.ApartmentRoomSuiteNumber, '') AS MailingAddressApartmentRoomOrSuiteNumber,
 		'' AS MailingAddressCountyAnsiCode,
-		--
+		CASE 
+			WHEN PhysicalAddress.StateAbbreviation IS NULL
+				THEN true
+			ELSE
+				false
+		END AS OutOfStateIndicator,
+		OperationalStatusDescriptor.CodeValue AS OrganizationOperationalStatus,
+		'' as OperationalStatusEffectiveDate,
 		COALESCE(PhysicalAddress.City, '') AS PhysicalAddressCity,
 		COALESCE(PhysicalAddress.PostalCode, '') AS PhysicalAddressPostalCode,
 		COALESCE(PhysicalAddress.StateAbbreviation, '') AS PhysicalAddressStateAbbreviation,
 		COALESCE(PhysicalAddress.StreetNumberName, '') AS PhysicalAddressStreetNumberAndName,
 		COALESCE(PhysicalAddress.ApartmentRoomSuiteNumber, '') AS PhysicalAddressApartmentRoomOrSuiteNumber,
 		'' AS PhysicalAddressCountyAnsiCode,
-		--
 		COALESCE(EducationOrganizationInstitutionTelephone.TelephoneNumber, '') AS TelephoneNumber,
 		COALESCE(EducationOrganization.WebSite, '') AS WebSiteAddress,
+		'' AS OrganizationRegionGeoJson,
 		COALESCE(EducationOrganizationAddress.Latitude, '') AS Latitude,
 		COALESCE(EducationOrganizationAddress.Longitude, '') AS Longitude,
 		'' AS RecordStartDateTime,
@@ -77,14 +83,16 @@ AS
             ) AS VALUE(MaxLastModifiedDate)
         ) AS LastModifiedDate
 	FROM
+		edfi.EducationServiceCenter
+	INNER JOIN
 		edfi.EducationOrganization
+			ON EducationServiceCenter.EducationServiceCenterId = EducationOrganization.EducationOrganizationId
 	INNER JOIN
 		edfi.StateEducationAgency
-			ON EducationOrganization.EducationOrganizationId = StateEducationAgency.StateEducationAgencyId
-	LEFT JOIN
-		edfi.EducationServiceCenter
-			ON StateEducationAgency.StateEducationAgencyId = EducationServiceCenter.StateEducationAgencyId
-				AND EducationOrganization.EducationOrganizationId = EducationServiceCenter.EducationServiceCenterId
+			ON EducationServiceCenter.StateEducationAgencyId = StateEducationAgency.StateEducationAgencyId
+	INNER JOIN
+		edfi.EducationOrganization StateEducationOrganization
+			ON EducationServiceCenter.StateEducationAgencyId = StateEducationAgency.StateEducationAgencyId
 	LEFT JOIN
 		edfi.EducationOrganizationAddress
 			ON EducationOrganization.EducationOrganizationId = EducationOrganizationAddress.EducationOrganizationId
@@ -94,18 +102,18 @@ AS
 	LEFT JOIN
 		edfi.Descriptor StateAbbreviationDesc
 			ON StateAbbreviationDescriptor.StateAbbreviationDescriptorId = StateAbbreviationDesc.DescriptorId
-	-- Mailing
+	LEFT JOIN
+		edfi.Descriptor OperationalStatusDescriptor
+			ON EducationOrganization.OperationalStatusDescriptorId = OperationalStatusDescriptor.DescriptorId
 	LEFT OUTER JOIN
-        StateOrgEducationAddress AS MailingAddress
-			ON StateEducationAgency.StateEducationAgencyId = MailingAddress.EducationOrganizationId
+        OrgEducationAddress AS MailingAddress
+			ON EducationOrganization.EducationOrganizationId = MailingAddress.EducationOrganizationId
 				AND MailingAddress.ConstantName = 'Address.Mailing'
-	-- Physical
 	LEFT OUTER JOIN
-        StateOrgEducationAddress AS PhysicalAddress
-			ON StateEducationAgency.StateEducationAgencyId = PhysicalAddress.EducationOrganizationId
+        OrgEducationAddress AS PhysicalAddress
+			ON EducationOrganization.EducationOrganizationId = PhysicalAddress.EducationOrganizationId
 				AND PhysicalAddress.ConstantName = 'Address.Physical'
-	-- Telephone
 	LEFT JOIN
 		edfi.EducationOrganizationInstitutionTelephone
 			ON EducationOrganization.EducationOrganizationId = EducationOrganizationInstitutionTelephone.EducationOrganizationId
-		
+	

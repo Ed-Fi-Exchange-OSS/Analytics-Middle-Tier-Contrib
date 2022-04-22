@@ -2,10 +2,17 @@
 -- Licensed to the Ed-Fi Alliance under one or more agreements.
 -- The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 -- See the LICENSE and NOTICES files in the project root for more information.
-DROP VIEW IF EXISTS xref.ceds_K12SchoolDim;
+IF EXISTS (
+        SELECT 1
+        FROM INFORMATION_SCHEMA.VIEWS
+        WHERE TABLE_SCHEMA = 'analytics' AND TABLE_NAME = 'ceds_K12SchoolDim'
+        )
+BEGIN
+    DROP VIEW analytics.ceds_K12SchoolDim;
+END;
+GO
 
-CREATE VIEW xref.ceds_K12SchoolDim
-AS
+CREATE VIEW analytics.ceds_K12SchoolDim AS
 WITH OrganizationAddress
 AS (
     SELECT School.SchoolId
@@ -37,15 +44,15 @@ AS (
     SELECT Descriptor.DescriptorId
         ,Descriptor.CodeValue
         ,Descriptor.Description
-        ,CedsTableReference.TableName
-        ,CedsTableInformation.EdFactsCode
-    FROM xref.CedsTableInformation
+        ,ceds_TableReference.TableName
+        ,ceds_TableInformation.EdFactsCode
+    FROM analytics_config.ceds_TableInformation
     INNER JOIN 
-		xref.CedsTableReference
-			ON CedsTableInformation.TableId = CedsTableReference.TableId
+		analytics_config.ceds_TableReference
+			ON ceds_TableInformation.TableId = ceds_TableReference.TableId
     INNER JOIN 
 		edfi.Descriptor
-			ON Descriptor.DescriptorId = CedsTableInformation.DescriptorId
+			ON Descriptor.DescriptorId = ceds_TableInformation.DescriptorId
     )
 SELECT CONCAT(
 		EducationOrganizationSchool.EducationOrganizationId
@@ -69,13 +76,13 @@ SELECT CONCAT(
     ,'' AS OperationalStatusEffectiveDate
     ,'' AS PriorLeaIdentifierSea
     ,'' AS PriorSchoolIdentifierSea
-    ,(
-        CASE 
-            WHEN School.CharterStatusDescriptorId IS NOT NULL
-                THEN TRUE
-            ELSE FALSE
-            END
-        ) AS CharterSchoolIndicator
+    ,CAST((
+            CASE 
+                WHEN School.CharterStatusDescriptorId IS NOT NULL
+                    THEN 1
+                ELSE 0
+                END
+            ) AS BIT) AS CharterSchoolIndicator
     ,'' AS CharterSchoolContractIdNumber
     ,'' AS CharterSchoolContractApprovalDate
     ,'' AS CharterSchoolContractRenewalDate
@@ -102,13 +109,13 @@ SELECT CONCAT(
     ,'' AS PhysicalAddressCountyAnsiCode
     ,COALESCE(EducationOrganizationInstitutionTelephone.TelephoneNumber,'') AS TelephoneNumber
     ,COALESCE(EducationOrganizationSchool.WebSite,'') AS WebSiteAddress
-    ,(
-        CASE 
-            WHEN PhysicalAddress.StateAbbreviationDescriptorId IS NULL
-                THEN TRUE
-            ELSE FALSE
-            END
-        ) AS OutOfStateIndicator
+    ,CAST((
+            CASE 
+                WHEN PhysicalAddress.StateAbbreviationDescriptorId IS NULL
+                    THEN 1
+                ELSE 0
+                END
+            ) AS BIT) AS OutOfStateIndicator
     ,'' AS RecordStartDateTime
     ,'' AS RecordEndDateTime
     ,COALESCE(SchoolOperationStatusDescriptor.CodeValue,'') AS SchoolOperationalStatus

@@ -5,14 +5,14 @@
 IF EXISTS (
         SELECT 1
         FROM INFORMATION_SCHEMA.VIEWS
-        WHERE TABLE_SCHEMA = 'xref' AND TABLE_NAME = 'ceds_SeaDim'
+        WHERE TABLE_SCHEMA = 'analytics' AND TABLE_NAME = 'ceds_SeaDim'
         )
 BEGIN
-    DROP VIEW xref.ceds_SeaDim;
+    DROP VIEW analytics.ceds_SeaDim;
 END;
 GO
 
-CREATE VIEW xref.ceds_SeaDim AS
+CREATE VIEW analytics.ceds_SeaDim AS
 	WITH StateOrgEducationAddress AS (
         SELECT
 			EducationOrganizationAddress.EducationOrganizationId,

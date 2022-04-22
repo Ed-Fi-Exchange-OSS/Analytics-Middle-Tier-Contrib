@@ -5,28 +5,28 @@
 IF EXISTS (
         SELECT 1
         FROM INFORMATION_SCHEMA.VIEWS
-        WHERE TABLE_SCHEMA = 'xref'
+        WHERE TABLE_SCHEMA = 'analytics'
             AND TABLE_NAME = 'ceds_IdeaStatusDim'
         )
 BEGIN
-    DROP VIEW xref.ceds_IdeaStatusDim;
+    DROP VIEW analytics.ceds_IdeaStatusDim;
 END;
 GO
 
-CREATE OR ALTER VIEW xref.ceds_IdeaStatusDim
+CREATE OR ALTER VIEW analytics.ceds_IdeaStatusDim
 AS
 WITH MapReferenceDescriptor
 AS (
     SELECT Descriptor.DescriptorId
         ,Descriptor.CodeValue
         ,Descriptor.Description
-        ,CedsTableReference.TableName
-        ,CedsTableInformation.EdFactsCode
-    FROM xref.CedsTableInformation
-    INNER JOIN xref.CedsTableReference
-        ON CedsTableInformation.TableId = CedsTableReference.TableId
+        ,ceds_TableReference.TableName
+        ,ceds_TableInformation.EdFactsCode
+    FROM analytics_config.ceds_TableInformation
+    INNER JOIN analytics_config.ceds_TableReference
+        ON ceds_TableInformation.TableId = ceds_TableReference.TableId
     INNER JOIN edfi.Descriptor
-        ON Descriptor.DescriptorId = CedsTableInformation.DescriptorId
+        ON Descriptor.DescriptorId = ceds_TableInformation.DescriptorId
     )
 SELECT DISTINCT CONCAT (
         COALESCE(ReferenceBasisOfExitDescriptor.EdFactsCode, '')

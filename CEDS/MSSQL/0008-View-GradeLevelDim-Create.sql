@@ -5,15 +5,15 @@
 IF EXISTS (
         SELECT 1
         FROM INFORMATION_SCHEMA.VIEWS
-        WHERE TABLE_SCHEMA = 'xref'
+        WHERE TABLE_SCHEMA = 'analytics'
             AND TABLE_NAME = 'ceds_GradeLevelDim'
         )
 BEGIN
-    DROP VIEW xref.ceds_GradeLevelDim;
+    DROP VIEW analytics.ceds_GradeLevelDim;
 END;
 GO
 
-CREATE OR ALTER VIEW xref.ceds_GradeLevelDim
+CREATE OR ALTER VIEW analytics.ceds_GradeLevelDim
 AS 
 WITH MapReferenceDescriptor
 AS (
@@ -21,28 +21,26 @@ AS (
          Descriptor.DescriptorId
         ,Descriptor.CodeValue
         ,Descriptor.Description
-        ,CedsTableReference.TableName
-        ,CedsTableInformation.EdFactsCode
+        ,ceds_TableReference.TableName
+        ,ceds_TableInformation.EdFactsCode
         ,Descriptor.LastModifiedDate
     FROM 
-        xref.CedsTableInformation
+        analytics_config.ceds_TableInformation
     INNER JOIN 
-        xref.CedsTableReference
-        ON CedsTableInformation.TableId = CedsTableReference.TableId
+        analytics_config.ceds_TableReference
+        ON ceds_TableInformation.TableId = ceds_TableReference.TableId
     INNER JOIN 
         edfi.Descriptor
-        ON Descriptor.DescriptorId = CedsTableInformation.DescriptorId
+        ON Descriptor.DescriptorId = ceds_TableInformation.DescriptorId
     INNER JOIN
         edfi.GradeLevelDescriptor
-        ON GradeLevelDescriptor.GradeLevelDescriptorId = CedsTableInformation.DescriptorId
+        ON GradeLevelDescriptor.GradeLevelDescriptorId = ceds_TableInformation.DescriptorId
     )
 SELECT DISTINCT 
     CONCAT (
             MapReferenceDescriptor.EdFactsCode, 
             '-', 
             MapReferenceDescriptor.CodeValue,
-            '-',
-            MapReferenceDescriptor.Description
         ) AS GradeLevelKey
     ,COALESCE(MapReferenceDescriptor.CodeValue, '') AS GradeLevelCode
     ,COALESCE(MapReferenceDescriptor.Description, '') AS GradeLevelDescription

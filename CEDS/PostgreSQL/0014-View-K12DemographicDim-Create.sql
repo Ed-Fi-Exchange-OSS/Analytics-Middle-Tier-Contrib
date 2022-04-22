@@ -2,31 +2,22 @@
 -- Licensed to the Ed-Fi Alliance under one or more agreements.
 -- The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 -- See the LICENSE and NOTICES files in the project root for more information.
-IF EXISTS (
-        SELECT 1
-        FROM INFORMATION_SCHEMA.VIEWS
-        WHERE TABLE_SCHEMA = 'xref'
-            AND TABLE_NAME = 'ceds_K12DemographicDim'
-        )
-BEGIN
-    DROP VIEW xref.ceds_K12DemographicDim;
-END;
-GO
+DROP VIEW IF EXISTS analytics.ceds_K12DemographicDim;
 
-CREATE OR ALTER VIEW xref.ceds_K12DemographicDim
+CREATE VIEW analytics.ceds_K12DemographicDim
 AS
 WITH MapReferenceDescriptor
 AS (
     SELECT Descriptor.DescriptorId
         ,Descriptor.CodeValue
         ,Descriptor.Description
-        ,CedsTableReference.TableName
-        ,CedsTableInformation.EdFactsCode
-    FROM xref.CedsTableInformation
-    INNER JOIN xref.CedsTableReference
-        ON CedsTableInformation.TableId = CedsTableReference.TableId
+        ,ceds_TableReference.TableName
+        ,ceds_TableInformation.EdFactsCode
+    FROM analytics_config.ceds_TableInformation
+    INNER JOIN analytics_config.ceds_TableReference
+        ON ceds_TableInformation.TableId = ceds_TableReference.TableId
     INNER JOIN edfi.Descriptor
-        ON Descriptor.DescriptorId = CedsTableInformation.DescriptorId
+        ON Descriptor.DescriptorId = ceds_TableInformation.DescriptorId
     )
 SELECT DISTINCT CONCAT (
         ReferenceEconomicDisadvantageStatusDescriptor.EdFactsCode

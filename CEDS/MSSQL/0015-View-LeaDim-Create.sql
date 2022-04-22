@@ -3,51 +3,56 @@
 -- The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 -- See the LICENSE and NOTICES files in the project root for more information.
 
-DROP VIEW IF EXISTS xref.ceds_LeaDim;
+IF EXISTS (
+        SELECT 1
+        FROM INFORMATION_SCHEMA.VIEWS
+        WHERE TABLE_SCHEMA = 'analytics' AND TABLE_NAME = 'ceds_LeaDim'
+        )
+BEGIN
+    DROP VIEW analytics.ceds_LeaDim;
+END;
+GO
 
-CREATE VIEW xref.ceds_LeaDim AS
+CREATE VIEW analytics.ceds_LeaDim AS
 WITH OrganizationAddress
-AS (
-    SELECT LocalEducationAgency.LocalEducationAgencyId
-        ,EducationOrganizationAddress.City AS AddressCity
-        ,EducationOrganizationAddress.PostalCode AS AddressPostalCode
-        ,Descriptor.CodeValue AS AddressStateAbbreviation
-        ,EducationOrganizationAddress.StreetNumberName AS AddressStreetNumberAndName
-        ,EducationOrganizationAddress.BuildingSiteNumber AS AddressApartmentRoomOrSuiteNumber
-        ,DescriptorConstant.ConstantName AS AddressType
-        ,COALESCE(EducationOrganizationAddress.Latitude, '') AS Latitude
-        ,COALESCE(EducationOrganizationAddress.Longitude, '') AS Longitude
-        ,EducationOrganizationAddress.StateAbbreviationDescriptorId
-    FROM 
-        edfi.LocalEducationAgency
-    INNER JOIN 
-        edfi.EducationOrganizationAddress
-            ON LocalEducationAgency.LocalEducationAgencyId = EducationOrganizationAddress.EducationOrganizationId
-    INNER JOIN 
-        edfi.Descriptor
-            ON AddressTypeDescriptorId = DescriptorId
-    INNER JOIN 
-        analytics_config.DescriptorMap
-            ON Descriptor.DescriptorId = DescriptorMap.DescriptorId
-    INNER JOIN 
-        analytics_config.DescriptorConstant
-            ON DescriptorConstant.DescriptorConstantId = DescriptorMap.DescriptorConstantId
+    AS (
+        SELECT LocalEducationAgency.LocalEducationAgencyId
+            ,EducationOrganizationAddress.City AS AddressCity
+            ,EducationOrganizationAddress.PostalCode AS AddressPostalCode
+            ,Descriptor.CodeValue AS AddressStateAbbreviation
+            ,EducationOrganizationAddress.StreetNumberName AS AddressStreetNumberAndName
+            ,EducationOrganizationAddress.BuildingSiteNumber AS AddressApartmentRoomOrSuiteNumber
+            ,DescriptorConstant.ConstantName AS AddressType
+            ,COALESCE(EducationOrganizationAddress.Latitude, '') AS Latitude
+            ,COALESCE(EducationOrganizationAddress.Longitude, '') AS Longitude
+            ,EducationOrganizationAddress.StateAbbreviationDescriptorId
+        FROM 
+            edfi.LocalEducationAgency
+        INNER JOIN 
+            edfi.EducationOrganizationAddress
+                ON LocalEducationAgency.LocalEducationAgencyId = EducationOrganizationAddress.EducationOrganizationId
+        INNER JOIN 
+            edfi.Descriptor
+                ON AddressTypeDescriptorId = DescriptorId
+        INNER JOIN 
+            analytics_config.DescriptorMap
+                ON Descriptor.DescriptorId = DescriptorMap.DescriptorId
+        INNER JOIN 
+            analytics_config.DescriptorConstant
+                ON DescriptorConstant.DescriptorConstantId = DescriptorMap.DescriptorConstantId
     )
     ,MapReferenceDescriptor
-AS (
-    SELECT Descriptor.DescriptorId
-        ,Descriptor.CodeValue
-        ,Descriptor.Description
-        ,CedsTableReference.TableName
-        ,CedsTableInformation.EdFactsCode
-    FROM 
-        xref.CedsTableInformation
-    INNER JOIN 
-        xref.CedsTableReference
-            ON CedsTableInformation.TableId = CedsTableReference.TableId
-    INNER JOIN 
-        edfi.Descriptor
-            ON Descriptor.DescriptorId = CedsTableInformation.DescriptorId
+    AS (
+        SELECT Descriptor.DescriptorId
+            ,Descriptor.CodeValue
+            ,Descriptor.Description
+            ,ceds_TableReference.TableName
+            ,ceds_TableInformation.EdFactsCode
+        FROM analytics_config.ceds_TableInformation
+        INNER JOIN analytics_config.ceds_TableReference
+            ON ceds_TableInformation.TableId = ceds_TableReference.TableId
+        INNER JOIN edfi.Descriptor
+            ON Descriptor.DescriptorId = ceds_TableInformation.DescriptorId
     )
 SELECT 
     CONCAT(
@@ -58,7 +63,7 @@ SELECT
     ,'' AS OperationalStatusEffectiveDate
     ,EducationOrganizationLEA.NameOfInstitution AS LeaName
     ,'' AS LeaIdentifierNces
-    ,COALESCE(CAST(LocalEducationAgency.LocalEducationAgencyId as VARCHAR), '') AS LeaIdentifierSea
+    ,COALESCE(CAST(LocalEducationAgency.LocalEducationAgencyId AS VARCHAR), '') AS LeaIdentifierSea
     ,EducationOrganizationLEA.NameOfInstitution AS NameOfInstitution
     ,'' AS PriorLeaIdentifierSea
     ,COALESCE(EducationOrganizationSEA.NameOfInstitution, '') AS SeaOrganizationName
@@ -85,13 +90,13 @@ SELECT
     ,'' AS PhysicalAddressCountyAnsiCode
     ,COALESCE(EducationOrganizationInstitutionTelephone.TelephoneNumber, '') AS TelephoneNumber
     ,COALESCE(EducationOrganizationLEA.WebSite, '') AS WebSiteAddress
-    ,(
-        CASE 
-            WHEN PhysicalAddress.StateAbbreviationDescriptorId IS NULL
-                THEN true
-            ELSE false
-            END
-        ) AS OutOfStateIndicator
+    ,CAST((
+            CASE 
+                WHEN PhysicalAddress.StateAbbreviationDescriptorId IS NULL
+                    THEN 1
+                ELSE 0
+                END
+            ) AS BIT) AS OutOfStateIndicator
     ,'' AS RecordStartDateTime
     ,'' AS RecordEndDateTime
     ,COALESCE(LEAOperationStatusDescriptor.CodeValue, '') AS LEAOperationalStatus
@@ -104,7 +109,8 @@ SELECT
     ,COALESCE(PhysicalAddress.Latitude, '') AS Latitude
     ,COALESCE(PhysicalAddress.Longitude, '') AS Longitude
     ,'' AS EffectiveDate
-FROM edfi.LocalEducationAgency
+FROM 
+    edfi.LocalEducationAgency
 INNER JOIN 
     edfi.EducationOrganization AS EducationOrganizationLEA
         ON LocalEducationAgency.LocalEducationAgencyId = EducationOrganizationLEA.EducationOrganizationId

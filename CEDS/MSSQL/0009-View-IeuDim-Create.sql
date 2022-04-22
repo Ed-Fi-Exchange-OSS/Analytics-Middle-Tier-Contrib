@@ -2,9 +2,17 @@
 -- Licensed to the Ed-Fi Alliance under one or more agreements.
 -- The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 -- See the LICENSE and NOTICES files in the project root for more information.
-DROP VIEW IF EXISTS xref.ceds_IeuDim;
+IF EXISTS (
+        SELECT 1
+        FROM INFORMATION_SCHEMA.VIEWS
+        WHERE TABLE_SCHEMA = 'analytics' AND TABLE_NAME = 'ceds_IeuDim'
+        )
+BEGIN
+    DROP VIEW analytics.ceds_IeuDim;
+END;
+GO
 
-CREATE VIEW xref.ceds_IeuDim AS
+CREATE VIEW analytics.ceds_IeuDim AS
 	WITH OrgEducationAddress AS (
         SELECT
 			EducationOrganizationAddress.EducationOrganizationId,
@@ -53,12 +61,12 @@ CREATE VIEW xref.ceds_IeuDim AS
 		COALESCE(MailingAddress.StateAbbreviation, '') AS MailingAddressStateAbbreviation,
 		COALESCE(MailingAddress.StreetNumberName, '') AS MailingAddressStreetNumberAndName,
 		'' AS MailingAddressCountyAnsiCode,
-		CASE 
+		CAST((CASE 
 			WHEN PhysicalAddress.StateAbbreviation IS NULL
-				THEN true
+				THEN 1
 			ELSE
-				false
-		END AS OutOfStateIndicator,
+				0
+		END) AS BIT) AS OutOfStateIndicator,
 		OperationalStatusDescriptor.CodeValue AS OrganizationOperationalStatus,
 		'' as OperationalStatusEffectiveDate,
 		COALESCE(PhysicalAddress.City, '') AS PhysicalAddressCity,

@@ -6,6 +6,6 @@
 IF NOT EXISTS 
     (   SELECT name
 	    FROM sys.schemas
-        WHERE name = 'xref' )
-    EXEC('CREATE SCHEMA xref')
+        WHERE name = 'analytics_config' )
+    EXEC('CREATE SCHEMA analytics_config')
 GO

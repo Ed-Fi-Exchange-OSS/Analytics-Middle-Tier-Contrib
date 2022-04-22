@@ -3,10 +3,10 @@
 -- The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 -- See the LICENSE and NOTICES files in the project root for more information.
 
-CREATE SEQUENCE IF NOT EXISTS xref.CedsTableReference_seq;
+CREATE SEQUENCE IF NOT EXISTS analytics_config.ceds_TableReference_seq;
 
-CREATE TABLE IF NOT EXISTS xref.CedsTableReference (
-	TableId INT DEFAULT NEXTVAL('xref.CedsTableReference_seq') NOT NULL,
+CREATE TABLE IF NOT EXISTS analytics_config.ceds_TableReference (
+	TableId INT DEFAULT NEXTVAL('analytics_config.ceds_TableReference_seq') NOT NULL,
 	TableName VARCHAR(250) NOT NULL,
-	CONSTRAINT PK_CedsTableReference_EdFiTable PRIMARY KEY(TableId)
+	CONSTRAINT PK_ceds_TableReference_EdFiTable PRIMARY KEY(TableId)
 )

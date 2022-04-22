@@ -3,7 +3,8 @@
 -- The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 -- See the LICENSE and NOTICES files in the project root for more information.
 
-WITH SOURCE AS (SELECT Descriptor.DescriptorId
+MERGE INTO analytics_config.ceds_TableInformation AS Target
+USING (SELECT Descriptor.DescriptorId
 	, Descriptor.CodeValue
 	, MapReference.EdFactsCode
 	, MapReference.TableId
@@ -31,18 +32,22 @@ INNER JOIN
 	edfi.Descriptor 
 		ON MapReference.CodeValue = Descriptor.CodeValue
 			AND Descriptor.Namespace='uri://ed-fi.org/GradeLevelDescriptor'
-)
-  INSERT INTO xref.CedsTableInformation
+) AS Source(DescriptorId, CodeValue, EdFactsCode, TableId)
+ON TARGET.CodeValue = Source.CodeValue
+	AND TARGET.EdFactsCode = Source.EdFactsCode
+    WHEN NOT MATCHED BY TARGET
+    THEN
+      INSERT
 	  (
 		DescriptorId
 		, CodeValue
 		, EdFactsCode
 		, TableId
 	  )
-    SELECT
+      VALUES
+      (
         Source.DescriptorId
-		  , Source.CodeValue
-		  , Source.EdFactsCode
-		  , Source.TableId
-    FROM Source
-ON CONFLICT DO NOTHING;
+		, Source.CodeValue
+		, Source.EdFactsCode
+		, Source.TableId
+      );

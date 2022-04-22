@@ -3,7 +3,9 @@
 -- The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 -- See the LICENSE and NOTICES files in the project root for more information.
 
-CREATE TABLE xref.CedsTableReference ( 
-	TableId INT PRIMARY KEY IDENTITY(1,1) NOT NULL,
-	TableName VARCHAR(250) NOT NULL
-)
+IF NOT EXISTS 
+    (   SELECT name
+	    FROM sys.schemas
+        WHERE name = 'analytics' )
+    EXEC('CREATE SCHEMA analytics')
+GO
