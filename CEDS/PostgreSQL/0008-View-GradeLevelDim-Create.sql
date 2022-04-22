@@ -31,7 +31,7 @@ SELECT DISTINCT
     CONCAT (
             MapReferenceDescriptor.EdFactsCode, 
             '-', 
-            MapReferenceDescriptor.CodeValue,
+            MapReferenceDescriptor.CodeValue
         ) AS GradeLevelKey
     ,COALESCE(MapReferenceDescriptor.CodeValue, '') AS GradeLevelCode
     ,COALESCE(MapReferenceDescriptor.Description, '') AS GradeLevelDescription
