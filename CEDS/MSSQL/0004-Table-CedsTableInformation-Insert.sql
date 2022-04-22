@@ -3,11 +3,11 @@
 -- The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 -- See the LICENSE and NOTICES files in the project root for more information.
 
-MERGE INTO xref.EdfiTableInformation AS Target
+MERGE INTO xref.CedsTableInformation AS Target
 USING (SELECT Descriptor.DescriptorId
 	, Descriptor.CodeValue
 	, MapReference.EdFactsCode
-	, MapReference.EdFiTableId
+	, MapReference.TableId
 FROM
 	(VALUES
 		('uri://ed-fi.org/GradeLevelDescriptor','Preschool/Prekindergarten', 'PK', 4),
@@ -27,27 +27,27 @@ FROM
 		('uri://ed-fi.org/GradeLevelDescriptor','Postsecondary', 'HS', 4),
 		('uri://ed-fi.org/GradeLevelDescriptor','Ungraded', 'UG', 4),
 		('uri://ed-fi.org/GradeLevelDescriptor','Adult Education', 'AE', 4)
-	) MapReference (Namespace, CodeValue, EdFactsCode, EdFiTableId)
+	) MapReference (Namespace, CodeValue, EdFactsCode, TableId)
 INNER JOIN 
 	edfi.Descriptor 
 		ON MapReference.CodeValue = Descriptor.CodeValue
 			AND Descriptor.Namespace='uri://ed-fi.org/GradeLevelDescriptor'
-) AS Source(DescriptorId, CodeValue, EdFactsCode, EdFiTableId)
-ON TARGET.EdFiCodeValue = Source.CodeValue
+) AS Source(DescriptorId, CodeValue, EdFactsCode, TableId)
+ON TARGET.CodeValue = Source.CodeValue
 	AND TARGET.EdFactsCode = Source.EdFactsCode
     WHEN NOT MATCHED BY TARGET
     THEN
       INSERT
 	  (
-		EdFiDescriptorId
-		, EdFiCodeValue
+		DescriptorId
+		, CodeValue
 		, EdFactsCode
-		, EdFiTableId
+		, TableId
 	  )
       VALUES
       (
         Source.DescriptorId
 		, Source.CodeValue
 		, Source.EdFactsCode
-		, Source.EdFiTableId
+		, Source.TableId
       );

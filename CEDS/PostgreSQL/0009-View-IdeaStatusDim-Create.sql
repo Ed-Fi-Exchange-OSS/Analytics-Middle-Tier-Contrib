@@ -11,13 +11,13 @@ CREATE VIEW xref.ceds_IdeaStatusDim
         SELECT Descriptor.DescriptorId
             ,Descriptor.CodeValue
             ,Descriptor.Description
-            ,EdFiTableReference.EdFiTableName
-            ,EdFiTableInformation.EdFactsCode
-        FROM xref.EdFiTableInformation
-        INNER JOIN xref.EdFiTableReference
-            ON EdFiTableInformation.EdFiTableId = EdFiTableReference.EdFiTableId
+            ,CedsTableReference.TableName
+            ,CedsTableInformation.EdFactsCode
+        FROM xref.CedsTableInformation
+        INNER JOIN xref.CedsTableReference
+            ON CedsTableInformation.TableId = CedsTableReference.TableId
         INNER JOIN edfi.Descriptor
-            ON Descriptor.DescriptorId = EdFiTableInformation.EdFiDescriptorId
+            ON Descriptor.DescriptorId = CedsTableInformation.DescriptorId
         )
     SELECT DISTINCT CONCAT (
             COALESCE(ReferenceBasisOfExitDescriptor.EdFactsCode, '')
@@ -25,7 +25,7 @@ CREATE VIEW xref.ceds_IdeaStatusDim
             ,COALESCE(ReferenceDisabilityDescriptor.EdFactsCode, '')
             ,'-'
             ,COALESCE(ReferenceEducationalEnvironmentDescriptor.EdFactsCode, '')
-            ) AS IdeaStatusesKey
+            ) AS IdeaStatusKey
         ,COALESCE(ReferenceBasisOfExitDescriptor.CodeValue, '') AS BasisOfExitCode
         ,COALESCE(ReferenceBasisOfExitDescriptor.Description, '') AS BasisOfExitDescription
         ,COALESCE(ReferenceBasisOfExitDescriptor.EdFactsCode, '') AS BasisOfExitEdFactsCode
@@ -38,15 +38,36 @@ CREATE VIEW xref.ceds_IdeaStatusDim
         ,COALESCE(ReferenceEducationalEnvironmentDescriptor.Description, '') AS EducEnvDescription
         ,COALESCE(ReferenceEducationalEnvironmentDescriptor.EdFactsCode, '') AS EducEnvEdFactsCode
         ,'' AS EducEnvId
-    FROM edfi.ReasonExitedDescriptor
-	LEFT JOIN MapReferenceDescriptor ReferenceBasisOfExitDescriptor
-		ON ReasonExitedDescriptor.ReasonExitedDescriptorId = ReferenceBasisOfExitDescriptor.DescriptorId
-		AND ReferenceBasisOfExitDescriptor.EdFiTableName = 'xref.BasisOfExit'
-	CROSS JOIN edfi.DisabilityDescriptor
-	LEFT JOIN MapReferenceDescriptor ReferenceDisabilityDescriptor
-		ON DisabilityDescriptor.DisabilityDescriptorId = ReferenceDisabilityDescriptor.DescriptorId
-		AND ReferenceDisabilityDescriptor.EdFiTableName = 'xref.DisabilityDescriptor'
-	CROSS JOIN  edfi.EducationalEnvironmentDescriptor
-	LEFT JOIN MapReferenceDescriptor ReferenceEducationalEnvironmentDescriptor
-		ON EducationalEnvironmentDescriptor.EducationalEnvironmentDescriptorId = ReferenceEducationalEnvironmentDescriptor.DescriptorId
-		AND ReferenceEducationalEnvironmentDescriptor.EdFiTableName = 'xref.EducationalEnvironmentType';
+    FROM 
+        (SELECT ReferenceBasisOfExitDescriptor.CodeValue
+                ,ReferenceBasisOfExitDescriptor.Description
+                ,ReferenceBasisOfExitDescriptor.EdFactsCode
+        FROM 
+            edfi.ReasonExitedDescriptor
+        LEFT JOIN 
+            MapReferenceDescriptor ReferenceBasisOfExitDescriptor
+                ON ReasonExitedDescriptor.ReasonExitedDescriptorId = ReferenceBasisOfExitDescriptor.DescriptorId
+        WHERE ReferenceBasisOfExitDescriptor.TableName = 'xref.BasisOfExit'
+    ) AS ReferenceBasisOfExitDescriptor
+    CROSS JOIN 
+        (SELECT ReferenceDisabilityDescriptor.CodeValue
+                ,ReferenceDisabilityDescriptor.Description
+                ,ReferenceDisabilityDescriptor.EdFactsCode
+        FROM
+            edfi.DisabilityDescriptor
+        LEFT JOIN 
+            MapReferenceDescriptor ReferenceDisabilityDescriptor
+                ON DisabilityDescriptor.DisabilityDescriptorId = ReferenceDisabilityDescriptor.DescriptorId
+        WHERE
+            ReferenceDisabilityDescriptor.TableName = 'xref.DisabilityDescriptor'
+    ) AS ReferenceDisabilityDescriptor
+    CROSS JOIN  
+        (SELECT ReferenceEducationalEnvironmentDescriptor.CodeValue
+                ,ReferenceEducationalEnvironmentDescriptor.Description
+                ,ReferenceEducationalEnvironmentDescriptor.EdFactsCode
+        FROM 
+            edfi.EducationalEnvironmentDescriptor
+        LEFT JOIN
+            MapReferenceDescriptor ReferenceEducationalEnvironmentDescriptor
+                ON EducationalEnvironmentDescriptor.EducationalEnvironmentDescriptorId = ReferenceEducationalEnvironmentDescriptor.DescriptorId
+        WHERE ReferenceEducationalEnvironmentDescriptor.TableName = 'xref.EducationalEnvironmentType') AS ReferenceEducationalEnvironmentDescriptor;

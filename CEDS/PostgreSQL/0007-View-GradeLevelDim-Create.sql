@@ -12,20 +12,20 @@ AS (
          Descriptor.DescriptorId
         ,Descriptor.CodeValue
         ,Descriptor.Description
-        ,EdFiTableReference.EdFiTableName
-        ,EdFiTableInformation.EdFactsCode
+        ,CedsTableReference.TableName
+        ,CedsTableInformation.EdFactsCode
         ,Descriptor.LastModifiedDate
     FROM 
-        xref.EdFiTableInformation
+        xref.CedsTableInformation
     INNER JOIN 
-        xref.EdFiTableReference
-        ON EdFiTableInformation.EdFiTableId = EdFiTableReference.EdFiTableId
+        xref.CedsTableReference
+        ON CedsTableInformation.TableId = CedsTableReference.TableId
     INNER JOIN 
         edfi.Descriptor
-        ON Descriptor.DescriptorId = EdFiTableInformation.EdFiDescriptorId
+        ON Descriptor.DescriptorId = CedsTableInformation.DescriptorId
     INNER JOIN
         edfi.GradeLevelDescriptor
-        ON GradeLevelDescriptor.GradeLevelDescriptorId = EdFiTableInformation.EdFiDescriptorId
+        ON GradeLevelDescriptor.GradeLevelDescriptorId = CedsTableInformation.DescriptorId
     )
 SELECT DISTINCT 
     CONCAT (
@@ -44,4 +44,4 @@ FROM
 LEFT JOIN 
     MapReferenceDescriptor
     ON GradeLevelDescriptor.GradeLevelDescriptorId = MapReferenceDescriptor.DescriptorId
-	AND MapReferenceDescriptor.EdFiTableName = 'xref.GradeLevels'
+	AND MapReferenceDescriptor.TableName = 'xref.GradeLevels'

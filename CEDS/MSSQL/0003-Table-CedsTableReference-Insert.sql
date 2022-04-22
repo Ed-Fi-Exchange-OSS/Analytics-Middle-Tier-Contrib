@@ -3,7 +3,7 @@
 -- The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 -- See the LICENSE and NOTICES files in the project root for more information.
 
-WITH source AS (VALUES
+INSERT INTO xref.CedsTableReference VALUES
 	('xref.LEAType'),
 	('xref.SchoolType'),
 	('xref.OperationalStatus'),
@@ -19,14 +19,3 @@ WITH source AS (VALUES
 	('xref.HomelessPrimaryNighttimeResidence'),
 	('xref.HomelessUnaccompaniedYouthStatus'),
 	('xref.Sex')
-)
-INSERT INTO 
-    xref.EdfiTableReference
-(
-	EdFiTableName
-)
-SELECT
-    source.column1
-FROM
-    source
-ON CONFLICT DO NOTHING;

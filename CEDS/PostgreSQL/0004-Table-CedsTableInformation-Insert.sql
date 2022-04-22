@@ -6,7 +6,7 @@
 WITH SOURCE AS (SELECT Descriptor.DescriptorId
 	, Descriptor.CodeValue
 	, MapReference.EdFactsCode
-	, MapReference.EdFiTableId
+	, MapReference.TableId
 FROM
 	(VALUES
 		('uri://ed-fi.org/GradeLevelDescriptor','Preschool/Prekindergarten', 'PK', 4),
@@ -26,23 +26,23 @@ FROM
 		('uri://ed-fi.org/GradeLevelDescriptor','Postsecondary', 'HS', 4),
 		('uri://ed-fi.org/GradeLevelDescriptor','Ungraded', 'UG', 4),
 		('uri://ed-fi.org/GradeLevelDescriptor','Adult Education', 'AE', 4)
-	) MapReference (Namespace, CodeValue, EdFactsCode, EdFiTableId)
+	) MapReference (Namespace, CodeValue, EdFactsCode, TableId)
 INNER JOIN 
 	edfi.Descriptor 
 		ON MapReference.CodeValue = Descriptor.CodeValue
 			AND Descriptor.Namespace='uri://ed-fi.org/GradeLevelDescriptor'
 )
-  INSERT INTO xref.EdfiTableInformation
+  INSERT INTO xref.CedsTableInformation
 	  (
-		EdFiDescriptorId
-		, EdFiCodeValue
+		DescriptorId
+		, CodeValue
 		, EdFactsCode
-		, EdFiTableId
+		, TableId
 	  )
     SELECT
         Source.DescriptorId
 		  , Source.CodeValue
 		  , Source.EdFactsCode
-		  , Source.EdFiTableId
+		  , Source.TableId
     FROM Source
 ON CONFLICT DO NOTHING;

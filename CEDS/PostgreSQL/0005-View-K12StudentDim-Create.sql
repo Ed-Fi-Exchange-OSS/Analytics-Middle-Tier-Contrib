@@ -2,21 +2,11 @@
 -- Licensed to the Ed-Fi Alliance under one or more agreements.
 -- The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 -- See the LICENSE and NOTICES files in the project root for more information.
-IF EXISTS (
-        SELECT 1
-        FROM INFORMATION_SCHEMA.VIEWS
-        WHERE TABLE_SCHEMA = 'xref'
-            AND TABLE_NAME = 'K12StudentsDim'
-        )
-BEGIN
-    DROP VIEW xref.K12StudentsDim;
-END;
-GO
+DROP VIEW IF EXISTS xref.ceds_K12StudentDim;
 
-CREATE OR ALTER VIEW xref.K12StudentsDim AS
-(
+CREATE OR REPLACE VIEW xref.ceds_K12StudentDim AS
     SELECT
-        CONCAT(Student.StudentUniqueId, '-', StudentSchoolAssociation.SchoolId, '-', StudentSchoolAssociation.ClassOfSchoolYear) as K12StudentsKey,
+        CONCAT(Student.StudentUniqueId, '-', StudentSchoolAssociation.SchoolId, '-', StudentSchoolAssociation.ClassOfSchoolYear) as K12StudentKey,
         CONCAT(Student.StudentUniqueId, '-', StudentSchoolAssociation.SchoolId) AS StudentSchoolKey,
         Student.BirthDate,
         StudentSchoolAssociation.ClassOfSchoolYear AS Cohort,
@@ -42,4 +32,3 @@ CREATE OR ALTER VIEW xref.K12StudentsDim AS
             Student.StudentUniqueId,
             StudentSchoolAssociation.SchoolId,
             StudentSchoolAssociation.ClassOfSchoolYear
-)

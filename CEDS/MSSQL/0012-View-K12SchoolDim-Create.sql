@@ -44,15 +44,15 @@ AS (
     SELECT Descriptor.DescriptorId
         ,Descriptor.CodeValue
         ,Descriptor.Description
-        ,EdFiTableReference.EdFiTableName
-        ,EdFiTableInformation.EdFactsCode
-    FROM xref.EdFiTableInformation
+        ,CedsTableReference.TableName
+        ,CedsTableInformation.EdFactsCode
+    FROM xref.CedsTableInformation
     INNER JOIN 
-		xref.EdFiTableReference
-			ON EdFiTableInformation.EdFiTableId = EdFiTableReference.EdFiTableId
+		xref.CedsTableReference
+			ON CedsTableInformation.TableId = CedsTableReference.TableId
     INNER JOIN 
 		edfi.Descriptor
-			ON Descriptor.DescriptorId = EdFiTableInformation.EdFiDescriptorId
+			ON Descriptor.DescriptorId = CedsTableInformation.DescriptorId
     )
 SELECT CONCAT(
 		EducationOrganizationSchool.EducationOrganizationId
@@ -160,7 +160,7 @@ LEFT JOIN
 LEFT JOIN 
 	MapReferenceDescriptor AS MapReferenceOrganizationCategoryLEADescriptor
 		ON MapReferenceOrganizationCategoryLEADescriptor.DescriptorId = OrganizationCategoryLEADescriptor.DescriptorId
-			AND MapReferenceOrganizationCategoryLEADescriptor.EdFiTableName = 'xref.LEAType'
+			AND MapReferenceOrganizationCategoryLEADescriptor.TableName = 'xref.LEAType'
 LEFT JOIN 
 	edfi.EducationOrganizationCategory AS EducationOrganizationCategorySchool
 		ON School.SchoolId = EducationOrganizationCategorySchool.EducationOrganizationId
@@ -171,7 +171,7 @@ LEFT JOIN edfi.Descriptor AS OrganizationCategorySchoolDescriptor
 LEFT JOIN 
 	MapReferenceDescriptor AS MapReferenceOrganizationCategorySchoolDescriptor
 		ON MapReferenceOrganizationCategorySchoolDescriptor.DescriptorId = OrganizationCategorySchoolDescriptor.DescriptorId
-			AND MapReferenceOrganizationCategorySchoolDescriptor.EdFiTableName = 'xref.LEAType'
+			AND MapReferenceOrganizationCategorySchoolDescriptor.TableName = 'xref.LEAType'
 LEFT JOIN 
 	OrganizationAddress AS MailingAddress
 		ON School.SchoolId = MailingAddress.SchoolId
@@ -189,7 +189,7 @@ LEFT JOIN
 LEFT JOIN 
 	MapReferenceDescriptor AS MapReferenceSchoolOperationStatusDescriptor
 		ON MapReferenceSchoolOperationStatusDescriptor.DescriptorId = SchoolOperationStatusDescriptor.DescriptorId
-        AND MapReferenceSchoolOperationStatusDescriptor.EdFiTableName = 'xref.OperationalStatus'
+        AND MapReferenceSchoolOperationStatusDescriptor.TableName = 'xref.OperationalStatus'
 LEFT JOIN 
 	edfi.Descriptor AS CharterSchoolStatusDescriptor
 		ON School.CharterStatusDescriptorId = CharterSchoolStatusDescriptor.DescriptorId
