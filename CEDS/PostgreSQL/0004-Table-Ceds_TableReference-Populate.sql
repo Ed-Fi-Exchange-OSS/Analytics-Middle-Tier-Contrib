@@ -21,9 +21,9 @@ WITH source AS (VALUES
 	('xref.Sex')
 )
 INSERT INTO 
-    xref.EdfiTableReference
+    analytics_config.ceds_TableReference
 (
-	EdFiTableName
+	TableName
 )
 SELECT
     source.column1

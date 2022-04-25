@@ -2,9 +2,9 @@
 -- Licensed to the Ed-Fi Alliance under one or more agreements.
 -- The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 -- See the LICENSE and NOTICES files in the project root for more information.
-DROP VIEW IF EXISTS xref.ceds_LeusDim;
+DROP VIEW IF EXISTS analytics.ceds_IeuDim;
 
-CREATE VIEW xref.ceds_LeusDim AS
+CREATE VIEW analytics.ceds_IeuDim AS
 	WITH OrgEducationAddress AS (
         SELECT
 			EducationOrganizationAddress.EducationOrganizationId,
@@ -40,11 +40,11 @@ CREATE VIEW xref.ceds_LeusDim AS
 			'-', EducationOrganizationAddress.PostalCode,
 			'-', EducationOrganizationAddress.StateAbbreviationDescriptorId,
 			'-', EducationOrganizationAddress.StreetNumberName
-		) AS LeusDimKey,
+		) AS IeuDimKey,
 		EducationOrganization.NameOfInstitution AS IeuOrganizationName,
-		EducationServiceCenter.EducationServiceCenterId AS IeuOrganizationIdentifierSea,
+		CAST(EducationServiceCenter.EducationServiceCenterId AS VARCHAR) AS IeuOrganizationIdentifierSea,
 		StateEducationOrganization.NameOfInstitution AS SeaOrganizationName,
-		EducationServiceCenter.StateEducationAgencyId AS SeaIdentifierSea,
+		CAST(EducationServiceCenter.StateEducationAgencyId AS VARCHAR) AS SeaIdentifierSea,
 		'' AS StateANSICode,
 		COALESCE(StateAbbreviationDesc.CodeValue, '') AS StateAbbreviationCode,
 		COALESCE(StateAbbreviationDesc.Description, '') AS StateAbbreviationDescription,
@@ -54,10 +54,10 @@ CREATE VIEW xref.ceds_LeusDim AS
 		COALESCE(MailingAddress.StreetNumberName, '') AS MailingAddressStreetNumberAndName,
 		'' AS MailingAddressCountyAnsiCode,
 		CASE 
-			WHEN PhysicalAddress.StateAbbreviation = StateAbbreviationDesc.CodeValue
-				THEN 'true'
+			WHEN PhysicalAddress.StateAbbreviation IS NULL
+				THEN true
 			ELSE
-				'false'
+				false
 		END AS OutOfStateIndicator,
 		OperationalStatusDescriptor.CodeValue AS OrganizationOperationalStatus,
 		'' as OperationalStatusEffectiveDate,

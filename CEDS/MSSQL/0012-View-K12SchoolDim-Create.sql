@@ -5,14 +5,14 @@
 IF EXISTS (
         SELECT 1
         FROM INFORMATION_SCHEMA.VIEWS
-        WHERE TABLE_SCHEMA = 'xref' AND TABLE_NAME = 'ceds_K12SchoolDim'
+        WHERE TABLE_SCHEMA = 'analytics' AND TABLE_NAME = 'ceds_K12SchoolDim'
         )
 BEGIN
-    DROP VIEW xref.ceds_K12SchoolDim;
+    DROP VIEW analytics.ceds_K12SchoolDim;
 END;
 GO
 
-CREATE VIEW xref.ceds_K12SchoolDim AS
+CREATE VIEW analytics.ceds_K12SchoolDim AS
 WITH OrganizationAddress
 AS (
     SELECT School.SchoolId
@@ -44,15 +44,15 @@ AS (
     SELECT Descriptor.DescriptorId
         ,Descriptor.CodeValue
         ,Descriptor.Description
-        ,EdFiTableReference.EdFiTableName
-        ,EdFiTableInformation.EdFactsCode
-    FROM xref.EdFiTableInformation
+        ,ceds_TableReference.TableName
+        ,ceds_TableInformation.EdFactsCode
+    FROM analytics_config.ceds_TableInformation
     INNER JOIN 
-		xref.EdFiTableReference
-			ON EdFiTableInformation.EdFiTableId = EdFiTableReference.EdFiTableId
+		analytics_config.ceds_TableReference
+			ON ceds_TableInformation.TableId = ceds_TableReference.TableId
     INNER JOIN 
 		edfi.Descriptor
-			ON Descriptor.DescriptorId = EdFiTableInformation.EdFiDescriptorId
+			ON Descriptor.DescriptorId = ceds_TableInformation.DescriptorId
     )
 SELECT CONCAT(
 		EducationOrganizationSchool.EducationOrganizationId
@@ -123,7 +123,7 @@ SELECT CONCAT(
     ,COALESCE(CharterSchoolStatusDescriptor.CodeValue,'') AS CharterSchoolStatus
     ,'' AS ReconstitutedStatus
     ,COALESCE(IeuOrganization.NameOfInstitution,'') AS IeuOrganizationName
-	,COALESCE(LocalEducationAgency.EducationServiceCenterId,0) AS IeuOrganizationIdentifierSea
+	,COALESCE(CAST(LocalEducationAgency.EducationServiceCenterId AS VARCHAR),'') AS IeuOrganizationIdentifierSea
 	,COALESCE(PhysicalAddress.Latitude,'') AS Latitude
     ,COALESCE(PhysicalAddress.Longitude,'') AS Longitude
     ,'' AS SchoolOperationalStatusEffectiveDate
@@ -160,7 +160,7 @@ LEFT JOIN
 LEFT JOIN 
 	MapReferenceDescriptor AS MapReferenceOrganizationCategoryLEADescriptor
 		ON MapReferenceOrganizationCategoryLEADescriptor.DescriptorId = OrganizationCategoryLEADescriptor.DescriptorId
-			AND MapReferenceOrganizationCategoryLEADescriptor.EdFiTableName = 'xref.LEAType'
+			AND MapReferenceOrganizationCategoryLEADescriptor.TableName = 'xref.LEAType'
 LEFT JOIN 
 	edfi.EducationOrganizationCategory AS EducationOrganizationCategorySchool
 		ON School.SchoolId = EducationOrganizationCategorySchool.EducationOrganizationId
@@ -171,7 +171,7 @@ LEFT JOIN edfi.Descriptor AS OrganizationCategorySchoolDescriptor
 LEFT JOIN 
 	MapReferenceDescriptor AS MapReferenceOrganizationCategorySchoolDescriptor
 		ON MapReferenceOrganizationCategorySchoolDescriptor.DescriptorId = OrganizationCategorySchoolDescriptor.DescriptorId
-			AND MapReferenceOrganizationCategorySchoolDescriptor.EdFiTableName = 'xref.LEAType'
+			AND MapReferenceOrganizationCategorySchoolDescriptor.TableName = 'xref.LEAType'
 LEFT JOIN 
 	OrganizationAddress AS MailingAddress
 		ON School.SchoolId = MailingAddress.SchoolId
@@ -189,7 +189,7 @@ LEFT JOIN
 LEFT JOIN 
 	MapReferenceDescriptor AS MapReferenceSchoolOperationStatusDescriptor
 		ON MapReferenceSchoolOperationStatusDescriptor.DescriptorId = SchoolOperationStatusDescriptor.DescriptorId
-        AND MapReferenceSchoolOperationStatusDescriptor.EdFiTableName = 'xref.OperationalStatus'
+        AND MapReferenceSchoolOperationStatusDescriptor.TableName = 'xref.OperationalStatus'
 LEFT JOIN 
 	edfi.Descriptor AS CharterSchoolStatusDescriptor
 		ON School.CharterStatusDescriptorId = CharterSchoolStatusDescriptor.DescriptorId

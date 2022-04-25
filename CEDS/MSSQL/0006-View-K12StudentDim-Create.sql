@@ -5,18 +5,18 @@
 IF EXISTS (
         SELECT 1
         FROM INFORMATION_SCHEMA.VIEWS
-        WHERE TABLE_SCHEMA = 'xref'
-            AND TABLE_NAME = 'K12StudentsDim'
+        WHERE TABLE_SCHEMA = 'analytics'
+            AND TABLE_NAME = 'ceds_K12StudentDim'
         )
 BEGIN
-    DROP VIEW xref.K12StudentsDim;
+    DROP VIEW analytics.ceds_K12StudentDim;
 END;
 GO
 
-CREATE OR ALTER VIEW xref.K12StudentsDim AS
+CREATE OR ALTER VIEW analytics.ceds_K12StudentDim AS
 (
     SELECT
-        CONCAT(Student.StudentUniqueId, '-', StudentSchoolAssociation.SchoolId, '-', StudentSchoolAssociation.ClassOfSchoolYear) as K12StudentsKey,
+        CONCAT(Student.StudentUniqueId, '-', StudentSchoolAssociation.SchoolId, '-', StudentSchoolAssociation.ClassOfSchoolYear) as K12StudentKey,
         CONCAT(Student.StudentUniqueId, '-', StudentSchoolAssociation.SchoolId) AS StudentSchoolKey,
         Student.BirthDate,
         StudentSchoolAssociation.ClassOfSchoolYear AS Cohort,
@@ -42,4 +42,4 @@ CREATE OR ALTER VIEW xref.K12StudentsDim AS
             Student.StudentUniqueId,
             StudentSchoolAssociation.SchoolId,
             StudentSchoolAssociation.ClassOfSchoolYear
-)
+);

@@ -5,14 +5,14 @@
 IF EXISTS (
         SELECT 1
         FROM INFORMATION_SCHEMA.VIEWS
-        WHERE TABLE_SCHEMA = 'xref' AND TABLE_NAME = 'ceds_LeusDim'
+        WHERE TABLE_SCHEMA = 'analytics' AND TABLE_NAME = 'ceds_IeuDim'
         )
 BEGIN
-    DROP VIEW xref.ceds_LeusDim;
+    DROP VIEW analytics.ceds_IeuDim;
 END;
 GO
 
-CREATE VIEW xref.ceds_LeusDim AS
+CREATE VIEW analytics.ceds_IeuDim AS
 	WITH OrgEducationAddress AS (
         SELECT
 			EducationOrganizationAddress.EducationOrganizationId,
@@ -48,11 +48,11 @@ CREATE VIEW xref.ceds_LeusDim AS
 			'-', EducationOrganizationAddress.PostalCode,
 			'-', EducationOrganizationAddress.StateAbbreviationDescriptorId,
 			'-', EducationOrganizationAddress.StreetNumberName
-		) AS LeusDimKey,
+		) AS IeuDimKey,
 		EducationOrganization.NameOfInstitution AS IeuOrganizationName,
-		EducationServiceCenter.EducationServiceCenterId AS IeuOrganizationIdentifierSea,
+		CAST(EducationServiceCenter.EducationServiceCenterId AS VARCHAR) AS IeuOrganizationIdentifierSea,
 		StateEducationOrganization.NameOfInstitution AS SeaOrganizationName,
-		EducationServiceCenter.StateEducationAgencyId AS SeaIdentifierSea,
+		CAST(EducationServiceCenter.StateEducationAgencyId AS VARCHAR) AS SeaIdentifierSea,
 		'' AS StateANSICode,
 		COALESCE(StateAbbreviationDesc.CodeValue, '') AS StateAbbreviationCode,
 		COALESCE(StateAbbreviationDesc.Description, '') AS StateAbbreviationDescription,
@@ -61,12 +61,12 @@ CREATE VIEW xref.ceds_LeusDim AS
 		COALESCE(MailingAddress.StateAbbreviation, '') AS MailingAddressStateAbbreviation,
 		COALESCE(MailingAddress.StreetNumberName, '') AS MailingAddressStreetNumberAndName,
 		'' AS MailingAddressCountyAnsiCode,
-		CASE 
-			WHEN PhysicalAddress.StateAbbreviation = StateAbbreviationDesc.CodeValue
-				THEN 'true'
+		CAST((CASE 
+			WHEN PhysicalAddress.StateAbbreviation IS NULL
+				THEN 1
 			ELSE
-				'false'
-		END AS OutOfStateIndicator,
+				0
+		END) AS BIT) AS OutOfStateIndicator,
 		OperationalStatusDescriptor.CodeValue AS OrganizationOperationalStatus,
 		'' as OperationalStatusEffectiveDate,
 		COALESCE(PhysicalAddress.City, '') AS PhysicalAddressCity,

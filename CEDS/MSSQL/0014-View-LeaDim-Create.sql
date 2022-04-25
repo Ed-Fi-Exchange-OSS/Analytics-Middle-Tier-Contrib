@@ -6,14 +6,14 @@
 IF EXISTS (
         SELECT 1
         FROM INFORMATION_SCHEMA.VIEWS
-        WHERE TABLE_SCHEMA = 'xref' AND TABLE_NAME = 'ceds_LeaDim'
+        WHERE TABLE_SCHEMA = 'analytics' AND TABLE_NAME = 'ceds_LeaDim'
         )
 BEGIN
-    DROP VIEW xref.ceds_LeaDim;
+    DROP VIEW analytics.ceds_LeaDim;
 END;
 GO
 
-CREATE VIEW xref.ceds_LeaDim AS
+CREATE VIEW analytics.ceds_LeaDim AS
 WITH OrganizationAddress
     AS (
         SELECT LocalEducationAgency.LocalEducationAgencyId
@@ -46,19 +46,19 @@ WITH OrganizationAddress
         SELECT Descriptor.DescriptorId
             ,Descriptor.CodeValue
             ,Descriptor.Description
-            ,EdFiTableReference.EdFiTableName
-            ,EdFiTableInformation.EdFactsCode
-        FROM xref.EdFiTableInformation
-        INNER JOIN xref.EdFiTableReference
-            ON EdFiTableInformation.EdFiTableId = EdFiTableReference.EdFiTableId
+            ,ceds_TableReference.TableName
+            ,ceds_TableInformation.EdFactsCode
+        FROM analytics_config.ceds_TableInformation
+        INNER JOIN analytics_config.ceds_TableReference
+            ON ceds_TableInformation.TableId = ceds_TableReference.TableId
         INNER JOIN edfi.Descriptor
-            ON Descriptor.DescriptorId = EdFiTableInformation.EdFiDescriptorId
+            ON Descriptor.DescriptorId = ceds_TableInformation.DescriptorId
     )
 SELECT 
     CONCAT(
 	    EducationOrganizationLEA.EducationOrganizationId
 		,'-',EducationOrganizationSEA.EducationOrganizationId
-	) as K12SchoolKey
+	) as LeaKey
     ,CAST(EducationOrganizationLEA.EducationOrganizationId AS VARCHAR) as LocalEducationAgencyKey
     ,'' AS OperationalStatusEffectiveDate
     ,EducationOrganizationLEA.NameOfInstitution AS LeaName
@@ -105,7 +105,7 @@ SELECT
     ,'' AS ReconstitutedStatus
     ,'' AS McKinneyVentoSubgrantRecipient
     ,COALESCE(IeuOrganization.NameOfInstitution, '') AS IeuOrganizationName
-    ,COALESCE(LocalEducationAgency.EducationServiceCenterId, 0) AS IeuOrganizationIdentifierSea
+    ,COALESCE(CAST(LocalEducationAgency.EducationServiceCenterId as VARCHAR), '') AS IeuOrganizationIdentifierSea
     ,COALESCE(PhysicalAddress.Latitude, '') AS Latitude
     ,COALESCE(PhysicalAddress.Longitude, '') AS Longitude
     ,'' AS EffectiveDate
@@ -132,7 +132,7 @@ LEFT JOIN
 LEFT JOIN 
     MapReferenceDescriptor AS MapReferenceLeaTypeDescriptor
         ON LeaTypeDescriptor.DescriptorId = MapReferenceLeaTypeDescriptor.DescriptorId
-            AND MapReferenceLeaTypeDescriptor.EdFiTableName = 'xref.LEAType'
+            AND MapReferenceLeaTypeDescriptor.TableName = 'xref.LEAType'
 LEFT JOIN 
     OrganizationAddress AS MailingAddress
         ON LocalEducationAgency.LocalEducationAgencyId = MailingAddress.LocalEducationAgencyId
@@ -150,7 +150,7 @@ LEFT JOIN
 LEFT JOIN 
     MapReferenceDescriptor AS MapReferenceLEAOperationStatusDescriptor
         ON MapReferenceLEAOperationStatusDescriptor.DescriptorId = LEAOperationStatusDescriptor.DescriptorId
-            AND MapReferenceLEAOperationStatusDescriptor.EdFiTableName = 'xref.OperationalStatus'
+            AND MapReferenceLEAOperationStatusDescriptor.TableName = 'xref.OperationalStatus'
 LEFT JOIN 
     edfi.Descriptor AS CharterLEAStatusDescriptor
         ON LocalEducationAgency.CharterStatusDescriptorId = CharterLEAStatusDescriptor.DescriptorId

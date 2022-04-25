@@ -3,4 +3,9 @@
 -- The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 -- See the LICENSE and NOTICES files in the project root for more information.
 
-CREATE SCHEMA IF NOT EXISTS xref;
+IF NOT EXISTS 
+    (   SELECT name
+	    FROM sys.schemas
+        WHERE name = 'analytics' )
+    EXEC('CREATE SCHEMA analytics')
+GO
