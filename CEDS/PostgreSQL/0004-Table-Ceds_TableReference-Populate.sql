@@ -18,7 +18,9 @@ WITH source AS (VALUES
 	('xref.MilitaryConnectedStudentIndicator'),
 	('xref.HomelessPrimaryNighttimeResidence'),
 	('xref.HomelessUnaccompaniedYouthStatus'),
-	('xref.Sex')
+	('xref.Sex'),
+	('xref.EntryType'),
+	('xref.ExitWithdrawType')
 )
 INSERT INTO 
     analytics_config.ceds_TableReference
