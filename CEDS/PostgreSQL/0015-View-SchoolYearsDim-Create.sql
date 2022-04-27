@@ -7,9 +7,10 @@ DROP VIEW IF EXISTS analytics.ceds_SchoolYearsDim;
 CREATE OR REPLACE VIEW analytics.ceds_SchoolYearsDim
 AS (
     SELECT
-        Id AS DimSchoolYearId,
+        SchoolYearDescription AS SchoolYearKey,
         SchoolYear,
         CONCAT('01-07-',SUBSTRING(SchoolYearDescription, 1,4)) AS SessionBeginDate,
-        CONCAT('06-30-',SUBSTRING(SchoolYearDescription, 6,9)) AS SessionEndDate
+        CONCAT('06-30-',SUBSTRING(SchoolYearDescription, 6,9)) AS SessionEndDate,
+        LastModifiedDate
     FROM edfi.SchoolYearType
 )
