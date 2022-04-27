@@ -31,11 +31,3 @@ CREATE OR REPLACE VIEW analytics.ceds_K12StudentDim AS
         Student.StudentUSI = StudentSchoolAssociation.StudentUSI
     WHERE 
         StudentSchoolAssociation.PrimarySchool = '1'
-    GROUP BY 
-            Student.BirthDate,
-            Student.FirstName, 
-            Student.LastSurname, 
-            Student.MiddleName, 
-            Student.StudentUniqueId,
-            StudentSchoolAssociation.SchoolId,
-            StudentSchoolAssociation.ClassOfSchoolYear
