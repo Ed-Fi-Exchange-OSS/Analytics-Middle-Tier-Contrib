@@ -1,0 +1,37 @@
+{
+    "TestsLocation": "<location where the tests are located>",
+    "ODSDatabaseInstaller" : {
+        "DownloadLocation": "C:\\temp\\downloads\\",
+        "MSSQL": {
+            "packageDetails": {
+                "packageName": "EdFi.Suite3.Ods.Minimal.Template",
+                "version": "5.4.114"
+            }
+        },
+        "PostgreSQL": {
+            "packageDetails": {
+                "packageName": "EdFi.Suite3.Ods.Minimal.Template.PostgreSQL",
+                "version": "5.4.99"
+            }
+        }
+    },
+    "SQLServer": {
+        "ConnectionString": {
+            "Host": "localhost",
+            "Database": "EdFi_OdsT1",
+            "Username": "",
+            "Password": "",
+            "IntegratedSecurity": "true"
+        }
+    },
+    "PostgreSQL": {
+        "ConnectionString": {
+            "Host": "localhost",
+            "Database": "edfi_odst1",
+            "Username": "postgres",
+            "Password": "gapUser123",
+            "Port": 5432
+        }
+    },
+    "RunTests" : ["test1"]
+}
