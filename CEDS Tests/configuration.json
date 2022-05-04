@@ -1,5 +1,4 @@
 {
-    "TestsLocation": "<location where the tests are located>",
     "ODSDatabaseInstaller" : {
         "DownloadLocation": "C:\\temp\\downloads\\",
         "MSSQL": {
@@ -18,7 +17,7 @@
     "SQLServer": {
         "ConnectionString": {
             "Host": "localhost",
-            "Database": "EdFi_OdsT1",
+            "Database": "EdFi_Ods",
             "Username": "",
             "Password": "",
             "IntegratedSecurity": "true"
@@ -27,11 +26,10 @@
     "PostgreSQL": {
         "ConnectionString": {
             "Host": "localhost",
-            "Database": "edfi_odst1",
+            "Database": "edfi_ods",
             "Username": "postgres",
             "Password": "gapUser123",
             "Port": 5432
         }
-    },
-    "RunTests" : ["test1"]
+    }
 }

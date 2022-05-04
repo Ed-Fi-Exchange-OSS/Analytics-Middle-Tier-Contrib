@@ -9,10 +9,11 @@ param (
     [string] $configPath = "$PSScriptRoot\configuration.json"
 )
 
-$configuration = Format-ConfigurationFileToHashTable $configPath
-
 #--- IMPORT MODULES ---
-Import-Module -Force "$PSScriptRoot\SetupModules\ODSDatabaseInstaller.psm1"
+Import-Module -Force "$PSScriptRoot\confighelper.psm1"
+Import-Module -Force "$PSScriptRoot\scripts\SetupModules\ODSDatabaseInstaller.psm1"
+
+$configuration = Format-ConfigurationFileToHashTable $configPath
 
 function Install-SqlDatabaseModule() {
     Write-Host "Installing the SqlDatabase Module from the PowerShell Gallery." -ForegroundColor Cyan
@@ -44,13 +45,20 @@ $paramsPostgreSQL = @{
     packageName = $configuration.ODSDatabaseInstallerConfig.PostgreSQL.packageDetails.packageName
     packageVersion = $configuration.ODSDatabaseInstallerConfig.PostgreSQL.packageDetails.version
     downloadLocation = $configuration.ODSDatabaseInstallerConfig.DownloadLocation
-    serverInstance = $configuration.SQLServerConfig.ConnectionString.Host
-    database = $configuration.SQLServerConfig.ConnectionString.Database
-    post = $configuration.SQLServerConfig.ConnectionString.Port
-    user = $configuration.SQLServerConfig.ConnectionString.Username
-    password = $configuration.SQLServerConfig.ConnectionString.Password
+    serverInstance = $configuration.PostgreSQLConfig.ConnectionString.Host
+    database = $configuration.PostgreSQLConfig.ConnectionString.Database
+    post = $configuration.PostgreSQLConfig.ConnectionString.Port
+    user = $configuration.PostgreSQLConfig.ConnectionString.Username
+    password = $configuration.PostgreSQLConfig.ConnectionString.Password
 }
 
 Deploy-PostgreSQL @paramsPostgreSQL
 
-Export-ModuleMember Deploy-ODSDatabase
+# First step.
+# Before the tests can be executed, we need to setup somethings:
+#   Install SqlDatabase module.
+#   Install ODS database.
+# The idea is that this is done just once.
+
+# Pending: At this point, when the database is restored for Postgres, it's necessary to enter the password. It would be nice if the user doesn't have to do this.
+# Pending: Maybe check if the databases exist before, and if they do, don't try to install.

@@ -3,61 +3,129 @@
 # The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 # See the LICENSE and NOTICES files in the project root for more information.
 
-# Here we need to find the unit tests, call the other modules to execute them.
-
 #Requires -RunAsAdministrator
-param(
-    [parameter(Position=0,Mandatory=$true)][Hashtable]$configuration
+
+param (
+    [string] $configPath = "$PSScriptRoot\configuration.json"
 )
 
 $ErrorActionPreference = "Stop"
 
+#--- IMPORT MODULES ---
+Import-Module -Force "$PSScriptRoot\confighelper.psm1"
+Import-Module -Force "$PSScriptRoot\scripts\Utilities.psm1"
+Import-Module -Force "$PSScriptRoot\scripts\TestsModules\TestRunner.psm1"
+
+$configuration = Format-ConfigurationFileToHashTable $configPath
+$testsLocation = "$PSScriptRoot\testCases\"
+
 function Find-Tests () {
     
     # With this line we create an array with the path to the xml test files.
-    return @(Get-ChildItem -Path $configuration.TestsLocation -Name -Include *.xml)
+    return @(Get-ChildItem -Path "$testsLocation" -Name -Include *.xml)
 }
 
 function Extract-TestData () {
     Param (
-        [string] [Parameter(Mandatory=$true)] $testFileNames
+        [System.Collections.ArrayList] [Parameter(Mandatory=$true)] $testFileNames
     )
-    # Input
-    #     The content of the test json file.
 
-    # Output
-    #     An object with the different components of the test: Name, query, result.
+    $testCases = [pscustomobject]@()
 
-    $testCases = @($null) * $testFileNames.Length
+    foreach ($testFileName in $testFileNames) {
+        [xml]$XmlDocument = Get-Content -Path (Join-Path $testsLocation $testFileName)
 
-    for ($i = 0; $i -le ($testFileNames.Length - 1); $i += 1) {
-        [xml]$XmlDocument = Get-Content -Path (Join-Path $configuration.TestsLocation $testFileNames[$i])
-    
-        $testCases[$i].Name = $XmlDocument.Test.Name
-        $testCases[$i].Query = $XmlDocument.Test.Query
-        $testCases[$i].Result = $XmlDocument.Test.Result
+        $testCaseObject = [PSCustomObject]@{
+            Name = $XmlDocument.Test.Name
+            Query = $XmlDocument.Test.Query
+            Result = $XmlDocument.Test.Result
+        }
+
+        $testCases += $testCaseObject
     }
 
-    return @testCases
+    return $testCases
 }
 
-@testFileNames = Find-Tests
-@testCases = Extract-TestData @testFileNames
+function Submit-TestsMSSQL {
+    Param (
+        [Parameter(Mandatory=$true)]
+        [string] $name,
+        [Parameter(Mandatory=$true)]
+        [string] $query,
+        [Parameter(Mandatory=$true)]
+        [string ] $expectedResult
+    )
+    
+    $connectionStringParams = @{
+        host = $configuration.SQLServerConfig.ConnectionString.Host
+        database = $configuration.SQLServerConfig.ConnectionString.Database
+        username = $configuration.SQLServerConfig.ConnectionString.Username
+        password = $configuration.SQLServerConfig.ConnectionString.Password
+        integratedSecurity = $configuration.SQLServerConfig.ConnectionString.IntegratedSecurity
+    }
 
-# Find-Test
-# Foreach test in the list
-#   Extract-TestData: Name, query, result.
-#   Call Execute-Test from TestRunner
-#   Compare the results. 
-#   Store the results. 
+    $connectionString = Get-ConnectionStringMSSQL @connectionStringParams
+    Submit-TestMSSQL $connectionString $name $query
 
-# Output the results.
+    # ToDo: This path should be configurable instead of hardcoded. In this file we have the result of the execution of the query.
+    $actualResult = (Get-Content -Path "C:\temp\testsResults\MSSQL\test_$name.csv")
 
-# Some notes:
-# Maybe somehting like
-    # $query = "select * from [Ed-Fi-Glendale-3.1.0].edfi.School;"
-    # $data = Invoke-Sqlcmd -ServerInstance "localhost" -Query "select * from [Ed-Fi-Glendale-3.1.0].edfi.School;"
-    # $data | Export-Csv -Append -Path "C:\GAP\somefile.csv" -NoTypeInformation
+    Write-Host "actualResult: $actualResult"
+    Write-Host "expectedResult: $expectedResult"
+
+    $objects = @{
+        ReferenceObject = $actualResult
+        DifferenceObject = $expectedResult
+    }
+
+    # The idea here is to compare the actual result of the tests against the expected result.
+    #   https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/compare-object?view=powershell-7.2
+    $comparison = Compare-Object @objects # | Set-Content "C:\temp\testsResults\MSSQL\result_$name.txt"
+
+    Write-Host "comparison: $comparison"
+
+    # And then find the differences. 
+    # If this filter results something, then the actual result and the expected result are different, and the test is failing.
+    $differences = $comparison | Where-Object {$_.SideIndicator -eq "=>" -or $_.SideIndicator -eq "<="}
+
+    Write-Host "differences: $differences"
+}
+
+# ToDo: Everything related to executing the tests for Postgres is pending.
+function Submit-TestsPostgreSQL {
+    Param (
+        [Parameter(Mandatory=$true)]
+        [string] $name,
+        [Parameter(Mandatory=$true)]
+        [string] $query,
+        [Parameter(Mandatory=$true)]
+        [string] $result
+    )
+    
+    $connectionStringParams = @{
+        host = $configuration.PostgreSQLConfig.ConnectionString.Host
+        database = $configuration.PostgreSQLConfig.ConnectionString.Database
+        username = $configuration.PostgreSQLConfig.ConnectionString.Username
+        password = $configuration.PostgreSQLConfig.ConnectionString.Password
+    }
+
+    $connectionString = Get-ConnectionStringPostgreSQL @connectionStringParams
+    Submit-TestPostgreSQL $connectionString $name $query
+
+    # Compare results.
+
+}
+
+$testFileNames = Find-Tests
+$testCases = Extract-TestData $testFileNames
+
+foreach ($testCase in $testCases) {
+    $testResult = Submit-TestsMSSQL $testCase.Name $testCase.Query $testCase.Result
+}
+
+# Third step
+# Actually execute the tests.
 
 # Jose Leiva recommends not using odbc if possible, for postgres, because it can be very problematic.
 

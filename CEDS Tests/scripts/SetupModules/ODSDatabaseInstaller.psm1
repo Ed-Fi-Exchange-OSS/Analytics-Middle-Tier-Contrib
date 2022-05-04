@@ -13,11 +13,8 @@ function Deploy-MSSQL {
         [String] $packageVersion = "5.4.114",
         [String] $downloadLocation = "C:\temp\downloads\",
         [String] $serverInstance  = "localhost",
-        [String] $database = "EdFi_OdsT1"
+        [String] $database = "EdFi_Ods"
     )
-
-    # ToDo: Do not hardcode this variable. It must be a parameter.
-    $packageName = "EdFi.Suite3.Ods.Minimal.Template"
 
     nuget install $packageName -source $packageSource -Version $packageVersion -outputDirectory $downloadLocation -ConfigFile "$PSScriptRoot\nuget.config" | Out-Host
 
@@ -37,14 +34,13 @@ function Deploy-PostgreSQL {
         $packageVersion = "5.4.99",
         $downloadLocation = "C:\temp\downloads\",
         $host = "localhost",
-        $database = "EdFi_OdsT1",
+        $database = "EdFi_Ods",
         $port = "5432",
         $user = "postgres",
         $password = "gapUser123"
     )
 
-    # ToDo: Do not hardcode this variable. It must be a parameter.
-    $packageName = "EdFi.Suite3.Ods.Minimal.Template.PostgreSQL"
+    Write-Host "user $user" 
 
     # Download and install the ODS database we will use for testing purposes.
     #    https://dev.azure.com/ed-fi-alliance/Ed-Fi-Alliance-OSS/_artifacts/feed/EdFi
@@ -55,9 +51,6 @@ function Deploy-PostgreSQL {
 
     $bakFilePath = Join-Path $downloadLocation "$packageName.$packageVersion"
     $bakFileName = Get-ChildItem -Path $bakFilePath -Name  -Include *.sql
-
-    Write-Host "bakFilePath: $bakFilePath"
-    Write-Host "bakFileName: $bakFileName"
 
     $database = $database.ToLower()
     $dropDatabase = "DROP DATABASE IF EXISTS " + $database +";"

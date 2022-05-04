@@ -3,35 +3,24 @@
 # The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 # See the LICENSE and NOTICES files in the project root for more information.
 
-# The responsability of this module is to execute the unit tests.
-#	We are going to cover 2 types of tests:
-#		1. Check that the views are installed successfully.
-#		2. Check the data dictionary: The fields that are returned and its type.
-#	Since we are not testing data for now, we don't need to do any cleanup, uninstall, etc.
+#Requires -RunAsAdministrator
 
-function Execute-Test () {
-	# Input
-	# 	Connection string for MSSQL
-	# 	Connection string for PostgreSQL
-	#   The name of the test
-	#   The Query to be executed.
+function Submit-TestMSSQL {
+	Param (
+        [Parameter(Mandatory = $true)]
+        [string] $connectionString,
+        [Parameter(Mandatory = $true)]
+        [string] $name,
+		[Parameter(Mandatory = $true)]
+        [string] $query
+    )
+    
+    # ToDo: The Export-Csv parameter should be configurable instead of hardcoded.
+	Invoke-Sqlcmd -Query $query -ConnectionString $connectionString | Export-Csv "C:\temp\testsResults\MSSQL\test_$name.csv" -Delimiter "," -NoTypeInformation
 }
 
-function Execute-TestMSSQL(){
-	# Input: 
-	# 	The connection string information.
-	#   The name of the test
-	#   The Query to be executed.
-
-    # Output: The result of the execution.
+function Submit-TestPostgreSQL {
+    
 }
 
-function Execute-TestPostgreSQL(){
-	# Input: 
-	# 	The connection string information.
-	#   The name of the test
-	#   The Query to be executed.
-	
-
-    # Output: The result of the execution.
-}
+Export-ModuleMember Submit-TestMSSQL, Submit-TestPostgreSQL

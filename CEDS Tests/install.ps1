@@ -9,13 +9,14 @@ param (
     [string] $configPath = "$PSScriptRoot\configuration.json"
 )
 
-$configuration = Format-ConfigurationFileToHashTable $configPath
-
 $ErrorActionPreference = "Stop"
 
 #--- IMPORT MODULES ---
-Import-Module -Force "$PSScriptRoot\MigratorModules\SqlDatabaseModuleWrapper.psm1"
-Import-Module -Force "$PSScriptRoot\Utilities.psm1"
+Import-Module -Force "$PSScriptRoot\confighelper.psm1"
+Import-Module -Force "$PSScriptRoot\scripts\MigratorModules\SqlDatabaseModuleWrapper.psm1"
+Import-Module -Force "$PSScriptRoot\scripts\Utilities.psm1"
+
+$configuration = Format-ConfigurationFileToHashTable $configPath
 
 # MSSQL
 $connectionStringParams = @{
@@ -28,7 +29,7 @@ $connectionStringParams = @{
 
 $connectionString = Get-ConnectionStringMSSQL @connectionStringParams
 
-Install-Views $connectionString "$PSScriptRoot\..\..\CEDS\MSSQL\"
+Install-Views $connectionString "$PSScriptRoot\..\CEDS\MSSQL\"
 
 # PostgreSQL
 $connectionStringParams = @{
@@ -40,6 +41,12 @@ $connectionStringParams = @{
 
 $connectionString = Get-ConnectionStringPostgreSQL @connectionStringParams
 
-Install-Views $connectionString "$PSScriptRoot\..\..\CEDS\PostgreSQL\"
+Install-Views $connectionString "$PSScriptRoot\..\CEDS\PostgreSQL\"
 
-Export-ModuleMember Install-CedsViews
+# Second step
+# Install the CEDS views.
+
+# Pending
+#   There is a situation we have to review here. 
+#       Since in the Ceds views we use the analytics_config.DescriptorMap table (specifically this script 0009-View-IeuDim-Create.sql), 
+#       this means that the AMT is a requirement for the Ceds collection. Because this table is created by the AMT.

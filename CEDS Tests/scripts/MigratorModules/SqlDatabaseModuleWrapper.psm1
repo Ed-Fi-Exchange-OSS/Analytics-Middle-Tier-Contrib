@@ -13,8 +13,6 @@ function Install-Views {
         [string] $scriptsFolder
     )
 
-    Write-Host "connectionString: $connectionString"
-
     Execute-SqlDatabase -database $connectionString -from $scriptsFolder -InformationAction Continue
 }
 

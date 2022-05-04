@@ -22,3 +22,6 @@ Write-Host "Installing Ceds Views..." -ForegroundColor Cyan
 
 Write-Host "running Ceds tests..." -ForegroundColor Cyan
 & $PSScriptRoot+"\scripts\run.ps1" $configuration
+
+# I haven't actually tested this file at this point. I don't know if we need this file. 
+# because the idea is that the setup script, install script and run script are executed individually. 
