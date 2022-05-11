@@ -37,6 +37,7 @@ $connectionStringParams = @{
     database = $configuration.PostgreSQLConfig.ConnectionString.Database
     username = $configuration.PostgreSQLConfig.ConnectionString.Username
     password = $configuration.PostgreSQLConfig.ConnectionString.Password
+    port = $configuration.PostgreSQLConfig.ConnectionString.Port
 }
 
 $connectionString = Get-ConnectionStringPostgreSQL @connectionStringParams
@@ -46,7 +47,7 @@ Install-Views $connectionString "$PSScriptRoot\..\CEDS\PostgreSQL\"
 # Second step
 # Install the CEDS views.
 
-# Pending
+# ToDo: (This is not really a ToDo. Just be aware of)
 #   There is a situation we have to review here. 
 #       Since in the Ceds views we use the analytics_config.DescriptorMap table (specifically this script 0009-View-IeuDim-Create.sql), 
 #       this means that the AMT is a requirement for the Ceds collection. Because this table is created by the AMT.

@@ -27,10 +27,12 @@ function Get-ConnectionStringMSSQL {
     }
 }
 
-function Get-ConnectionStringPostgreSQL() {
+function Get-ConnectionStringPostgreSQL {
     param (
         [Parameter(Mandatory = $true)]
         [string] $host,
+        [Parameter(Mandatory = $true)]
+        [string] $port,
         [Parameter(Mandatory = $true)]
         [string] $database,
         [Parameter(Mandatory = $true)]
@@ -39,7 +41,24 @@ function Get-ConnectionStringPostgreSQL() {
         [string] $password
     )
 
-    return "Host=$host;Database=$database;User ID=$username;password=$password;Pooling=false;"
+    return "Host=${host};Database=$database;User ID=$username;password=$password;Port=$port;Pooling=false;"
 }
 
-Export-ModuleMember Get-ConnectionStringMSSQL, Get-ConnectionStringPostgreSQL
+function Get-ConnectionStringPostgreSqlUrl {
+    param (
+        [Parameter(Mandatory = $true)]
+        [string] $host,
+        [Parameter(Mandatory = $true)]
+        [string] $port,
+        [Parameter(Mandatory = $true)]
+        [string] $database,
+        [Parameter(Mandatory = $true)]
+        [string] $username,
+        [Parameter(Mandatory = $true)]
+        [string] $password
+    )
+
+    return "postgresql://${username}:${password}@${host}:${port}/${database}"
+}
+
+Export-ModuleMember Get-ConnectionStringMSSQL, Get-ConnectionStringPostgreSQL, Get-ConnectionStringPostgreSqlUrl

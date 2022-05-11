@@ -12,10 +12,11 @@ param (
 #--- IMPORT MODULES ---
 Import-Module -Force "$PSScriptRoot\confighelper.psm1"
 Import-Module -Force "$PSScriptRoot\scripts\SetupModules\ODSDatabaseInstaller.psm1"
+Import-Module -Force "$PSScriptRoot\scripts\Utilities.psm1"
 
 $configuration = Format-ConfigurationFileToHashTable $configPath
 
-function Install-SqlDatabaseModule() {
+function Install-SqlDatabaseModule {
     Write-Host "Installing the SqlDatabase Module from the PowerShell Gallery." -ForegroundColor Cyan
 
     Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
@@ -29,36 +30,61 @@ function Install-SqlServerModule {
     Import-Module SqlServer
 }
 
-Write-Host "Installing ODS for MSSQL." -ForegroundColor Cyan
-$paramsMSSQL = @{
-    packageName = $configuration.ODSDatabaseInstallerConfig.MSSQL.packageDetails.packageName
-    packageVersion = $configuration.ODSDatabaseInstallerConfig.MSSQL.packageDetails.version
-    downloadLocation = $configuration.ODSDatabaseInstallerConfig.DownloadLocation
-    serverInstance = $configuration.SQLServerConfig.ConnectionString.Host
-    database = $configuration.SQLServerConfig.ConnectionString.Database
-}
+# $connectionStringParams = @{
+#     host = $configuration.SQLServerConfig.ConnectionString.Host
+#     database = $configuration.SQLServerConfig.ConnectionString.Database
+#     username = $configuration.SQLServerConfig.ConnectionString.Username
+#     password = $configuration.SQLServerConfig.ConnectionString.Password
+#     integratedSecurity = $configuration.SQLServerConfig.ConnectionString.IntegratedSecurity
+# }
 
-Deploy-MSSQL @paramsMSSQL
+# $connectionString = Get-ConnectionStringMSSQL @connectionStringParams
 
-Write-Host "Installing ODS for PostgreSQL."
-$paramsPostgreSQL = @{
-    packageName = $configuration.ODSDatabaseInstallerConfig.PostgreSQL.packageDetails.packageName
-    packageVersion = $configuration.ODSDatabaseInstallerConfig.PostgreSQL.packageDetails.version
-    downloadLocation = $configuration.ODSDatabaseInstallerConfig.DownloadLocation
-    serverInstance = $configuration.PostgreSQLConfig.ConnectionString.Host
-    database = $configuration.PostgreSQLConfig.ConnectionString.Database
-    post = $configuration.PostgreSQLConfig.ConnectionString.Port
-    user = $configuration.PostgreSQLConfig.ConnectionString.Username
-    password = $configuration.PostgreSQLConfig.ConnectionString.Password
-}
+# if ($null -ne (Get-SqlDatabase -ConnectionString $connectionString)) {
+#     Write-Host "MSSQL datatabase ${connectionStringParams.database} already exists. Skipping."
+# } else {
+#     Write-Host "Installing ODS for MSSQL." -ForegroundColor Cyan
+#     $paramsMSSQL = @{
+#         packageName = $configuration.ODSDatabaseInstallerConfig.MSSQL.packageDetails.packageName
+#         packageVersion = $configuration.ODSDatabaseInstallerConfig.MSSQL.packageDetails.version
+#         downloadLocation = $configuration.ODSDatabaseInstallerConfig.DownloadLocation
+#         serverInstance = $configuration.SQLServerConfig.ConnectionString.Host
+#         database = $configuration.SQLServerConfig.ConnectionString.Database
+#     }
 
-Deploy-PostgreSQL @paramsPostgreSQL
+#     Deploy-MSSQL @paramsMSSQL
+# }
 
-# First step.
-# Before the tests can be executed, we need to setup somethings:
-#   Install SqlDatabase module.
-#   Install ODS database.
-# The idea is that this is done just once.
+# # PostgreSQL
+# $connectionStringParams = @{
+#     host = $configuration.PostgreSQLConfig.ConnectionString.Host
+#     database = $configuration.PostgreSQLConfig.ConnectionString.Database
+#     username = $configuration.PostgreSQLConfig.ConnectionString.Username
+#     password = $configuration.PostgreSQLConfig.ConnectionString.Password
+#     port = $configuration.PostgreSQLConfig.ConnectionString.Port
+# }
 
-# Pending: At this point, when the database is restored for Postgres, it's necessary to enter the password. It would be nice if the user doesn't have to do this.
-# Pending: Maybe check if the databases exist before, and if they do, don't try to install.
+# $connectionStringAlt = Get-ConnectionStringPostgreSQLAlt @connectionStringParams
+
+# if ("select exists(select datname from pg_database where datname = '${connectionStringParams.database}');" | psql $connectionStringAlt | ConvertFrom-Csv) {
+#     Write-Host "PostgreSQL datatabase ${connectionStringParams.database} already exists. Skipping."
+# } else {
+#     Write-Host "Installing ODS for PostgreSQL." -ForegroundColor Cyan
+
+#     $paramsPostgreSQL = @{
+#         packageName = $configuration.ODSDatabaseInstallerConfig.PostgreSQL.packageDetails.packageName
+#         packageVersion = $configuration.ODSDatabaseInstallerConfig.PostgreSQL.packageDetails.version
+#         downloadLocation = $configuration.ODSDatabaseInstallerConfig.DownloadLocation
+#         serverInstance = $configuration.PostgreSQLConfig.ConnectionString.Host
+#         database = $configuration.PostgreSQLConfig.ConnectionString.Database
+#         post = $configuration.PostgreSQLConfig.ConnectionString.Port
+#         user = $configuration.PostgreSQLConfig.ConnectionString.Username
+#         password = $configuration.PostgreSQLConfig.ConnectionString.Password
+#     }
+
+#     Deploy-PostgreSQL @paramsPostgreSQL
+# }
+
+
+Install-SqlDatabaseModule
+Install-SqlServerModule

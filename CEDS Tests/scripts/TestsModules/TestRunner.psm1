@@ -20,7 +20,16 @@ function Submit-TestMSSQL {
 }
 
 function Submit-TestPostgreSQL {
+	Param (
+        [Parameter(Mandatory = $true)]
+        [string] $connectionStringURL,
+        [Parameter(Mandatory = $true)]
+        [string] $name,
+		[Parameter(Mandatory = $true)]
+        [string] $query
+    )
     
+    return $query | psql $connectionStringURL | ConvertFrom-Csv
 }
 
 Export-ModuleMember Submit-TestMSSQL, Submit-TestPostgreSQL

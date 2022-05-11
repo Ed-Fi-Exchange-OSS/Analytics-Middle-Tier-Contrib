@@ -25,8 +25,6 @@ function Format-ConfigurationFileToHashTable {
     $configJson = Get-Content $configPath | ConvertFrom-Json
 
     $formattedConfig = @{
-        SqlDatabaseModuleInstallerConfig =  Convert-PsObjectToHashTable $configJson.SqlDatabaseModuleInstaller
-
         ODSDatabaseInstallerConfig =  Convert-PsObjectToHashTable $configJson.ODSDatabaseInstaller
 
         SQLServerConfig =  Convert-PsObjectToHashTable $configJson.SQLServer

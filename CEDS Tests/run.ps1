@@ -105,13 +105,14 @@ function Submit-TestsPostgreSQL {
     
     $connectionStringParams = @{
         host = $configuration.PostgreSQLConfig.ConnectionString.Host
+        port = $configuration.PostgreSQLConfig.ConnectionString.Port
         database = $configuration.PostgreSQLConfig.ConnectionString.Database
         username = $configuration.PostgreSQLConfig.ConnectionString.Username
         password = $configuration.PostgreSQLConfig.ConnectionString.Password
     }
 
-    $connectionString = Get-ConnectionStringPostgreSQL @connectionStringParams
-    Submit-TestPostgreSQL $connectionString $name $query
+    $connectionStringPostgreSqlUrl = Get-ConnectionStringPostgreSqlUrl @connectionStringParams
+    Submit-TestPostgreSQL $connectionStringPostgreSqlUrl $name $query
 
     # Compare results.
 
@@ -125,7 +126,7 @@ foreach ($testCase in $testCases) {
 }
 
 # Third step
-# Actually execute the tests.
+# Execute the tests.
 
 # Jose Leiva recommends not using odbc if possible, for postgres, because it can be very problematic.
 
