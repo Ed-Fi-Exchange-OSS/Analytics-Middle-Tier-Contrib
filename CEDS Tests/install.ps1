@@ -11,36 +11,20 @@ param (
 
 $ErrorActionPreference = "Stop"
 
+$configuration = Format-ConfigurationFileToHashTable $configPath
+
 #--- IMPORT MODULES ---
 Import-Module -Force "$PSScriptRoot\confighelper.psm1"
 Import-Module -Force "$PSScriptRoot\scripts\MigratorModules\SqlDatabaseModuleWrapper.psm1"
-Import-Module -Force "$PSScriptRoot\scripts\Utilities.psm1"
+Import-Module -Force "$PSScriptRoot\scripts\Utilities.psm1" -ArgumentList $configuration
 
-$configuration = Format-ConfigurationFileToHashTable $configPath
-
-# MSSQL
-$connectionStringParams = @{
-    host = $configuration.SQLServerConfig.ConnectionString.Host
-    database = $configuration.SQLServerConfig.ConnectionString.Database
-    username = $configuration.SQLServerConfig.ConnectionString.Username
-    password = $configuration.SQLServerConfig.ConnectionString.Password
-    integratedSecurity = $configuration.SQLServerConfig.ConnectionString.IntegratedSecurity
-}
-
-$connectionString = Get-ConnectionStringMSSQL @connectionStringParams
+$connectionString = Get-ConnectionStringMSSQL
 
 Install-Views $connectionString "$PSScriptRoot\..\CEDS\MSSQL\"
 
 # PostgreSQL
-$connectionStringParams = @{
-    host = $configuration.PostgreSQLConfig.ConnectionString.Host
-    database = $configuration.PostgreSQLConfig.ConnectionString.Database
-    username = $configuration.PostgreSQLConfig.ConnectionString.Username
-    password = $configuration.PostgreSQLConfig.ConnectionString.Password
-    port = $configuration.PostgreSQLConfig.ConnectionString.Port
-}
 
-$connectionString = Get-ConnectionStringPostgreSQL @connectionStringParams
+$connectionString = Get-ConnectionStringPostgreSQL
 
 Install-Views $connectionString "$PSScriptRoot\..\CEDS\PostgreSQL\"
 

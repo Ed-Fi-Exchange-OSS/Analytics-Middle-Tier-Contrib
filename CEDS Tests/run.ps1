@@ -11,18 +11,17 @@ param (
 
 $ErrorActionPreference = "Stop"
 
+$configuration = Format-ConfigurationFileToHashTable $configPath
 #--- IMPORT MODULES ---
 Import-Module -Force "$PSScriptRoot\confighelper.psm1"
-Import-Module -Force "$PSScriptRoot\scripts\Utilities.psm1"
+Import-Module -Force "$PSScriptRoot\scripts\Utilities.psm1" -ArgumentList $configuration
 Import-Module -Force "$PSScriptRoot\scripts\TestsModules\TestRunner.psm1"
 
-$configuration = Format-ConfigurationFileToHashTable $configPath
 $testsLocation = "$PSScriptRoot\testCases\"
 
 function Find-Tests () {
-    
     # With this line we create an array with the path to the xml test files.
-    return @(Get-ChildItem -Path "$testsLocation" -Name -Include *.xml)
+    return @(Get-ChildItem -Path "$testsLocation" -Name -Include *.xml -Recurse -Force)
 }
 
 function Extract-TestData () {
@@ -38,7 +37,7 @@ function Extract-TestData () {
         $testCaseObject = [PSCustomObject]@{
             Name = $XmlDocument.Test.Name
             Query = $XmlDocument.Test.Query
-            Result = $XmlDocument.Test.Result
+            ResultFile = $XmlDocument.Test.ResultFile
         }
 
         $testCases += $testCaseObject
@@ -54,45 +53,24 @@ function Submit-TestsMSSQL {
         [Parameter(Mandatory=$true)]
         [string] $query,
         [Parameter(Mandatory=$true)]
-        [string ] $expectedResult
+        [string] $expectedResultFile,
+        [Parameter(Mandatory=$true)]
+        [string] $connectionString
     )
-    
-    $connectionStringParams = @{
-        host = $configuration.SQLServerConfig.ConnectionString.Host
-        database = $configuration.SQLServerConfig.ConnectionString.Database
-        username = $configuration.SQLServerConfig.ConnectionString.Username
-        password = $configuration.SQLServerConfig.ConnectionString.Password
-        integratedSecurity = $configuration.SQLServerConfig.ConnectionString.IntegratedSecurity
-    }
 
-    $connectionString = Get-ConnectionStringMSSQL @connectionStringParams
     Submit-TestMSSQL $connectionString $name $query
 
-    # ToDo: This path should be configurable instead of hardcoded. In this file we have the result of the execution of the query.
-    $actualResult = (Get-Content -Path "C:\temp\testsResults\MSSQL\test_$name.csv")
-
-    Write-Host "actualResult: $actualResult"
-    Write-Host "expectedResult: $expectedResult"
-
-    $objects = @{
-        ReferenceObject = $actualResult
-        DifferenceObject = $expectedResult
+    # Check if expected result file exists.
+    if ((Test-Path -Path "$PSScriptRoot\testCases\results\MSSQL\$expectedResultFile" -PathType leaf) -eq $true) {
+        $diff = (&git diff "$($configuration.TestsConfig.ExecutionResultsPath)MSSQL\test_${name}_actualresult.csv" ".\testCases\results\MSSQL\$expectedResultFile")
+    }
+    else {
+        return $false;
     }
 
-    # The idea here is to compare the actual result of the tests against the expected result.
-    #   https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/compare-object?view=powershell-7.2
-    $comparison = Compare-Object @objects # | Set-Content "C:\temp\testsResults\MSSQL\result_$name.txt"
-
-    Write-Host "comparison: $comparison"
-
-    # And then find the differences. 
-    # If this filter results something, then the actual result and the expected result are different, and the test is failing.
-    $differences = $comparison | Where-Object {$_.SideIndicator -eq "=>" -or $_.SideIndicator -eq "<="}
-
-    Write-Host "differences: $differences"
+    return [string]::IsNullOrEmpty($diff)
 }
 
-# ToDo: Everything related to executing the tests for Postgres is pending.
 function Submit-TestsPostgreSQL {
     Param (
         [Parameter(Mandatory=$true)]
@@ -100,35 +78,58 @@ function Submit-TestsPostgreSQL {
         [Parameter(Mandatory=$true)]
         [string] $query,
         [Parameter(Mandatory=$true)]
-        [string] $result
+        [string] $expectedResultFile,
+        [Parameter(Mandatory=$true)]
+        [string] $connectionString
     )
     
-    $connectionStringParams = @{
-        host = $configuration.PostgreSQLConfig.ConnectionString.Host
-        port = $configuration.PostgreSQLConfig.ConnectionString.Port
-        database = $configuration.PostgreSQLConfig.ConnectionString.Database
-        username = $configuration.PostgreSQLConfig.ConnectionString.Username
-        password = $configuration.PostgreSQLConfig.ConnectionString.Password
+    Submit-TestPostgreSQL $connectionString $name $query
+
+    # Check if expected result file exists.
+    if ((Test-Path -Path "$PSScriptRoot\testCases\results\PostgreSQL\$expectedResultFile" -PathType leaf) -eq $true) {
+        $diff = (&git diff "$($configuration.TestsConfig.ExecutionResultsPath)PostgreSQL\test_${name}_actualresult.csv" ".\testCases\results\PostgreSQL\$expectedResultFile")
+    }
+    else {
+        return $false;
     }
 
-    $connectionStringPostgreSqlUrl = Get-ConnectionStringPostgreSqlUrl @connectionStringParams
-    Submit-TestPostgreSQL $connectionStringPostgreSqlUrl $name $query
-
-    # Compare results.
-
+    return [string]::IsNullOrEmpty($diff)
 }
 
 $testFileNames = Find-Tests
 $testCases = Extract-TestData $testFileNames
 
+$numberOfTestsThatFailedMSSQL = 0
+$numberOfTestsThatFailedPostgreSQL = 0
+
+$connectionStringMSSQL = Get-ConnectionStringMSSQL
+$connectionStringPostgreSqlUrl = Get-ConnectionStringPostgreSqlUrl
+
 foreach ($testCase in $testCases) {
-    $testResult = Submit-TestsMSSQL $testCase.Name $testCase.Query $testCase.Result
+    # MSSQL
+    $testPassed = Submit-TestsMSSQL $testCase.Name $testCase.Query $testCase.ResultFile $connectionStringMSSQL
+
+    if ($testPassed -eq $true) {
+        Write-Host "Test with name $($testCase.Name) has been executed successfully." -ForegroundColor Green
+    }
+    else {
+        Write-Host "Test with name $($testCase.Name) has failed for MSSQL." -ForegroundColor Red
+        $numberOfTestsThatFailedMSSQL++
+    }
+
+    # PostgreSQL
+    $testPassed = Submit-TestsPostgreSQL $testCase.Name $testCase.Query $testCase.ResultFile $connectionStringPostgreSqlUrl
+
+    if ($testPassed -eq $true) {
+        Write-Host "Test with name $($testCase.Name) has been executed successfully." -ForegroundColor Green
+    }
+    else {
+        Write-Host "Test with name $($testCase.Name) has failed for PostgreSQL." -ForegroundColor Red
+        $numberOfTestsThatFailedPostgreSQL++
+    }
 }
 
-# Third step
-# Execute the tests.
-
-# Jose Leiva recommends not using odbc if possible, for postgres, because it can be very problematic.
-
-# Manage SQL Server on Linux with PowerShell Core
-# https://docs.microsoft.com/en-us/sql/linux/sql-server-linux-manage-powershell-core?view=sql-server-ver15
+Write-Host "Total number of tests is $($testCases.Count)." -ForegroundColor Cyan
+Write-Host "Number of tests that failed for MSSQL is $($numberOfTestsThatFailedMSSQL)." -ForegroundColor Cyan
+Write-Host "Number of tests that failed for PostgreSQL is $($numberOfTestsThatFailedPostgreSQL)." -ForegroundColor Cyan
+Write-Host "Number of tests that passed successfully is $($testCases.Count - $numberOfTestsThatFailed)." -ForegroundColor Cyan

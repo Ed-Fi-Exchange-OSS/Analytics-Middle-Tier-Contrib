@@ -4,61 +4,37 @@
 # See the LICENSE and NOTICES files in the project root for more information.
 
 #Requires -RunAsAdministrator
+param(
+    [parameter(Position=0,Mandatory=$true)][Hashtable]$configuration
+)
+
+$ErrorActionPreference = "Stop"
 
 function Get-ConnectionStringMSSQL {
-    param (
-        [Parameter(Mandatory = $true)]
-        [string] $host,
-        [Parameter(Mandatory = $true)]
-        [string] $database,
-        [Parameter(Mandatory = $false)]
-        [string] $username,
-        [Parameter(Mandatory = $false)]
-        [string] $password,
-        [Parameter(Mandatory = $false)]
-        [string] $integratedSecurity = "true"
-    )
+    $configurationMSSQL = $configuration.SQLServerConfig.ConnectionString
 
-    if ($integratedSecurity.ToLower() -eq "true"){
-        return "Data Source=$host;Initial Catalog=$database;Integrated Security=$integratedSecurity;"
+    if ($configurationMSSQL.IntegratedSecurity.ToLower() -eq "true"){
+
+        # Write-Host "(database) $($configurationMSSQL.database)"
+        # Write-Host "(integratedSecurity) $($configurationMSSQL.integratedSecurity)"
+
+        return "Data Source=$($configurationMSSQL.host);Initial Catalog=$($configurationMSSQL.database);Integrated Security=$($configurationMSSQL.IntegratedSecurity);"
     }
     else {
-        return "Data Source=$host;Initial Catalog=$database;User=$username;Password=$password;"
+        return "Data Source=$($configurationMSSQL.host);Initial Catalog=$($configurationMSSQL.database);User=$($configurationMSSQL.username);Password=$($configurationMSSQL.password);"
     }
 }
 
 function Get-ConnectionStringPostgreSQL {
-    param (
-        [Parameter(Mandatory = $true)]
-        [string] $host,
-        [Parameter(Mandatory = $true)]
-        [string] $port,
-        [Parameter(Mandatory = $true)]
-        [string] $database,
-        [Parameter(Mandatory = $true)]
-        [string] $username,
-        [Parameter(Mandatory = $true)]
-        [string] $password
-    )
+    $configurationPostgreSQL = $configuration.PostgreSQLConfig.ConnectionString
 
-    return "Host=${host};Database=$database;User ID=$username;password=$password;Port=$port;Pooling=false;"
+    return "Host=$($configurationPostgreSQL.host);Database=$($configurationPostgreSQL.database);User ID=$($configurationPostgreSQL.username);password=$($configurationPostgreSQL.password);Port=$($configurationPostgreSQL.port);Pooling=false;"
 }
 
 function Get-ConnectionStringPostgreSqlUrl {
-    param (
-        [Parameter(Mandatory = $true)]
-        [string] $host,
-        [Parameter(Mandatory = $true)]
-        [string] $port,
-        [Parameter(Mandatory = $true)]
-        [string] $database,
-        [Parameter(Mandatory = $true)]
-        [string] $username,
-        [Parameter(Mandatory = $true)]
-        [string] $password
-    )
+    $configurationPostgreSQL = $configuration.PostgreSQLConfig.ConnectionString
 
-    return "postgresql://${username}:${password}@${host}:${port}/${database}"
+    return "postgresql://$($configurationPostgreSQL.username):$($configurationPostgreSQL.password)@$($configurationPostgreSQL.host):$($configurationPostgreSQL.port)/$($configurationPostgreSQL.database)"
 }
 
 Export-ModuleMember Get-ConnectionStringMSSQL, Get-ConnectionStringPostgreSQL, Get-ConnectionStringPostgreSqlUrl

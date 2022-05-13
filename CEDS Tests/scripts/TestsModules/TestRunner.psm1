@@ -16,7 +16,7 @@ function Submit-TestMSSQL {
     )
     
     # ToDo: The Export-Csv parameter should be configurable instead of hardcoded.
-	Invoke-Sqlcmd -Query $query -ConnectionString $connectionString | Export-Csv "C:\temp\testsResults\MSSQL\test_$name.csv" -Delimiter "," -NoTypeInformation
+	Invoke-Sqlcmd -Query $query -ConnectionString $connectionString | Export-Csv "C:\temp\testsResults\MSSQL\test_${name}_actualresult.csv" -Delimiter "," -NoTypeInformation
 }
 
 function Submit-TestPostgreSQL {
@@ -29,7 +29,12 @@ function Submit-TestPostgreSQL {
         [string] $query
     )
     
-    return $query | psql $connectionStringURL | ConvertFrom-Csv
+    # psql $connectionStringURL -d dbname -t -A -F"," -c $query > "C:\temp\testsResults\PostgreSQL\test_${name}_actualresult.csv"
+
+    # $query | psql $connectionStringURL | ConvertFrom-Csv   
+    # $query | psql --csv $connectionStringURL | ConvertFrom-Csv | Export-Csv "C:\temp\testsResults\PostgreSQL\test_${name}_actualresult.csv" -Delimiter "," -NoTypeInformation
+    $query | psql "-A" "-F," $connectionStringURL | Out-File -FilePath "C:\temp\testsResults\PostgreSQL\test_${name}_actualresult.csv" # -Delimiter "," -NoTypeInformation
+    # $query | psql $connectionStringURL | Out-File -FilePath "C:\temp\testsResults\PostgreSQL\test_${name}_actualresult.csv"
 }
 
 Export-ModuleMember Submit-TestMSSQL, Submit-TestPostgreSQL

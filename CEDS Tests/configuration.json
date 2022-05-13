@@ -1,4 +1,7 @@
 {
+    "Tests": {
+        "ExecutionResultsPath": "C:\\temp\\testsResults\\"
+    },
     "ODSDatabaseInstaller" : {
         "DownloadLocation": "C:\\temp\\downloads\\",
         "MSSQL": {

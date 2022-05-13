@@ -1,5 +1,0 @@
-<Test>
-  <Name>test1</Name>
-  <Query>select 'a1' as a1H, 'a2' as a2H;</Query>
-  <Result>"a1H","a2H" "a1","a2"</Result>
-</Test>
