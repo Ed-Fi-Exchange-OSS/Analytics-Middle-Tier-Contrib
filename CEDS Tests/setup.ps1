@@ -36,9 +36,9 @@ function Install-SqlServerModule {
 $connectionString = Get-ConnectionStringMSSQL
 
 if ($null -ne (Get-SqlDatabase -ConnectionString $connectionString)) {
-    Write-Host "MSSQL datatabase ${connectionStringParams.database} already exists. Skipping."
+    Write-Host "MSSQL datatabase ${connectionStringParams.database} already exists. Skipping..."
 } else {
-    Write-Host "Installing ODS for MSSQL." -ForegroundColor Cyan
+    Write-Host "Installing ODS for MSSQL..." -ForegroundColor Cyan
     $paramsMSSQL = @{
         packageName = $configuration.ODSDatabaseInstallerConfig.MSSQL.packageDetails.packageName
         packageVersion = $configuration.ODSDatabaseInstallerConfig.MSSQL.packageDetails.version
@@ -47,14 +47,14 @@ if ($null -ne (Get-SqlDatabase -ConnectionString $connectionString)) {
         database = $configuration.SQLServerConfig.ConnectionString.Database
     }
 
-    Deploy-MSSQL @paramsMSSQL
+    Install-MSSQLODS @paramsMSSQL
 }
 
 # PostgreSQL
 $connectionStringAlt = Get-ConnectionStringPostgreSqlUrl
 
 if ("select exists(select datname from pg_database where datname = '${connectionStringParams.database}');" | psql $connectionStringAlt | ConvertFrom-Csv) {
-    Write-Host "PostgreSQL datatabase ${connectionStringParams.database} already exists. Skipping."
+    Write-Host "PostgreSQL datatabase ${connectionStringParams.database} already exists. Skipping..."
 } else {
     Write-Host "Installing ODS for PostgreSQL." -ForegroundColor Cyan
 
@@ -69,7 +69,7 @@ if ("select exists(select datname from pg_database where datname = '${connection
         password = $configuration.PostgreSQLConfig.ConnectionString.Password
     }
 
-    Deploy-PostgreSQL @paramsPostgreSQL
+    Install-PostgreSQLODS @paramsPostgreSQL
 }
 
 Install-SqlDatabaseModule

@@ -6,7 +6,8 @@
 #Requires -RunAsAdministrator
 
 param (
-    [string] $configPath = "$PSScriptRoot\configuration.json"
+    [string] $configPath = "$PSScriptRoot\configuration.json",
+    [string][Alias('e')]$engine="all"
 )
 
 $ErrorActionPreference = "Stop"
@@ -85,7 +86,6 @@ function Submit-TestsPostgreSQL {
     
     Submit-TestPostgreSQL $connectionString $name $query
 
-    # Check if expected result file exists.
     if ((Test-Path -Path "$($testsLocation)results\PostgreSQL\$expectedResultFile" -PathType leaf) -eq $true) {
         $diff = (&git diff "$($configuration.TestsConfig.ExecutionResultsPath)PostgreSQL\test_${name}_actualresult.csv" ".\testCases\results\PostgreSQL\$expectedResultFile")
     }
@@ -99,37 +99,64 @@ function Submit-TestsPostgreSQL {
 $testFileNames = Find-Tests
 $testCases = Extract-TestData $testFileNames
 
+Write-Host "These are the tests found..." -ForegroundColor Cyan
+foreach ($testCase in $testCases) {
+    Write-Host "    $($testCase.Name)" -ForegroundColor Cyan
+}
+Write-Host "... End of tests found.`n" -ForegroundColor Cyan
+
 $numberOfTestsThatFailedMSSQL = 0
 $numberOfTestsThatFailedPostgreSQL = 0
 
-$connectionStringMSSQL = Get-ConnectionStringMSSQL
-$connectionStringPostgreSqlUrl = Get-ConnectionStringPostgreSqlUrl
+# MSSQL
+if ($engine -eq "all" -or $engine -eq "mssql") {
 
-foreach ($testCase in $testCases) {
-    # MSSQL
-    $testPassed = Submit-TestsMSSQL $testCase.Name $testCase.Query $testCase.ResultFile $connectionStringMSSQL
+    Write-Host "Executing tests for MSSQL..." -ForegroundColor Cyan
 
-    if ($testPassed -eq $true) {
-        Write-Host "Test with name $($testCase.Name) has been executed successfully." -ForegroundColor Green
-    }
-    else {
-        Write-Host "Test with name $($testCase.Name) has failed for MSSQL." -ForegroundColor Red
-        $numberOfTestsThatFailedMSSQL++
+    foreach ($testCase in $testCases) {
+        $connectionStringMSSQL = Get-ConnectionStringMSSQL
+        $testPassed = Submit-TestsMSSQL $connectionStringMSSQL $testCase.Name $testCase.Query $testCase.ResultFile $configuration.TestsConfig.ExecutionResultsPath
+
+        if ($testPassed -eq $true) {
+            Write-Host "    Test with name $($testCase.Name) has been executed successfully." -ForegroundColor Green
+        }
+        else {
+            Write-Host "    Test with name $($testCase.Name) has failed for MSSQL." -ForegroundColor Red
+            $numberOfTestsThatFailedMSSQL++
+        }
     }
 
-    # PostgreSQL
-    $testPassed = Submit-TestsPostgreSQL $testCase.Name $testCase.Query $testCase.ResultFile $connectionStringPostgreSqlUrl
+    Write-Host "... Tests for MSSQL have been executed." -ForegroundColor Cyan
+    
+    Write-Host "Number of tests that failed for MSSQL is $($numberOfTestsThatFailedMSSQL).`n" -ForegroundColor Cyan
+}
 
-    if ($testPassed -eq $true) {
-        Write-Host "Test with name $($testCase.Name) has been executed successfully." -ForegroundColor Green
+# PostgreSQL
+if ($engine -eq "all" -or $engine -eq "postgresql") {
+    
+    Write-Host "Executing tests for PostgreSQL..." -ForegroundColor Cyan
+
+    foreach ($testCase in $testCases) {
+        $connectionStringPostgreSqlUrl = Get-ConnectionStringPostgreSqlUrl
+        $testPassed = Submit-TestsPostgreSQL $connectionStringPostgreSqlUrl $testCase.Name $testCase.Query $testCase.ResultFile $configuration.TestsConfig.ExecutionResultsPath
+
+        if ($testPassed -eq $true) {
+            Write-Host "    Test with name $($testCase.Name) has been executed successfully." -ForegroundColor Green
+        }
+        else {
+            Write-Host "    Test with name $($testCase.Name) has failed for PostgreSQL." -ForegroundColor Red
+            $numberOfTestsThatFailedPostgreSQL++
+        }
     }
-    else {
-        Write-Host "Test with name $($testCase.Name) has failed for PostgreSQL." -ForegroundColor Red
-        $numberOfTestsThatFailedPostgreSQL++
-    }
+
+    Write-Host "... Tests for PostgreSQL have been executed." -ForegroundColor Cyan
+
+    Write-Host "Number of tests that failed for PostgreSQL is $($numberOfTestsThatFailedPostgreSQL).`n" -ForegroundColor Cyan
 }
 
 Write-Host "Total number of tests is $($testCases.Count)." -ForegroundColor Cyan
-Write-Host "Number of tests that failed for MSSQL is $($numberOfTestsThatFailedMSSQL)." -ForegroundColor Cyan
-Write-Host "Number of tests that failed for PostgreSQL is $($numberOfTestsThatFailedPostgreSQL)." -ForegroundColor Cyan
 Write-Host "Number of tests that passed successfully is $($testCases.Count - $numberOfTestsThatFailed)." -ForegroundColor Cyan
+
+if ($numberOfTestsThatFailedMSSQL -ne 0 -or $numberOfTestsThatFailedPostgreSQL -ne 0) {
+    Write-Host "`nTo check why a test failed, go to $($configuration.TestsConfig.ExecutionResultsPath) and review the actual result of the query." -ForegroundColor Red
+}

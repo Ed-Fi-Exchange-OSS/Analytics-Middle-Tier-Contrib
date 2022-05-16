@@ -5,7 +5,7 @@
 
 #Requires -RunAsAdministrator
 
-function Install-Views {
+function Install-CedsViews {
     param (
         [Parameter(Mandatory = $true)]
         [string] $connectionString,
@@ -16,4 +16,4 @@ function Install-Views {
     Execute-SqlDatabase -database $connectionString -from $scriptsFolder -InformationAction Continue
 }
 
-Export-ModuleMember Install-Views
+Export-ModuleMember Install-CedsViews

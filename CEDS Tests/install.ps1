@@ -52,7 +52,7 @@ Write-Host "Installing CEDS Collection for MSSQL..." -ForegroundColor Cyan
 
 $connectionString = Get-ConnectionStringMSSQL
 
-Install-Views $connectionString "$PSScriptRoot\..\CEDS\MSSQL\"
+Install-CedsViews $connectionString "$PSScriptRoot\..\CEDS\MSSQL\"
 
 Write-Host "CEDS Collection has been installed for MSSQL" -ForegroundColor Cyan
 
@@ -60,6 +60,6 @@ Write-Host "Installing CEDS Collection for PostgreSQL..." -ForegroundColor Cyan
 
 $connectionString = Get-ConnectionStringPostgreSQL
 
-Install-Views $connectionString "$PSScriptRoot\..\CEDS\PostgreSQL\"
+Install-CedsViews $connectionString "$PSScriptRoot\..\CEDS\PostgreSQL\"
 
 Write-Host "CEDS Collection has been installed for PostgreSQL" -ForegroundColor Cyan

@@ -12,11 +12,13 @@ function Submit-TestMSSQL {
         [Parameter(Mandatory = $true)]
         [string] $name,
 		[Parameter(Mandatory = $true)]
-        [string] $query
+        [string] $query,
+		[Parameter(Mandatory = $true)]
+        [string] $executionResultsPath
     )
     
     # ToDo: The Export-Csv parameter should be configurable instead of hardcoded.
-	Invoke-Sqlcmd -Query $query -ConnectionString $connectionString | Export-Csv "C:\temp\testsResults\MSSQL\test_${name}_actualresult.csv" -Delimiter "," -NoTypeInformation
+	Invoke-Sqlcmd -Query $query -ConnectionString $connectionString | Export-Csv "$executionResultsPath\MSSQL\test_${name}_actualresult.csv" -Delimiter "," -NoTypeInformation
 }
 
 function Submit-TestPostgreSQL {
@@ -26,15 +28,12 @@ function Submit-TestPostgreSQL {
         [Parameter(Mandatory = $true)]
         [string] $name,
 		[Parameter(Mandatory = $true)]
-        [string] $query
+        [string] $query,
+		[Parameter(Mandatory = $true)]
+        [string] $executionResultsPath
     )
     
-    # psql $connectionStringURL -d dbname -t -A -F"," -c $query > "C:\temp\testsResults\PostgreSQL\test_${name}_actualresult.csv"
-
-    # $query | psql $connectionStringURL | ConvertFrom-Csv   
-    # $query | psql --csv $connectionStringURL | ConvertFrom-Csv | Export-Csv "C:\temp\testsResults\PostgreSQL\test_${name}_actualresult.csv" -Delimiter "," -NoTypeInformation
-    $query | psql "-A" "-F," $connectionStringURL | Out-File -FilePath "C:\temp\testsResults\PostgreSQL\test_${name}_actualresult.csv" # -Delimiter "," -NoTypeInformation
-    # $query | psql $connectionStringURL | Out-File -FilePath "C:\temp\testsResults\PostgreSQL\test_${name}_actualresult.csv"
+    $query | psql "-A" "-F," $connectionStringURL | Out-File -FilePath "$executionResultsPath\PostgreSQL\test_${name}_actualresult.csv"
 }
 
 Export-ModuleMember Submit-TestMSSQL, Submit-TestPostgreSQL

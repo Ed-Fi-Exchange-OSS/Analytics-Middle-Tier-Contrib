@@ -6,22 +6,18 @@
 #Requires -RunAsAdministrator
 
 param (
-    [string] $configPath = "$PSScriptRoot\configuration.json"
+    [string] $configPath = "$PSScriptRoot\configuration.json",
+    [string][Alias('e')]$engine="all"
 )
 
-$configuration = Format-ConfigurationFileToHashTable $configPath
-
-#--- IMPORT MODULES ---
-Import-Module -Force "$PSScriptRoot\confighelper.psm1"
-
 Write-Host "Initializing Setup..." -ForegroundColor Cyan
-& "$PSScriptRoot\scripts\setup.ps1" $configuration
+Invoke-Expression ".\setup.ps1"
+Write-Host "... Setup Completed." -ForegroundColor Cyan
 
 Write-Host "Installing Ceds Views..." -ForegroundColor Cyan
-& $PSScriptRoot+"\scripts\install.ps1" $configuration
+Invoke-Expression ".\install.ps1"
+Write-Host "... Ceds views installed." -ForegroundColor Cyan
 
-Write-Host "running Ceds tests..." -ForegroundColor Cyan
-& $PSScriptRoot+"\scripts\run.ps1" $configuration
-
-# I haven't actually tested this file at this point. I don't know if we need this file. 
-# because the idea is that the setup script, install script and run script are executed individually. 
+Write-Host "Running Ceds tests..." -ForegroundColor Cyan
+Invoke-Expression ".\run.ps1"
+Write-Host "... All Tests Executed." -ForegroundColor Cyan

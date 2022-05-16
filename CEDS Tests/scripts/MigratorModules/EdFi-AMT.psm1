@@ -67,25 +67,6 @@ function Expand-amt-Files {
     }
 }
 
-# function New-amt-ConnectionString{
-#     param (
-#         $databaseInfo
-#     )
-#     $postgresqlConnectionString="host={0};Database={1};user id={2};Password={3};port={4}" 
-#     $mssqlConnectionStringIntegrated="Server={0};Database={1};Integrated Security=SSPI;"
-#     $mssqlConnectionString="Server={0};Database={1};user id={2};Password={3};"
-#     if($databaseInfo.engine -ieq "SQLServer"){
-#         if($databaseInfo.UseIntegratedSecurity){
-#             return $mssqlConnectionStringIntegrated -f $databaseInfo.databaseServer,$databaseInfo.odsDatabaseName
-#         }
-#         else{
-#             return $mssqlConnectionString -f $databaseInfo.databaseServer,$databaseInfo.odsDatabaseName, $databaseInfo.applicationCredentials.databaseUser,$databaseInfo.applicationCredentials.databasePassword
-#         }
-#     }
-#     else{
-#         return $postgresqlConnectionString -f $databaseInfo.databaseServer,$databaseInfo.odsDatabaseName, $databaseInfo.applicationCredentials.databaseUser,$databaseInfo.applicationCredentials.databasePassword,$databaseInfo.applicationCredentials.databasePort
-#     }
-# }
 function Install-AMT {
     <#
     .SYNOPSIS
