@@ -32,6 +32,8 @@ function Format-ConfigurationFileToHashTable {
         SQLServerConfig =  Convert-PsObjectToHashTable $configJson.SQLServer
 
         PostgreSQLConfig =  Convert-PsObjectToHashTable $configJson.PostgreSQL
+
+        amtConfig = Convert-PsObjectToHashTable $configJson.AMT
     }
 
     return $formattedConfig

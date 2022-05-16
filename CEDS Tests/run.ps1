@@ -11,9 +11,9 @@ param (
 
 $ErrorActionPreference = "Stop"
 
-$configuration = Format-ConfigurationFileToHashTable $configPath
 #--- IMPORT MODULES ---
 Import-Module -Force "$PSScriptRoot\confighelper.psm1"
+$configuration = Format-ConfigurationFileToHashTable $configPath
 Import-Module -Force "$PSScriptRoot\scripts\Utilities.psm1" -ArgumentList $configuration
 Import-Module -Force "$PSScriptRoot\scripts\TestsModules\TestRunner.psm1"
 
@@ -61,7 +61,7 @@ function Submit-TestsMSSQL {
     Submit-TestMSSQL $connectionString $name $query
 
     # Check if expected result file exists.
-    if ((Test-Path -Path "$PSScriptRoot\testCases\results\MSSQL\$expectedResultFile" -PathType leaf) -eq $true) {
+    if ((Test-Path -Path "$($testsLocation)results\MSSQL\$expectedResultFile" -PathType leaf) -eq $true) {
         $diff = (&git diff "$($configuration.TestsConfig.ExecutionResultsPath)MSSQL\test_${name}_actualresult.csv" ".\testCases\results\MSSQL\$expectedResultFile")
     }
     else {
@@ -86,7 +86,7 @@ function Submit-TestsPostgreSQL {
     Submit-TestPostgreSQL $connectionString $name $query
 
     # Check if expected result file exists.
-    if ((Test-Path -Path "$PSScriptRoot\testCases\results\PostgreSQL\$expectedResultFile" -PathType leaf) -eq $true) {
+    if ((Test-Path -Path "$($testsLocation)results\PostgreSQL\$expectedResultFile" -PathType leaf) -eq $true) {
         $diff = (&git diff "$($configuration.TestsConfig.ExecutionResultsPath)PostgreSQL\test_${name}_actualresult.csv" ".\testCases\results\PostgreSQL\$expectedResultFile")
     }
     else {

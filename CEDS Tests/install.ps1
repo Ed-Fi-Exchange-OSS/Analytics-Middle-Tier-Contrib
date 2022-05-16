@@ -11,27 +11,55 @@ param (
 
 $ErrorActionPreference = "Stop"
 
-$configuration = Format-ConfigurationFileToHashTable $configPath
-
 #--- IMPORT MODULES ---
 Import-Module -Force "$PSScriptRoot\confighelper.psm1"
+$configuration = Format-ConfigurationFileToHashTable $configPath
 Import-Module -Force "$PSScriptRoot\scripts\MigratorModules\SqlDatabaseModuleWrapper.psm1"
+Import-Module -Force "$PSScriptRoot\scripts\MigratorModules\EdFi-AMT.psm1" -ArgumentList $configuration
 Import-Module -Force "$PSScriptRoot\scripts\Utilities.psm1" -ArgumentList $configuration
+
+Write-Host "Installing AMT for MSSQL..." -ForegroundColor Cyan
+
+$parameters = @{
+    databasesConfig          = @{
+        engine = "SQLServer"
+    }
+    amtDownloadPath          = $configuration.amtConfig.amtDownloadPath
+    amtInstallerPath         = $configuration.amtConfig.amtInstallerPath
+    amtOptions               = $configuration.amtConfig.options
+}
+
+Install-amt @parameters
+
+Write-Host "AMT has been installed for MSSQL" -ForegroundColor Cyan
+
+Write-Host "Installing AMT for PostgreSQL..." -ForegroundColor Cyan
+
+$parameters = @{
+    databasesConfig          = @{
+        engine = "PostgreSQL"
+    }
+    amtDownloadPath          = $configuration.amtConfig.amtDownloadPath
+    amtInstallerPath         = $configuration.amtConfig.amtInstallerPath
+    amtOptions               = $configuration.amtConfig.options
+}
+
+Install-amt @parameters
+
+Write-Host "AMT has been installed for PostgreSQL" -ForegroundColor Cyan
+
+Write-Host "Installing CEDS Collection for MSSQL..." -ForegroundColor Cyan
 
 $connectionString = Get-ConnectionStringMSSQL
 
 Install-Views $connectionString "$PSScriptRoot\..\CEDS\MSSQL\"
 
-# PostgreSQL
+Write-Host "CEDS Collection has been installed for MSSQL" -ForegroundColor Cyan
+
+Write-Host "Installing CEDS Collection for PostgreSQL..." -ForegroundColor Cyan
 
 $connectionString = Get-ConnectionStringPostgreSQL
 
 Install-Views $connectionString "$PSScriptRoot\..\CEDS\PostgreSQL\"
 
-# Second step
-# Install the CEDS views.
-
-# ToDo: (This is not really a ToDo. Just be aware of)
-#   There is a situation we have to review here. 
-#       Since in the Ceds views we use the analytics_config.DescriptorMap table (specifically this script 0009-View-IeuDim-Create.sql), 
-#       this means that the AMT is a requirement for the Ceds collection. Because this table is created by the AMT.
+Write-Host "CEDS Collection has been installed for PostgreSQL" -ForegroundColor Cyan

@@ -32,6 +32,7 @@ function Install-SqlServerModule {
     Import-Module SqlServer
 }
 
+# MSSQL
 $connectionString = Get-ConnectionStringMSSQL
 
 if ($null -ne (Get-SqlDatabase -ConnectionString $connectionString)) {
@@ -70,7 +71,6 @@ if ("select exists(select datname from pg_database where datname = '${connection
 
     Deploy-PostgreSQL @paramsPostgreSQL
 }
-
 
 Install-SqlDatabaseModule
 Install-SqlServerModule

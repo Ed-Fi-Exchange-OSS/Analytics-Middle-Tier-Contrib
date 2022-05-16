@@ -34,5 +34,17 @@
             "Password": "gapUser123",
             "Port": 5432
         }
+    },
+    "AMT": {
+        "amtDownloadPath": "C:\\temp\\downloads",
+        "amtInstallerPath": "C:\\temp\\tools",
+        "options": "indexes",
+        "install_selfContained": "true",
+        "selfContainedOS": "win10.x64",
+        "packageDetails": {
+            "packageName": "EdFi.AnalyticsMiddleTier",
+            "packageURL": "https://github.com/Ed-Fi-Alliance-OSS/Ed-Fi-Analytics-Middle-Tier",
+            "version": "2.8.0"
+        }
     }
 }
