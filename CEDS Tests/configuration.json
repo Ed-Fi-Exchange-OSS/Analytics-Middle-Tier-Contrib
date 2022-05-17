@@ -20,16 +20,16 @@
     "SQLServer": {
         "ConnectionString": {
             "Host": "localhost",
-            "Database": "EdFi_Ods",
+            "Database": "EdFi_Ods_Ceds",
             "Username": "",
             "Password": "",
-            "IntegratedSecurity": "true"
+            "UseIntegratedSecurity": true
         }
     },
     "PostgreSQL": {
         "ConnectionString": {
             "Host": "localhost",
-            "Database": "edfi_ods",
+            "Database": "edfi_ods_ceds",
             "Username": "postgres",
             "Password": "gapUser123",
             "Port": 5432

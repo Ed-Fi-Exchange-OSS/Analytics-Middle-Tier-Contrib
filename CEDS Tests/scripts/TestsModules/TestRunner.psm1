@@ -17,7 +17,6 @@ function Submit-TestMSSQL {
         [string] $executionResultsPath
     )
     
-    # ToDo: The Export-Csv parameter should be configurable instead of hardcoded.
 	Invoke-Sqlcmd -Query $query -ConnectionString $connectionString | Export-Csv "$executionResultsPath\MSSQL\test_${name}_actualresult.csv" -Delimiter "," -NoTypeInformation
 }
 

@@ -13,28 +13,40 @@ $ErrorActionPreference = "Stop"
 function Get-ConnectionStringMSSQL {
     $configurationMSSQL = $configuration.SQLServerConfig.ConnectionString
 
-    if ($configurationMSSQL.IntegratedSecurity.ToLower() -eq "true"){
+    $mssqlConnectionStringIntegrated="Data Source={0};Initial Catalog={1};Integrated Security=SSPI;"
+    $mssqlConnectionString="Data Source={0};Initial Catalog={1};User={2};Password={3};"
 
-        # Write-Host "(database) $($configurationMSSQL.database)"
-        # Write-Host "(integratedSecurity) $($configurationMSSQL.integratedSecurity)"
-
-        return "Data Source=$($configurationMSSQL.host);Initial Catalog=$($configurationMSSQL.database);Integrated Security=$($configurationMSSQL.IntegratedSecurity);"
+    if($configurationMSSQL.UseIntegratedSecurity){
+        return $mssqlConnectionStringIntegrated -f $configurationMSSQL.host, $configurationMSSQL.database
     }
     else {
-        return "Data Source=$($configurationMSSQL.host);Initial Catalog=$($configurationMSSQL.database);User=$($configurationMSSQL.username);Password=$($configurationMSSQL.password);"
+        return $mssqlConnectionString -f $configurationMSSQL.host, $configurationMSSQL.database, $configurationMSSQL.username, $configurationMSSQL.password
     }
 }
 
 function Get-ConnectionStringPostgreSQL {
     $configurationPostgreSQL = $configuration.PostgreSQLConfig.ConnectionString
 
-    return "Host=$($configurationPostgreSQL.host);Database=$($configurationPostgreSQL.database);User ID=$($configurationPostgreSQL.username);password=$($configurationPostgreSQL.password);Port=$($configurationPostgreSQL.port);Pooling=false;"
+    $postgresqlConnectionString="host={0};Database={1};user id={2};Password={3};port={4}"
+
+    return $postgresqlConnectionString -f $configurationPostgreSQL.host, $configurationPostgreSQL.database, $configurationPostgreSQL.username, $configurationPostgreSQL.password, $configurationPostgreSQL.port
 }
 
 function Get-ConnectionStringPostgreSqlUrl {
+    param (
+        [bool] $UsePostgresDatabase = $false
+    )
+
     $configurationPostgreSQL = $configuration.PostgreSQLConfig.ConnectionString
 
-    return "postgresql://$($configurationPostgreSQL.username):$($configurationPostgreSQL.password)@$($configurationPostgreSQL.host):$($configurationPostgreSQL.port)/$($configurationPostgreSQL.database)"
+    $databaseURL = "postgresql://{0}:{1}@{2}:{3}/{4}"
+
+    if ($UsePostgresDatabase) {
+        return $databaseURL -f $configurationPostgreSQL.username, $configurationPostgreSQL.password, $configurationPostgreSQL.host, $configurationPostgreSQL.port, "postgres"
+    }
+    else {
+        return $databaseURL -f $configurationPostgreSQL.username, $configurationPostgreSQL.password, $configurationPostgreSQL.host, $configurationPostgreSQL.port, $configurationPostgreSQL.database
+    }
 }
 
 Export-ModuleMember Get-ConnectionStringMSSQL, Get-ConnectionStringPostgreSQL, Get-ConnectionStringPostgreSqlUrl

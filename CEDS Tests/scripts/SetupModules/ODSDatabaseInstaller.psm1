@@ -13,7 +13,7 @@ function Install-MSSQLODS {
         [String] $packageVersion = "5.4.114",
         [String] $downloadLocation = "C:\temp\downloads\",
         [String] $serverInstance  = "localhost",
-        [String] $database = "EdFi_Ods"
+        [String] $database = "EdFi_Ods_Ceds"
     )
 
     nuget install $packageName -source $packageSource -Version $packageVersion -outputDirectory $downloadLocation -ConfigFile "$PSScriptRoot\nuget.config" | Out-Host
@@ -33,10 +33,10 @@ function Install-PostgreSQLODS {
         $packageVersion = "5.4.99",
         $downloadLocation = "C:\temp\downloads\",
         $host = "localhost",
-        $database = "edfi_ods",
         $port = "5432",
-        $user = "",
-        $password = ""
+        $database = "edfi_ods_ceds",
+        $user = "postgres",
+        $connectionStringPostgreSqlUrl = ""
     )
 
     nuget install $packageName -source $packageSource -Version $packageVersion -outputDirectory $downloadLocation -ConfigFile "$PSScriptRoot\nuget.config" | Out-Host
@@ -45,15 +45,11 @@ function Install-PostgreSQLODS {
     $bakFileName = Get-ChildItem -Path $bakFilePath -Name -Include *.sql
 
     $database = $database.ToLower()
-    $dropDatabase = "DROP DATABASE IF EXISTS " + $database +";"
     $createDatabase = "CREATE DATABASE " + $database +";"
 
-    Write-Host "dropping db if it exists"
-    psql -h $host -p $port -U $user -c $dropDatabase
-    Write-Host "creating db"
-    psql -h $host -p $port -U $user -c $createDatabase
-    Write-Host "Running migration on db"
-    psql -d $database -h $host -p $port  -U $user -f "$bakFilePath\$bakFileName"
+    $createDatabase | psql $connectionStringPostgreSqlUrl
+
+    psql -d $database -h $host -p $port -U $user -f "$bakFilePath\$bakFileName"
 }
 
 Export-ModuleMember Install-MSSQLODS, Install-PostgreSQLODS

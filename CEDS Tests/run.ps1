@@ -50,16 +50,16 @@ function Extract-TestData () {
 function Submit-TestsMSSQL {
     Param (
         [Parameter(Mandatory=$true)]
+        [string] $connectionString,
+        [Parameter(Mandatory=$true)]
         [string] $name,
         [Parameter(Mandatory=$true)]
         [string] $query,
         [Parameter(Mandatory=$true)]
-        [string] $expectedResultFile,
-        [Parameter(Mandatory=$true)]
-        [string] $connectionString
+        [string] $expectedResultFile
     )
 
-    Submit-TestMSSQL $connectionString $name $query
+    Submit-TestMSSQL $connectionString $name $query $configuration.TestsConfig.ExecutionResultsPath
 
     # Check if expected result file exists.
     if ((Test-Path -Path "$($testsLocation)results\MSSQL\$expectedResultFile" -PathType leaf) -eq $true) {
@@ -75,16 +75,16 @@ function Submit-TestsMSSQL {
 function Submit-TestsPostgreSQL {
     Param (
         [Parameter(Mandatory=$true)]
+        [string] $connectionString,
+        [Parameter(Mandatory=$true)]
         [string] $name,
         [Parameter(Mandatory=$true)]
         [string] $query,
         [Parameter(Mandatory=$true)]
-        [string] $expectedResultFile,
-        [Parameter(Mandatory=$true)]
-        [string] $connectionString
+        [string] $expectedResultFile
     )
     
-    Submit-TestPostgreSQL $connectionString $name $query
+    Submit-TestPostgreSQL $connectionString $name $query $configuration.TestsConfig.ExecutionResultsPath
 
     if ((Test-Path -Path "$($testsLocation)results\PostgreSQL\$expectedResultFile" -PathType leaf) -eq $true) {
         $diff = (&git diff "$($configuration.TestsConfig.ExecutionResultsPath)PostgreSQL\test_${name}_actualresult.csv" ".\testCases\results\PostgreSQL\$expectedResultFile")
@@ -115,7 +115,7 @@ if ($engine -eq "all" -or $engine -eq "mssql") {
 
     foreach ($testCase in $testCases) {
         $connectionStringMSSQL = Get-ConnectionStringMSSQL
-        $testPassed = Submit-TestsMSSQL $connectionStringMSSQL $testCase.Name $testCase.Query $testCase.ResultFile $configuration.TestsConfig.ExecutionResultsPath
+        $testPassed = Submit-TestsMSSQL $connectionStringMSSQL $testCase.Name $testCase.Query $testCase.ResultFile
 
         if ($testPassed -eq $true) {
             Write-Host "    Test with name $($testCase.Name) has been executed successfully." -ForegroundColor Green
@@ -138,7 +138,7 @@ if ($engine -eq "all" -or $engine -eq "postgresql") {
 
     foreach ($testCase in $testCases) {
         $connectionStringPostgreSqlUrl = Get-ConnectionStringPostgreSqlUrl
-        $testPassed = Submit-TestsPostgreSQL $connectionStringPostgreSqlUrl $testCase.Name $testCase.Query $testCase.ResultFile $configuration.TestsConfig.ExecutionResultsPath
+        $testPassed = Submit-TestsPostgreSQL $connectionStringPostgreSqlUrl $testCase.Name $testCase.Query $testCase.ResultFile
 
         if ($testPassed -eq $true) {
             Write-Host "    Test with name $($testCase.Name) has been executed successfully." -ForegroundColor Green
