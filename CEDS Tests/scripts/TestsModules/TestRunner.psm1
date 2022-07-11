@@ -32,7 +32,7 @@ function Submit-TestPostgreSQL {
         [string] $executionResultsPath
     )
     
-    $query | psql "-A" "-F," $connectionStringURL | Out-File -FilePath "$executionResultsPath\PostgreSQL\test_${name}_actualresult.csv"
+    $query | psql "-A" "-F," $connectionStringURL | Out-File -FilePath "$executionResultsPath\PostgreSQL\test_${name}_actualresult.csv" -Encoding default
 }
 
 Export-ModuleMember Submit-TestMSSQL, Submit-TestPostgreSQL
