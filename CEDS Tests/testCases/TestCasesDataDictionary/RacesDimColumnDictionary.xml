@@ -1,0 +1,12 @@
+<Test>
+  <Name>RacesDimColumnDictionary</Name>
+  <Query>
+    SELECT COLUMN_NAME AS ColumnName,
+    DATA_TYPE AS DataType
+    FROM information_schema.columns
+    WHERE table_schema = 'analytics'
+    AND table_name = 'ceds_racesdim'
+    ORDER BY ORDINAL_POSITION ASC;
+  </Query>
+  <ResultFile>RacesDimDataDictionary.csv</ResultFile>
+</Test>
