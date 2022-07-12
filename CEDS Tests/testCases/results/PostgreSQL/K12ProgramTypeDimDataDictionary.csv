@@ -1,0 +1,6 @@
+columnname,datatype
+k12programtypekey,text
+programtypecode,character varying
+programtypedescription,character varying
+programtypedefinition,character varying
+(4 rows)
