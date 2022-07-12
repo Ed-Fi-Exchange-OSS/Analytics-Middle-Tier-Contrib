@@ -5,16 +5,38 @@
 DROP VIEW IF EXISTS analytics.ceds_RacesDim;
 
 CREATE OR REPLACE VIEW analytics.ceds_RacesDim
+AS
+WITH MapReferenceDescriptor
 AS (
-      SELECT 
-         Descriptor.DescriptorId AS 'RaceKey'
-        ,Descriptor.CodeValue AS 'RaceCode'
-        ,Descriptor.ShortDescription AS 'RaceDescription'
-        ,ceds_TableInformation.EdFactsCode AS 'RaceEdFactsCode'
-    FROM analytics_config.ceds_TableInformation
-    INNER JOIN analytics_config.ceds_TableReference
+    SELECT
+         Descriptor.DescriptorId
+        ,Descriptor.CodeValue
+        ,Descriptor.Description
+        ,ceds_TableReference.TableName
+        ,ceds_TableInformation.EdFactsCode
+        ,Descriptor.LastModifiedDate
+    FROM
+        analytics_config.ceds_TableInformation
+    INNER JOIN
+        analytics_config.ceds_TableReference
         ON ceds_TableInformation.TableId = ceds_TableReference.TableId
-    INNER JOIN edfi.Descriptor
+    INNER JOIN
+        edfi.Descriptor
         ON Descriptor.DescriptorId = ceds_TableInformation.DescriptorId
-    WHERE ceds_TableReference.TableName = 'xref.Races'
-)
+    )
+SELECT DISTINCT
+    CONCAT (
+            MapReferenceDescriptor.EdFactsCode,
+            '-',
+            MapReferenceDescriptor.CodeValue
+        ) AS RaceKey
+    ,COALESCE(MapReferenceDescriptor.CodeValue, '') AS RaceCode
+    ,COALESCE(MapReferenceDescriptor.Description, '') AS RaceDescription
+    ,COALESCE(MapReferenceDescriptor.EdFactsCode, '') AS RaceEdFactsCode
+    ,COALESCE(MapReferenceDescriptor.LastModifiedDate, '') AS LastModifiedDate
+FROM
+    edfi.Descriptor
+LEFT JOIN
+    MapReferenceDescriptor
+    ON Descriptor.DescriptorId = MapReferenceDescriptor.DescriptorId
+	AND MapReferenceDescriptor.TableName = 'xref.Races'
