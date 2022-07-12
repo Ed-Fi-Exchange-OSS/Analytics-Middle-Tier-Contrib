@@ -1,0 +1,15 @@
+columnname,datatype
+ideastatuskey,text
+basisofexitcode,character varying
+basisofexitdescription,character varying
+basisofexitedfactscode,character varying
+basisofexitid,text
+disabilitycode,character varying
+disabilitydescription,character varying
+disabilityedfactscode,character varying
+disabilityid,text
+educenvcode,character varying
+educenvdescription,character varying
+educenvedfactscode,character varying
+educenvid,text
+(13 rows)
