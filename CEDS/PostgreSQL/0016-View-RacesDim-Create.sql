@@ -33,7 +33,7 @@ SELECT DISTINCT
     ,COALESCE(MapReferenceDescriptor.CodeValue, '') AS RaceCode
     ,COALESCE(MapReferenceDescriptor.Description, '') AS RaceDescription
     ,COALESCE(MapReferenceDescriptor.EdFactsCode, '') AS RaceEdFactsCode
-    ,COALESCE(MapReferenceDescriptor.LastModifiedDate, '') AS LastModifiedDate
+    ,COALESCE(MapReferenceDescriptor.LastModifiedDate::TEXT, '') AS LastModifiedDate
 FROM
     edfi.Descriptor
 LEFT JOIN
