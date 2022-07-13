@@ -6,14 +6,14 @@ IF EXISTS (
         SELECT 1
         FROM INFORMATION_SCHEMA.VIEWS
         WHERE TABLE_SCHEMA = 'analytics'
-            AND TABLE_NAME = 'ceds_SchoolYearsDim'
+            AND TABLE_NAME = 'ceds_SchoolYearDim'
         )
 BEGIN
-    DROP VIEW analytics.ceds_SchoolYearsDim;
+    DROP VIEW analytics.ceds_SchoolYearDim;
 END;
 GO
 
-CREATE OR ALTER VIEW analytics.ceds_SchoolYearsDim
+CREATE OR ALTER VIEW analytics.ceds_SchoolYearDim
 AS (
     SELECT
         SchoolYearDescription AS SchoolYearKey,
