@@ -1,0 +1,16 @@
+columnname,datatype
+schoolyearid,character varying
+datacollectionid,text
+seaid,character varying
+ieuid,character varying
+leaid,character varying
+k12schoolid,character varying
+k12studentid,text
+k12enrollmentstatusid,text
+entrygradelevelid,text
+exitgradelevelid,text
+enrollmententrydateid,character varying
+projectedgraduationdateid,character varying
+k12demographicid,text
+ideastatusid,text
+(14 rows)
