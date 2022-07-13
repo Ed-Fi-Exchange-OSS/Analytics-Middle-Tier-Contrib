@@ -2,9 +2,18 @@
 -- Licensed to the Ed-Fi Alliance under one or more agreements.
 -- The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 -- See the LICENSE and NOTICES files in the project root for more information.
-DROP VIEW IF EXISTS analytics.ceds_RacesDim;
+IF EXISTS (
+        SELECT 1
+        FROM INFORMATION_SCHEMA.VIEWS
+        WHERE TABLE_SCHEMA = 'analytics'
+            AND TABLE_NAME = 'ceds_RaceDim'
+        )
+BEGIN
+    DROP VIEW analytics.ceds_RaceDim;
+END;
+GO
 
-CREATE OR REPLACE VIEW analytics.ceds_RacesDim
+CREATE OR ALTER VIEW analytics.ceds_RaceDim
 AS
 WITH MapReferenceDescriptor
 AS (
@@ -33,7 +42,7 @@ SELECT DISTINCT
     ,COALESCE(MapReferenceDescriptor.CodeValue, '') AS RaceCode
     ,COALESCE(MapReferenceDescriptor.Description, '') AS RaceDescription
     ,COALESCE(MapReferenceDescriptor.EdFactsCode, '') AS RaceEdFactsCode
-    ,COALESCE(MapReferenceDescriptor.LastModifiedDate::TEXT, '') AS LastModifiedDate
+    ,COALESCE(MapReferenceDescriptor.LastModifiedDate, '') AS LastModifiedDate
 FROM
     edfi.Descriptor
 LEFT JOIN

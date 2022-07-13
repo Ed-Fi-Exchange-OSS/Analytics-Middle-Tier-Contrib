@@ -1,7 +1,0 @@
-columnname,datatype
-raceskey,text
-racescode,character varying
-racesdescription,character varying
-racesedfactscode,character varying
-lastmodifieddate,text
-(5 rows)
