@@ -1,0 +1,6 @@
+"ColumnName","DataType"
+"RaceKey","nvarchar"
+"RaceCode","nvarchar"
+"RaceDescription","nvarchar"
+"RaceEdFactsCode","varchar"
+"LastModifiedDate","datetime2"
