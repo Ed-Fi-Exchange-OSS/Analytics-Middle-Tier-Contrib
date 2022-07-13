@@ -1,4 +1,5 @@
 "ColumnName","DataType"
+"FactK12StudentEnrollmentKey","nvarchar"
 "SchoolYearKey","nvarchar"
 "DataCollectionKey","varchar"
 "SeaKey","varchar"
@@ -13,3 +14,4 @@
 "ProjectedGraduationDateKey","nvarchar"
 "K12DemographicKey","varchar"
 "IdeaStatusKey","varchar"
+"StudentCount","int"

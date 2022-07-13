@@ -1,16 +1,18 @@
 columnname,datatype
-schoolyearid,character varying
-datacollectionid,text
-seaid,character varying
-ieuid,character varying
-leaid,character varying
-k12schoolid,character varying
-k12studentid,text
-k12enrollmentstatusid,text
-entrygradelevelid,text
-exitgradelevelid,text
-enrollmententrydateid,character varying
-projectedgraduationdateid,character varying
-k12demographicid,text
-ideastatusid,text
-(14 rows)
+factk12studentenrollmentkey,text
+schoolyearkey,character varying
+datacollectionkey,text
+seakey,character varying
+ieukey,character varying
+leakey,character varying
+k12schoolkey,character varying
+k12studentkey,text
+k12enrollmentstatuskey,text
+entrygradelevelkey,text
+exitgradelevelkey,text
+enrollmententrydatekey,character varying
+projectedgraduationdatekey,character varying
+k12demographickey,text
+ideastatuskey,text
+studentcount,bigint
+(16 rows)
