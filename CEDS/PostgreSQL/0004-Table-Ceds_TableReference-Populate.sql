@@ -20,8 +20,9 @@ WITH source AS (VALUES
 	('xref.HomelessUnaccompaniedYouthStatus'),
 	('xref.Sex'),
 	('xref.EntryType'),
-	('xref.ExitWithdrawType'),
-	('xref.Races')
+	('xref.ProgramType'),
+	('xref.Race'),
+	('xref.ExitWithdrawType')
 )
 INSERT INTO 
     analytics_config.ceds_TableReference

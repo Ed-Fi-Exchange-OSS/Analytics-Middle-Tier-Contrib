@@ -10,16 +10,21 @@ USING (SELECT Descriptor.DescriptorId
 	, ceds_TableReference.TableId
 FROM
 	(VALUES
-		('Bilingual','LEP'),
-		('Bilingual Summer','LEP')
-) MapReference (CodeValue, EdFactsCode)
+		('Choose Not to Respond','MISSING'),
+		('Asian','AS7'),
+		('American Indian - Alaska Native','AM7'),
+		('Black - African American','BL7'),
+		('Native Hawaiian - Pacific Islander','PI7'),
+		('Other','MISSING'),
+		('White','WH7')
+	) MapReference (CodeValue, EdFactsCode)
 INNER JOIN 
 	edfi.Descriptor 
 		ON MapReference.CodeValue = Descriptor.CodeValue
-			AND Descriptor.Namespace like '%/ProgramTypeDescriptor'
+			AND Descriptor.Namespace like '%/RaceDescriptor'
 INNER JOIN 
 	analytics_config.ceds_TableReference
-		ON ceds_TableReference.TableName = 'xref.EnglishLearnerStatus'
+		ON ceds_TableReference.TableName = 'xref.Race'
 ) AS Source(DescriptorId, CodeValue, EdFactsCode, TableId)
 ON TARGET.CodeValue = Source.CodeValue
 	AND TARGET.EdFactsCode = Source.EdFactsCode

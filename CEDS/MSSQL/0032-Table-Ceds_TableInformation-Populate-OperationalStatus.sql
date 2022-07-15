@@ -10,21 +10,23 @@ USING (SELECT Descriptor.DescriptorId
 	, ceds_TableReference.TableId
 FROM
 	(VALUES
-		('Female','F'),
-		('Male','M'),
-		('Non-binary','MISSING'),
-		('Not Selected','MISSING')
+		('Added', 'Active'),
+		('Changed', 'Active'),
+		('Active', 'Active'),
+		('New', 'Active'),
+		('Reopened', 'Active')
 	) MapReference (CodeValue, EdFactsCode)
 INNER JOIN 
 	edfi.Descriptor 
 		ON MapReference.CodeValue = Descriptor.CodeValue
-			AND Descriptor.Namespace like '%/SexDescriptor'
+			AND Descriptor.Namespace like '%/OperationalStatusDescriptor'
 INNER JOIN 
 	analytics_config.ceds_TableReference
-		ON ceds_TableReference.TableName = 'xref.Sex'
+		ON ceds_TableReference.TableName = 'xref.OperationalStatus'
 ) AS Source(DescriptorId, CodeValue, EdFactsCode, TableId)
 ON TARGET.CodeValue = Source.CodeValue
 	AND TARGET.EdFactsCode = Source.EdFactsCode
+	AND TARGET.TableId = Source.TableId
     WHEN NOT MATCHED BY TARGET
     THEN
       INSERT

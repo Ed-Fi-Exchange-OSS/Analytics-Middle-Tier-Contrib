@@ -22,8 +22,9 @@ FROM
 		('xref.HomelessUnaccompaniedYouthStatus'),
 		('xref.Sex'),
 		('xref.EntryType'),
-		('xref.ExitWithdrawType'),
-		('xref.Races')
+		('xref.ProgramType'),
+		('xref.Race'),
+		('xref.ExitWithdrawType')
 	) ReferenceTableName (TableName)
 )  Source(TableName)
 ON TARGET.TableName = Source.TableName

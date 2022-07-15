@@ -9,33 +9,20 @@ WITH SOURCE AS (SELECT Descriptor.DescriptorId
 	, ceds_TableReference.TableId
 FROM
 	(VALUES
-		('Preschool/Prekindergarten', 'PK'),
-		('Kindergarten', 'KG'),
-		('First grade', '3'),
-		('Second grade', '4'),
-		('Third grade', '5'),
-		('Fourth grade', '6'),
-		('Fifth grade', '7'),
-		('Sixth grade', '8'),
-		('Seventh grade', '9'),
-		('Eighth grade', '10'),
-		('Ninth grade', '11'),
-		('Tenth grade', '10'),
-		('Eleventh grade', '11'),
-		('Twelfth grade', '12'),
-		('Postsecondary', 'HS'),
-		('Ungraded', 'UG'),
-		('Adult Education', 'AE')
+		('Female','F'),
+		('Male','M'),
+		('Non-binary','MISSING'),
+		('Not Selected','MISSING')
 	) MapReference (CodeValue, EdFactsCode)
 INNER JOIN 
 	edfi.Descriptor 
 		ON MapReference.CodeValue = Descriptor.CodeValue
-			AND Descriptor.Namespace='uri://ed-fi.org/GradeLevelDescriptor'
+			AND Descriptor.Namespace like '%/SexDescriptor'
 INNER JOIN 
 	analytics_config.ceds_TableReference
-		ON ceds_TableReference.TableName = 'xref.GradeLevels'
-)
-  INSERT INTO analytics_config.ceds_TableInformation
+		ON ceds_TableReference.TableName = 'xref.Sex'
+) 
+INSERT INTO analytics_config.ceds_TableInformation
 	  (
 		DescriptorId
 		, CodeValue

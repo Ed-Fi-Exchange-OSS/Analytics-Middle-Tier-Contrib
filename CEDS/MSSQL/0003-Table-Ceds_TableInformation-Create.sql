@@ -17,6 +17,7 @@ BEGIN
 		CONSTRAINT PK_ceds_TableInformation PRIMARY KEY CLUSTERED 
 		(
 			DescriptorId ASC
+			,TableId ASC
 		)
 		,CONSTRAINT FK_ceds_TableReference_ceds_TableInformation
 		FOREIGN KEY (TableId)

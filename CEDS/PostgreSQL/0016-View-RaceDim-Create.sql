@@ -39,4 +39,4 @@ FROM
 LEFT JOIN
     MapReferenceDescriptor
     ON Descriptor.DescriptorId = MapReferenceDescriptor.DescriptorId
-	AND MapReferenceDescriptor.TableName = 'xref.Races'
+	AND MapReferenceDescriptor.TableName = 'xref.Race'

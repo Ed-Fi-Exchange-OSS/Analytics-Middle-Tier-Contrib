@@ -10,18 +10,19 @@ USING (SELECT Descriptor.DescriptorId
 	, ceds_TableReference.TableId
 FROM
 	(VALUES
-		('Parent in Military','')
+		('Migrant Education','')
 ) MapReference (CodeValue, EdFactsCode)
 INNER JOIN 
 	edfi.Descriptor 
 		ON MapReference.CodeValue = Descriptor.CodeValue
-			AND Descriptor.Namespace like '%/StudentCharacteristicDescriptor'
+			AND Descriptor.Namespace like '%/ProgramTypeDescriptor'
 INNER JOIN 
 	analytics_config.ceds_TableReference
-		ON ceds_TableReference.TableName = 'xref.MilitaryConnectedStudentIndicator'
+		ON ceds_TableReference.TableName = 'xref.MigrantStatus'
 ) AS Source(DescriptorId, CodeValue, EdFactsCode, TableId)
 ON TARGET.CodeValue = Source.CodeValue
 	AND TARGET.EdFactsCode = Source.EdFactsCode
+	AND TARGET.TableId = Source.TableId
     WHEN NOT MATCHED BY TARGET
     THEN
       INSERT

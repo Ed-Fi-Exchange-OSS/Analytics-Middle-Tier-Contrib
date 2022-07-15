@@ -26,6 +26,7 @@ INNER JOIN
 ) AS Source(DescriptorId, CodeValue, EdFactsCode, TableId)
 ON TARGET.CodeValue = Source.CodeValue
 	AND TARGET.EdFactsCode = Source.EdFactsCode
+	AND TARGET.TableId = Source.TableId
     WHEN NOT MATCHED BY TARGET
     THEN
       INSERT

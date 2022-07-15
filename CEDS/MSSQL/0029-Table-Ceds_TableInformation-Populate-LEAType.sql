@@ -10,16 +10,15 @@ USING (SELECT Descriptor.DescriptorId
 	, ceds_TableReference.TableId
 FROM
 	(VALUES
-		('Bilingual','LEP'),
-		('Bilingual Summer','LEP')
-) MapReference (CodeValue, EdFactsCode)
+		('Local Education Agency','LEA')
+	) MapReference (CodeValue, EdFactsCode)
 INNER JOIN 
 	edfi.Descriptor 
 		ON MapReference.CodeValue = Descriptor.CodeValue
-			AND Descriptor.Namespace like '%/ProgramTypeDescriptor'
+			AND Descriptor.Namespace like '%/EducationOrganizationCategoryDescriptor'
 INNER JOIN 
 	analytics_config.ceds_TableReference
-		ON ceds_TableReference.TableName = 'xref.EnglishLearnerStatus'
+		ON ceds_TableReference.TableName = 'xref.LEAType'
 ) AS Source(DescriptorId, CodeValue, EdFactsCode, TableId)
 ON TARGET.CodeValue = Source.CodeValue
 	AND TARGET.EdFactsCode = Source.EdFactsCode
