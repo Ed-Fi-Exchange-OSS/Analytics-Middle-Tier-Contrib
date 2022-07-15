@@ -8,6 +8,6 @@ CREATE TABLE IF NOT EXISTS analytics_config.ceds_TableInformation (
 	CodeValue VARCHAR(50) NOT NULL,
 	EdFactsCode VARCHAR(50) NOT NULL,
 	TableId INT NOT NULL,
-	CONSTRAINT FK_ceds_TableReference_ceds_TableInformation PRIMARY KEY(DescriptorId),
+	CONSTRAINT FK_ceds_TableReference_ceds_TableInformation PRIMARY KEY(DescriptorId,TableId),
 	CONSTRAINT FK_ceds_TableInformation_CedsTable FOREIGN KEY (TableId) REFERENCES analytics_config.ceds_TableReference(TableId)
 )
