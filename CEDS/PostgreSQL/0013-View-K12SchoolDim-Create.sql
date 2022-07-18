@@ -112,7 +112,7 @@ SELECT CONCAT(
     ,'' AS RecordStartDateTime
     ,'' AS RecordEndDateTime
     ,COALESCE(SchoolOperationStatusDescriptor.CodeValue,'') AS SchoolOperationalStatus
-    ,COALESCE(CAST(MapReferenceSchoolOperationStatusDescriptor.EdFactsCode AS INT),0) AS SchoolOperationalStatusEdFactsCode
+    ,COALESCE(MapReferenceSchoolOperationStatusDescriptor.EdFactsCode,'') AS SchoolOperationalStatusEdFactsCode
     ,COALESCE(CharterSchoolStatusDescriptor.CodeValue,'') AS CharterSchoolStatus
     ,'' AS ReconstitutedStatus
     ,COALESCE(IeuOrganization.NameOfInstitution,'') AS IeuOrganizationName

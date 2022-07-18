@@ -48,7 +48,7 @@
 "RecordStartDateTime","varchar"
 "RecordEndDateTime","varchar"
 "SchoolOperationalStatus","nvarchar"
-"SchoolOperationalStatusEdFactsCode","int"
+"SchoolOperationalStatusEdFactsCode","varchar"
 "CharterSchoolStatus","nvarchar"
 "ReconstitutedStatus","varchar"
 "IeuOrganizationName","nvarchar"
