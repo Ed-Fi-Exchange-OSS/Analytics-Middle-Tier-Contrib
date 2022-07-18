@@ -48,7 +48,7 @@ outofstateindicator,boolean
 recordstartdatetime,text
 recordenddatetime,text
 schooloperationalstatus,character varying
-schooloperationalstatusedfactscode,integer
+schooloperationalstatusedfactscode,character varying
 charterschoolstatus,character varying
 reconstitutedstatus,text
 ieuorganizationname,character varying
