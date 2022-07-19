@@ -1,16 +1,16 @@
 columnname,datatype
 factk12programparticipationkey,text
 schoolyearkey,ncharacter varying
-dateid,character varying
-datacollectionid,character varying
-seaid,character varying
-ieuid,character varying
-leaid,character varying
-k12schoolid,character varying
-dimk12programtypeid,text
-dimk12studentlid,text
-dimk12demographicid,character varying
-dimideastatusid,character varying
+datekey,character varying
+datacollectionkey,character varying
+seakey,character varying
+ieukey,character varying
+leakey,character varying
+k12schoolkey,character varying
+dimk12programtypekey,text
+dimk12studentlkey,text
+dimk12demographickey,character varying
+dimideastatuskey,character varying
 begindate,text
 enddate,text
 studentcount,bigint
