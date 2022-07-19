@@ -1,0 +1,16 @@
+columnname,datatype
+factk12programparticipationkey,text
+schoolyearkey,ncharacter varying
+dateid,character varying
+datacollectionid,character varying
+seaid,character varying
+ieuid,character varying
+leaid,character varying
+k12schoolid,character varying
+dimk12programtypeid,text
+dimk12studentlid,text
+dimk12demographicid,character varying
+dimideastatusid,character varying
+begindate,text
+enddate,text
+studentcount,bigint
