@@ -10,32 +10,30 @@ AS
 	WITH FactK12ProgramParticipation
 	AS (
         SELECT
-        (
-            SELECT
-            CONCAT(EducationOrganizationId, '-', ProgramTypeDescriptorId,'-', ProgramEducationOrganizationId)
-            FROM edfi.StudentSpecialEducationProgramAssociation
-            GROUP BY EducationOrganizationId, ProgramTypeDescriptorId, ProgramEducationOrganizationId
-	    ) AS FactK12ProgramParticipationId,
-           SchoolYearKey
+            CONCAT(StudentSpecialEducationProgramAssociation.EducationOrganizationId, '-',
+                   StudentSpecialEducationProgramAssociation.ProgramTypeDescriptorId, '-',
+                   StudentSpecialEducationProgramAssociation.ProgramEducationOrganizationId)
+            AS FactK12ProgramParticipationKey
+           ,SchoolYearKey
            ,'' AS DateKey
            ,'' AS DataCollectionKey
            ,IeuOrganizationIdentifierSea AS SeaKey
            ,LeaIdentifierSea AS IeuKey
            ,LeaIdentifierNces AS LeaKey
            ,K12SchoolKey AS K12SchoolKey
-           ,K12ProgramTypeKey AS DimK12ProgramTypeKey
-           ,StudentSchoolKey AS DimK12StudentlKey
-           ,K12DemographicKey AS DimK12DemographicKey
-           ,IdeaStatusKey AS DimIdeaStatusKey
-           ,GeneralStudentProgramAssociation.BeginDate AS BeginDate
-           ,GeneralStudentProgramAssociation.EndDate AS EndDate
+           ,K12ProgramTypeKey AS K12ProgramTypeKey
+           ,StudentSchoolKey AS K12StudentlKey
+           ,K12DemographicKey AS K12DemographicKey
+           ,IdeaStatusKey AS IdeaStatusKey
+           ,GeneralStudentProgramAssociation.BeginDate AS ProgramParticipationStartDateKey
+           ,GeneralStudentProgramAssociation.EndDate AS ProgramParticipationExitDateKey
         FROM
             edfi.StudentSpecialEducationProgramAssociation
         INNER JOIN
             analytics.ceds_SchoolYearsDim
         ON
-            StudentSpecialEducationProgramAssociation.BeginDate 
-               BETWEEN TO_DATE(ceds_SchoolYearsDim.SessionBeginDate, 'MM-DD-YYYY') AND TO_DATE(ceds_SchoolYearsDim.SessionEndDate, 'MM-DD-YYYY')
+            StudentSpecialEducationProgramAssociation.BeginDate
+                BETWEEN TO_DATE(ceds_SchoolYearsDim.SessionBeginDate, 'MM-DD-YYYY') AND TO_DATE(ceds_SchoolYearsDim.SessionEndDate, 'MM-DD-YYYY')
         INNER JOIN
             analytics.ceds_K12SchoolDim
         ON
@@ -63,8 +61,8 @@ AS
         LEFT JOIN
             edfi.StudentEducationOrganizationAssociation
         ON
-            StudentEducationOrganizationAssociation.StudentUSI = StudentSpecialEducationProgramAssociation.StudentUSI 
-            AND Descriptor.DescriptorId = StudentEducationOrganizationAssociation.SexDescriptorId
+            StudentEducationOrganizationAssociation.StudentUSI = StudentSpecialEducationProgramAssociation.StudentUSI
+            AND StudentEducationOrganizationAssociation.SexDescriptorId = StudentSpecialEducationProgramAssociation.ProgramTypeDescriptorId
         LEFT JOIN
 			edfi.StudentEducationOrganizationAssociationStudentCharacteristic EconomicDisadvantageCharacteristic
 				ON StudentEducationOrganizationAssociation.StudentUSI = EconomicDisadvantageCharacteristic.StudentUSI
@@ -132,7 +130,7 @@ AS
                     OR GeneralStudentProgramAssociation.ProgramName = StudentSpecialEducationProgramAssociation.ProgramName
                     OR GeneralStudentProgramAssociation.ProgramTypeDescriptorId = StudentSpecialEducationProgramAssociation.ProgramTypeDescriptorId
                     OR GeneralStudentProgramAssociation.StudentUSI = StudentSpecialEducationProgramAssociation.StudentUSI
-        INNER JOIN 
+        INNER JOIN
             edfi.StudentSpecialEducationProgramAssociationDisability
                 ON
                     StudentSpecialEducationProgramAssociationDisability.BeginDate = StudentSpecialEducationProgramAssociation.BeginDate
@@ -140,11 +138,15 @@ AS
                     OR StudentSpecialEducationProgramAssociationDisability.ProgramEducationOrganizationId = StudentSpecialEducationProgramAssociation.ProgramEducationOrganizationId
                     OR StudentSpecialEducationProgramAssociationDisability.ProgramTypeDescriptorId = StudentSpecialEducationProgramAssociation.ProgramTypeDescriptorId
                     OR StudentSpecialEducationProgramAssociationDisability.StudentUSI = StudentSpecialEducationProgramAssociation.StudentUSI
-        INNER JOIN 
-            analytics.ceds_IdeaStatusDim DimIdeaStatus
+        INNER JOIN
+            edfi.Descriptor Descriptor2
                 ON
-                    Descriptor.CodeValue = DimIdeaStatus.BasisOfExitCode 
-                    AND Descriptor.CodeValue = DimIdeaStatus.DisabilityCode
+                    Descriptor2.DescriptorId = Descriptor.DescriptorId
+        INNER JOIN
+            analytics.ceds_IdeaStatusDim
+                ON
+                    ceds_IdeaStatusDim.BasisOfExitCode = Descriptor.CodeValue
+                    AND ceds_IdeaStatusDim.DisabilityCode = Descriptor2.CodeValue
         )
     SELECT
         CONCAT(
@@ -162,17 +164,17 @@ AS
 			'-',
 			K12SchoolKey,
 			'-',
-			DimK12ProgramTypeKey,
+			K12ProgramTypeKey,
 			'-',
-			DimK12StudentlKey,
+			K12StudentlKey,
 			'-',
-			DimK12DemographicKey,
+			K12DemographicKey,
 			'-',
-			DimIdeaStatusKey,
+			IdeaStatusKey,
 			'-',
-			BeginDate,
+			ProgramParticipationStartDateKey,
 			'-',
-			EndDate
+			ProgramParticipationExitDateKey
         ) AS FactK12ProgramParticipationKey
         ,SchoolYearKey
         ,DateKey
@@ -181,13 +183,13 @@ AS
         ,IeuKey
         ,LeaKey
         ,K12SchoolKey
-        ,DimK12ProgramTypeKey
-        ,DimK12StudentlKey
-        ,DimK12DemographicKey
-        ,DimIdeaStatusKey
-        ,BeginDate
-        ,EndDate
-        ,COUNT(DimK12DemographicKey) AS StudentCount
+        ,K12ProgramTypeKey
+        ,K12StudentlKey
+        ,K12DemographicKey
+        ,IdeaStatusKey
+        ,ProgramParticipationStartDateKey
+        ,ProgramParticipationExitDateKey
+        ,COUNT(K12DemographicKey) AS StudentCount
     FROM
         FactK12ProgramParticipation
     GROUP BY
@@ -198,9 +200,9 @@ AS
         ,IeuKey
         ,LeaKey
         ,K12SchoolKey
-        ,DimK12ProgramTypeKey
-        ,DimK12StudentlKey
-        ,DimK12DemographicKey
-        ,DimIdeaStatusKey
-        ,BeginDate
-        ,EndDate
+        ,K12ProgramTypeKey
+        ,K12StudentlKey
+        ,K12DemographicKey
+        ,IdeaStatusKey
+        ,ProgramParticipationStartDateKey
+        ,ProgramParticipationExitDateKey

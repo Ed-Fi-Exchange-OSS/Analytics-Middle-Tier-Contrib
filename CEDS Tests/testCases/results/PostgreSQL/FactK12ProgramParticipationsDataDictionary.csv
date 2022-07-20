@@ -7,10 +7,11 @@ seakey,character varying
 ieukey,character varying
 leakey,character varying
 k12schoolkey,character varying
-dimk12programtypekey,text
-dimk12studentlkey,text
-dimk12demographickey,character varying
-dimideastatuskey,character varying
-begindate,text
-enddate,text
+k12programtypekey,text
+k12studentlkey,text
+k12demographickey,character varying
+ideastatuskey,character varying
+programparticipationexitdatekey,text
+programparticipationexitdatekey,text
 studentcount,bigint
+(15 rows)
