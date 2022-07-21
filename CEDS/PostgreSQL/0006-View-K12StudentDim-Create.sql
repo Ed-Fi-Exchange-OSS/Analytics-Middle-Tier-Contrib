@@ -6,6 +6,9 @@
 -- Drop ceds_FactK12StudentEnrollments first because it uses ceds_K12StudentDim
 DROP VIEW IF EXISTS analytics.ceds_FactK12StudentEnrollments;
 
+-- Drop ceds_FactK12ProgramParticipation first because it uses ceds_K12StudentDim
+DROP VIEW IF EXISTS analytics.ceds_FactK12ProgramParticipation;
+
 DROP VIEW IF EXISTS analytics.ceds_K12StudentDim;
 
 CREATE OR REPLACE VIEW analytics.ceds_K12StudentDim AS

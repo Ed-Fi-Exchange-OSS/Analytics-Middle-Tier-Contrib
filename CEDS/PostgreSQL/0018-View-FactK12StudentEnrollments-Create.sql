@@ -23,7 +23,7 @@ AS
 	FactK12StudentEnrollments 
 	AS (
 		SELECT
-			ceds_SchoolYearsDim.SchoolYearKey AS SchoolYearKey,
+			ceds_SchoolYearDim.SchoolYearKey AS SchoolYearKey,
 			'' AS DataCollectionKey,
 			ceds_K12SchoolDim.SeaIdentifierSea AS SeaKey,
 			ceds_K12SchoolDim.IeuOrganizationIdentifierSea AS IeuKey,
@@ -34,15 +34,15 @@ AS
 			ceds_GradeLevelDim.GradeLevelKey AS EntryGradeLevelKey,
 			ceds_GradeLevelDim.GradeLevelKey AS ExitGradeLevelKey,
 			SchoolYearsDim_ExitWithdrawDate.SchoolYearKey AS EnrollmentEntryDateKey,
-			ceds_SchoolYearsDim_SchoolYear.SchoolYearKey AS ProjectedGraduationDateKey,
+			ceds_SchoolYearDim_SchoolYear.SchoolYearKey AS ProjectedGraduationDateKey,
 			ceds_K12DemographicDim.K12DemographicKey AS K12DemographicKey,
 			'' AS IdeaStatusKey
 
 		FROM
-			analytics.ceds_SchoolYearsDim
+			analytics.ceds_SchoolYearDim
 		INNER JOIN 
 			edfi.StudentSchoolAssociation
-				ON StudentSchoolAssociation.EntryDate BETWEEN TO_DATE(ceds_SchoolYearsDim.SessionBeginDate, 'MM-DD-YYYY') AND TO_DATE(ceds_SchoolYearsDim.SessionEndDate, 'MM-DD-YYYY')
+				ON StudentSchoolAssociation.EntryDate BETWEEN TO_DATE(ceds_SchoolYearDim.SessionBeginDate, 'MM-DD-YYYY') AND TO_DATE(ceds_SchoolYearDim.SessionEndDate, 'MM-DD-YYYY')
 		INNER JOIN
 			analytics.ceds_K12SchoolDim
 				ON edfi.StudentSchoolAssociation.SchoolId::TEXT = ceds_K12SchoolDim.SchoolIdentifierSea
@@ -86,11 +86,11 @@ AS
 			analytics.ceds_GradeLevelDim
 				ON EntryGradeLevelDescriptor.CodeValue = ceds_GradeLevelDim.GradeLevelCode
 		INNER JOIN
-			analytics.ceds_SchoolYearsDim SchoolYearsDim_ExitWithdrawDate
+			analytics.ceds_SchoolYearDim SchoolYearsDim_ExitWithdrawDate
 				ON StudentSchoolAssociation.ExitWithdrawDate BETWEEN TO_DATE(SchoolYearsDim_ExitWithdrawDate.SessionBeginDate, 'MM-DD-YYYY') AND TO_DATE(SchoolYearsDim_ExitWithdrawDate.SessionEndDate, 'MM-DD-YYYY')
 		LEFT JOIN
-			analytics.ceds_SchoolYearsDim ceds_SchoolYearsDim_SchoolYear
-				ON StudentSchoolAssociation.ClassOfSchoolYear = ceds_SchoolYearsDim_SchoolYear.SchoolYear
+			analytics.ceds_SchoolYearDim ceds_SchoolYearDim_SchoolYear
+				ON StudentSchoolAssociation.ClassOfSchoolYear = ceds_SchoolYearDim_SchoolYear.SchoolYear
 		LEFT JOIN
 			edfi.StudentEducationOrganizationAssociation
 				ON StudentSchoolAssociation.StudentUSI = StudentEducationOrganizationAssociation.StudentUSI

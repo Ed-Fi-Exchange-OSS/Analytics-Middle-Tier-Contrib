@@ -14,6 +14,17 @@ BEGIN
 END;
 GO
 
+-- Drop ceds_FactK12ProgramParticipation first because it uses ceds_K12StudentDim
+IF EXISTS (
+        SELECT 1
+        FROM INFORMATION_SCHEMA.VIEWS
+        WHERE TABLE_SCHEMA = 'analytics' AND TABLE_NAME = 'ceds_FactK12ProgramParticipation'
+        )
+BEGIN
+    DROP VIEW analytics.ceds_FactK12ProgramParticipation;
+END;
+GO
+
 IF EXISTS (
         SELECT 1
         FROM INFORMATION_SCHEMA.VIEWS
