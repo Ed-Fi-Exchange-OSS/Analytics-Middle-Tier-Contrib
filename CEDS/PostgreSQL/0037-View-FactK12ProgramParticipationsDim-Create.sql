@@ -37,7 +37,7 @@ AS
         INNER JOIN
             analytics.ceds_K12SchoolDim
         ON
-            ceds_K12SchoolDim.SchoolIdentifierSea = StudentSpecialEducationProgramAssociation.EducationOrganizationId
+            ceds_K12SchoolDim.SchoolIdentifierSea::TEXT = StudentSpecialEducationProgramAssociation.EducationOrganizationId::TEXT
         INNER JOIN
             edfi.ProgramTypeDescriptor
         ON
@@ -138,15 +138,15 @@ AS
                     OR StudentSpecialEducationProgramAssociationDisability.ProgramEducationOrganizationId = StudentSpecialEducationProgramAssociation.ProgramEducationOrganizationId
                     OR StudentSpecialEducationProgramAssociationDisability.ProgramTypeDescriptorId = StudentSpecialEducationProgramAssociation.ProgramTypeDescriptorId
                     OR StudentSpecialEducationProgramAssociationDisability.StudentUSI = StudentSpecialEducationProgramAssociation.StudentUSI
-        INNER JOIN
-            edfi.Descriptor Descriptor2
+         INNER JOIN
+            edfi.Descriptor StudentSpecialEducationProgramAssociationDisabilityDescriptor
                 ON
-                    Descriptor2.DescriptorId = Descriptor.DescriptorId
+                    StudentSpecialEducationProgramAssociationDisability.DisabilityDescriptorId = StudentSpecialEducationProgramAssociationDisabilityDescriptor.DescriptorId
         INNER JOIN
             analytics.ceds_IdeaStatusDim
                 ON
                     ceds_IdeaStatusDim.BasisOfExitCode = Descriptor.CodeValue
-                    AND ceds_IdeaStatusDim.DisabilityCode = Descriptor2.CodeValue
+                    AND ceds_IdeaStatusDim.DisabilityCode = StudentSpecialEducationProgramAssociationDisabilityDescriptor.CodeValue
         )
     SELECT
         CONCAT(

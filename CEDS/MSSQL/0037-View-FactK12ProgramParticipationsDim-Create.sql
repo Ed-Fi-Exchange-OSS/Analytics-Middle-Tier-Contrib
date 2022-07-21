@@ -146,14 +146,14 @@ CREATE VIEW analytics.ceds_FactK12ProgramParticipation AS
                     OR StudentSpecialEducationProgramAssociationDisability.ProgramTypeDescriptorId = StudentSpecialEducationProgramAssociation.ProgramTypeDescriptorId
                     OR StudentSpecialEducationProgramAssociationDisability.StudentUSI = StudentSpecialEducationProgramAssociation.StudentUSI
         INNER JOIN
-            edfi.Descriptor Descriptor2
+            edfi.Descriptor StudentSpecialEducationProgramAssociationDisabilityDescriptor
                 ON
-                    Descriptor2.DescriptorId = Descriptor.DescriptorId
+                    StudentSpecialEducationProgramAssociationDisability.DisabilityDescriptorId = StudentSpecialEducationProgramAssociationDisabilityDescriptor.DescriptorId
         INNER JOIN
             analytics.ceds_IdeaStatusDim
                 ON
                     ceds_IdeaStatusDim.BasisOfExitCode = Descriptor.CodeValue
-                    AND ceds_IdeaStatusDim.DisabilityCode = Descriptor2.CodeValue
+                    AND ceds_IdeaStatusDim.DisabilityCode = StudentSpecialEducationProgramAssociationDisabilityDescriptor.CodeValue
         )
     SELECT
         CONCAT(
