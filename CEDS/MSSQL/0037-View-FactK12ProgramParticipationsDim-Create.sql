@@ -37,10 +37,10 @@ CREATE VIEW analytics.ceds_FactK12ProgramParticipation AS
         FROM
             edfi.StudentSpecialEducationProgramAssociation
         INNER JOIN
-            analytics.ceds_SchoolYearsDim
+            analytics.ceds_SchoolYearDim
         ON
             StudentSpecialEducationProgramAssociation.BeginDate
-                BETWEEN CONVERT(date, ceds_SchoolYearsDim.SessionBeginDate) AND CONVERT(date, ceds_SchoolYearsDim.SessionEndDate)
+                BETWEEN CONVERT(date, ceds_SchoolYearDim.SessionBeginDate) AND CONVERT(date, ceds_SchoolYearDim.SessionEndDate)
         INNER JOIN
             analytics.ceds_K12SchoolDim
         ON

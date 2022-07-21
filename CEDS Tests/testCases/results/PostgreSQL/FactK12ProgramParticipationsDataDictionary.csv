@@ -1,17 +1,17 @@
 columnname,datatype
 factk12programparticipationkey,text
-schoolyearkey,ncharacter varying
-datekey,character varying
-datacollectionkey,character varying
+schoolyearkey,character varying
+datekey,text
+datacollectionkey,text
 seakey,character varying
 ieukey,character varying
-leakey,character varying
-k12schoolkey,character varying
+leakey,text
+k12schoolkey,text
 k12programtypekey,text
 k12studentlkey,text
-k12demographickey,character varying
-ideastatuskey,character varying
-programparticipationexitdatekey,text
-programparticipationexitdatekey,text
+k12demographickey,text
+ideastatuskey,text
+programparticipationstartdatekey,date
+programparticipationexitdatekey,date
 studentcount,bigint
 (15 rows)

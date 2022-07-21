@@ -30,10 +30,10 @@ AS
         FROM
             edfi.StudentSpecialEducationProgramAssociation
         INNER JOIN
-            analytics.ceds_SchoolYearsDim
+            analytics.ceds_SchoolYearDim
         ON
             StudentSpecialEducationProgramAssociation.BeginDate
-                BETWEEN TO_DATE(ceds_SchoolYearsDim.SessionBeginDate, 'MM-DD-YYYY') AND TO_DATE(ceds_SchoolYearsDim.SessionEndDate, 'MM-DD-YYYY')
+                BETWEEN TO_DATE(ceds_SchoolYearDim.SessionBeginDate, 'MM-DD-YYYY') AND TO_DATE(ceds_SchoolYearDim.SessionEndDate, 'MM-DD-YYYY')
         INNER JOIN
             analytics.ceds_K12SchoolDim
         ON
