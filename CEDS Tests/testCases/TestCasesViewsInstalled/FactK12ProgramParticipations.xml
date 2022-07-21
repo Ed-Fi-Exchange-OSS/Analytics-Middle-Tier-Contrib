@@ -1,0 +1,5 @@
+<Test>
+  <Name>FactK12ProgramParticipation</Name>
+  <Query>select 1 AS viewexists from information_schema.tables where table_schema = 'analytics' and (table_name='ceds_factk12programparticipation' OR table_name='ceds_factk12programparticipation')</Query>
+  <ResultFile>ViewExists.csv</ResultFile>
+</Test>
