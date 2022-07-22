@@ -6,14 +6,14 @@
 IF EXISTS (
         SELECT 1
         FROM INFORMATION_SCHEMA.VIEWS
-        WHERE TABLE_SCHEMA = 'analytics' AND TABLE_NAME = 'ceds_FactK12StudentEnrollments'
+        WHERE TABLE_SCHEMA = 'analytics' AND TABLE_NAME = 'ceds_FactK12StudentEnrollment'
         )
 BEGIN
-    DROP VIEW analytics.ceds_FactK12StudentEnrollments;
+    DROP VIEW analytics.ceds_FactK12StudentEnrollment;
 END;
 GO
 
-CREATE VIEW analytics.ceds_FactK12StudentEnrollments AS
+CREATE VIEW analytics.ceds_FactK12StudentEnrollment AS
 	WITH StudentEnrollmentAcrossSchools
 	AS (
 		SELECT
