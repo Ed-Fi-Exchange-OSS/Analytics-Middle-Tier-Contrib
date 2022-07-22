@@ -2,6 +2,8 @@
 -- Licensed to the Ed-Fi Alliance under one or more agreements.
 -- The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 -- See the LICENSE and NOTICES files in the project root for more information.
+-- Drop ceds_BridgeK12StudentEnrollmentRace first because it uses ceds_K12StudentDim
+DROP VIEW IF EXISTS analytics.ceds_BridgeK12StudentEnrollmentRace;
 
 -- Drop ceds_FactK12StudentEnrollment first because it uses ceds_K12StudentDim
 DROP VIEW IF EXISTS analytics.ceds_FactK12StudentEnrollment;

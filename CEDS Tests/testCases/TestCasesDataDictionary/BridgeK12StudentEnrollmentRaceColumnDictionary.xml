@@ -1,5 +1,5 @@
 <Test>
-  <Name>ceds_BridgeK12StudentEnrollmentRaceColumnDictionary</Name>
+  <Name>BridgeK12StudentEnrollmentRaceColumnDictionary</Name>
   <Query>
     SELECT COLUMN_NAME AS ColumnName,
     DATA_TYPE AS DataType
