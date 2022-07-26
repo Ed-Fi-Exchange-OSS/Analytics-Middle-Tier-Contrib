@@ -1,0 +1,6 @@
+<Test>
+  <Name>BridgeK12StudentEnrollmentRace</Name>
+  <Query>select 1 AS viewexists from information_schema.tables where table_schema = 'analytics' and (table_name='ceds_bridgek12studentenrollmentrace' OR table_name='ceds_bridgek12studentenrollmentrace')</Query>
+  <ResultFile>ViewExists.csv</ResultFile>
+</Test>
+
