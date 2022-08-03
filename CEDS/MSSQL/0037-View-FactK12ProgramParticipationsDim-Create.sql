@@ -65,6 +65,36 @@ CREATE VIEW analytics.ceds_FactK12ProgramParticipation AS
             analytics.ceds_K12StudentDim
         ON
             ceds_K12StudentDim.StudentIdentifierState = Student.StudentUniqueId
+        INNER JOIN
+            edfi.GeneralStudentProgramAssociation
+                ON
+                    GeneralStudentProgramAssociation.BeginDate = StudentSpecialEducationProgramAssociation.BeginDate
+                    AND GeneralStudentProgramAssociation.EducationOrganizationId = StudentSpecialEducationProgramAssociation.EducationOrganizationId
+                    AND GeneralStudentProgramAssociation.ProgramEducationOrganizationId = StudentSpecialEducationProgramAssociation.ProgramEducationOrganizationId
+                    AND GeneralStudentProgramAssociation.ProgramName = StudentSpecialEducationProgramAssociation.ProgramName
+                    AND GeneralStudentProgramAssociation.ProgramTypeDescriptorId = StudentSpecialEducationProgramAssociation.ProgramTypeDescriptorId
+                    AND GeneralStudentProgramAssociation.StudentUSI = StudentSpecialEducationProgramAssociation.StudentUSI
+        INNER JOIN
+			edfi.StudentSpecialEducationProgramAssociationDisability
+				ON
+					StudentSpecialEducationProgramAssociationDisability.BeginDate = StudentSpecialEducationProgramAssociation.BeginDate
+					AND StudentSpecialEducationProgramAssociationDisability.EducationOrganizationId = StudentSpecialEducationProgramAssociation.EducationOrganizationId
+					AND StudentSpecialEducationProgramAssociationDisability.ProgramEducationOrganizationId = StudentSpecialEducationProgramAssociation.ProgramEducationOrganizationId
+					AND StudentSpecialEducationProgramAssociationDisability.ProgramTypeDescriptorId = StudentSpecialEducationProgramAssociation.ProgramTypeDescriptorId
+					AND StudentSpecialEducationProgramAssociationDisability.StudentUSI = StudentSpecialEducationProgramAssociation.StudentUSI
+		INNER JOIN
+			edfi.Descriptor StudentSpecialEducationProgramAssociationDisabilityDescriptor
+				ON
+					StudentSpecialEducationProgramAssociationDisability.DisabilityDescriptorId = StudentSpecialEducationProgramAssociationDisabilityDescriptor.DescriptorId
+		INNER JOIN
+			edfi.Descriptor ReasonExitedDescriptor
+				ON
+					GeneralStudentProgramAssociation.ReasonExitedDescriptorId = ReasonExitedDescriptor.DescriptorId
+		INNER JOIN
+			analytics.ceds_IdeaStatusDim
+				ON
+					ReasonExitedDescriptor.CodeValue = ceds_IdeaStatusDim.BasisOfExitCode
+					AND ceds_IdeaStatusDim.DisabilityCode = StudentSpecialEducationProgramAssociationDisabilityDescriptor.CodeValue
         LEFT JOIN
             edfi.StudentEducationOrganizationAssociation
         ON
@@ -128,32 +158,6 @@ CREATE VIEW analytics.ceds_FactK12ProgramParticipation AS
         LEFT JOIN
             edfi.StudentHomelessProgramAssociation
                 ON StudentHomelessProgramAssociation.StudentUSI = StudentEducationOrganizationAssociation.StudentUSI
-        INNER JOIN
-            edfi.GeneralStudentProgramAssociation
-                ON
-                    GeneralStudentProgramAssociation.BeginDate = StudentSpecialEducationProgramAssociation.BeginDate
-                    OR GeneralStudentProgramAssociation.EducationOrganizationId = StudentSpecialEducationProgramAssociation.EducationOrganizationId
-                    OR GeneralStudentProgramAssociation.ProgramEducationOrganizationId = StudentSpecialEducationProgramAssociation.ProgramEducationOrganizationId
-                    OR GeneralStudentProgramAssociation.ProgramName = StudentSpecialEducationProgramAssociation.ProgramName
-                    OR GeneralStudentProgramAssociation.ProgramTypeDescriptorId = StudentSpecialEducationProgramAssociation.ProgramTypeDescriptorId
-                    OR GeneralStudentProgramAssociation.StudentUSI = StudentSpecialEducationProgramAssociation.StudentUSI
-        INNER JOIN
-            edfi.StudentSpecialEducationProgramAssociationDisability
-                ON
-                    StudentSpecialEducationProgramAssociationDisability.BeginDate = StudentSpecialEducationProgramAssociation.BeginDate
-                    OR StudentSpecialEducationProgramAssociationDisability.EducationOrganizationId = StudentSpecialEducationProgramAssociation.EducationOrganizationId
-                    OR StudentSpecialEducationProgramAssociationDisability.ProgramEducationOrganizationId = StudentSpecialEducationProgramAssociation.ProgramEducationOrganizationId
-                    OR StudentSpecialEducationProgramAssociationDisability.ProgramTypeDescriptorId = StudentSpecialEducationProgramAssociation.ProgramTypeDescriptorId
-                    OR StudentSpecialEducationProgramAssociationDisability.StudentUSI = StudentSpecialEducationProgramAssociation.StudentUSI
-        INNER JOIN
-            edfi.Descriptor StudentSpecialEducationProgramAssociationDisabilityDescriptor
-                ON
-                    StudentSpecialEducationProgramAssociationDisability.DisabilityDescriptorId = StudentSpecialEducationProgramAssociationDisabilityDescriptor.DescriptorId
-        INNER JOIN
-            analytics.ceds_IdeaStatusDim
-                ON
-                    ceds_IdeaStatusDim.BasisOfExitCode = Descriptor.CodeValue
-                    AND ceds_IdeaStatusDim.DisabilityCode = StudentSpecialEducationProgramAssociationDisabilityDescriptor.CodeValue
         )
     SELECT
         CONCAT(
