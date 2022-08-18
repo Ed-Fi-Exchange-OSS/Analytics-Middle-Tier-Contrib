@@ -13,28 +13,31 @@ AS (
         ,Descriptor.Description
         ,ceds_TableReference.TableName
         ,ceds_TableInformation.EdFactsCode
-    FROM analytics_config.ceds_TableInformation
-    INNER JOIN analytics_config.ceds_TableReference
-        ON ceds_TableInformation.TableId = ceds_TableReference.TableId
-    INNER JOIN edfi.Descriptor
-        ON Descriptor.DescriptorId = ceds_TableInformation.DescriptorId
+    FROM
+		analytics_config.ceds_TableInformation
+    INNER JOIN
+		analytics_config.ceds_TableReference
+			ON ceds_TableInformation.TableId = ceds_TableReference.TableId
+    INNER JOIN
+		edfi.Descriptor
+			ON Descriptor.DescriptorId = ceds_TableInformation.DescriptorId
     )
 SELECT DISTINCT CONCAT (
-        ReferenceEconomicDisadvantageStatusDescriptor.EdFactsCode
+        ReferenceEconomicDisadvantageStatusDescriptor.DescriptorId
         ,'-'
-        ,ReferenceHomelessnessStatusDescriptor.EdFactsCode
+        ,ReferenceHomelessnessStatusDescriptor.DescriptorId
         ,'-'
-        ,ReferenceEnglishLearnerStatusDescriptor.EdFactsCode
+        ,ReferenceEnglishLearnerStatusDescriptor.DescriptorId
         ,'-'
-        ,ReferenceMigrantStatusDescriptor.EdFactsCode
+        ,ReferenceMigrantStatusDescriptor.DescriptorId
         ,'-'
-        ,ReferenceMilitaryConnectedStudentIndicatorDescriptor.EdFactsCode
+        ,ReferenceMilitaryConnectedStudentIndicatorDescriptor.DescriptorId
         ,'-'
-        ,ReferenceHomelessPrimaryNighttimeResidenceDescriptor.EdFactsCode
+        ,ReferenceHomelessPrimaryNighttimeResidenceDescriptor.DescriptorId
         ,'-'
-        ,ReferenceHomelessUnaccompaniedYouthStatusDescriptor.EdFactsCode
+        ,ReferenceHomelessUnaccompaniedYouthStatusDescriptor.DescriptorId
         ,'-'
-        ,ReferenceSexDescriptor.EdFactsCode
+        ,ReferenceSexDescriptor.DescriptorId
         ) AS K12DemographicKey
     ,COALESCE(ReferenceEconomicDisadvantageStatusDescriptor.CodeValue, '') AS EconomicDisadvantageStatusCode
     ,COALESCE(ReferenceEconomicDisadvantageStatusDescriptor.Description, '') AS EconomicDisadvantageStatusDescription
@@ -61,72 +64,114 @@ SELECT DISTINCT CONCAT (
     ,COALESCE(ReferenceSexDescriptor.Description, '') AS SexDescription
     ,COALESCE(ReferenceSexDescriptor.EdFactsCode, '') AS SexEdFactsCode
 FROM (
-    SELECT ReferenceEconomicDisadvantageStatusDescriptor.CodeValue
-        ,ReferenceEconomicDisadvantageStatusDescriptor.Description
-        ,ReferenceEconomicDisadvantageStatusDescriptor.EdFactsCode
-    FROM edfi.StudentCharacteristicDescriptor AS EconomicDisadvantageStatusDescriptor
-    LEFT JOIN MapReferenceDescriptor ReferenceEconomicDisadvantageStatusDescriptor
-        ON EconomicDisadvantageStatusDescriptor.StudentCharacteristicDescriptorId = ReferenceEconomicDisadvantageStatusDescriptor.DescriptorId
-            AND ReferenceEconomicDisadvantageStatusDescriptor.TableName = 'xref.EconomicDisadvantageStatus'
+    SELECT
+		ReferenceEconomicDisadvantageStatusDescriptorm.CodeValue
+        ,ReferenceEconomicDisadvantageStatusDescriptorm.Description
+        ,ReferenceEconomicDisadvantageStatusDescriptorm.EdFactsCode
+		,ReferenceEconomicDisadvantageStatusDescriptorm.DescriptorId
+    FROM
+		MapReferenceDescriptor ReferenceEconomicDisadvantageStatusDescriptorm
+	INNER JOIN
+		edfi.StudentCharacteristicDescriptor AS EconomicDisadvantageStatusDescriptor
+			ON EconomicDisadvantageStatusDescriptor.StudentCharacteristicDescriptorId = ReferenceEconomicDisadvantageStatusDescriptorm.DescriptorId
+	WHERE
+         ReferenceEconomicDisadvantageStatusDescriptorm.TableName = 'xref.EconomicDisadvantageStatus'
     ) AS ReferenceEconomicDisadvantageStatusDescriptor
 CROSS JOIN (
-    SELECT ReferenceHomelessnessStatusDescriptor.CodeValue
+    SELECT
+		ReferenceHomelessnessStatusDescriptor.CodeValue
         ,ReferenceHomelessnessStatusDescriptor.Description
         ,ReferenceHomelessnessStatusDescriptor.EdFactsCode
-    FROM edfi.StudentCharacteristicDescriptor AS HomelessnessStatusDescriptor
-    LEFT JOIN MapReferenceDescriptor ReferenceHomelessnessStatusDescriptor
-        ON HomelessnessStatusDescriptor.StudentCharacteristicDescriptorId = ReferenceHomelessnessStatusDescriptor.DescriptorId
-            AND ReferenceHomelessnessStatusDescriptor.TableName = 'xref.HomelessnessStatus'
+		,ReferenceHomelessnessStatusDescriptor.DescriptorId
+    FROM
+		MapReferenceDescriptor ReferenceHomelessnessStatusDescriptor
+	INNER JOIN
+		edfi.StudentCharacteristicDescriptor AS HomelessnessStatusDescriptor
+			ON HomelessnessStatusDescriptor.StudentCharacteristicDescriptorId = ReferenceHomelessnessStatusDescriptor.DescriptorId
+	WHERE
+		ReferenceHomelessnessStatusDescriptor.TableName = 'xref.HomelessnessStatus'
     ) AS ReferenceHomelessnessStatusDescriptor
 CROSS JOIN (
-    SELECT ReferenceEnglishLearnerStatusDescriptor.CodeValue
+    SELECT
+		ReferenceEnglishLearnerStatusDescriptor.CodeValue
         ,ReferenceEnglishLearnerStatusDescriptor.Description
         ,ReferenceEnglishLearnerStatusDescriptor.EdFactsCode
-    FROM MapReferenceDescriptor ReferenceEnglishLearnerStatusDescriptor
-    WHERE ReferenceEnglishLearnerStatusDescriptor.TableName = 'xref.EnglishLearnerStatus'
+		,ReferenceEnglishLearnerStatusDescriptor.DescriptorId
+    FROM
+		MapReferenceDescriptor ReferenceEnglishLearnerStatusDescriptor
+	INNER JOIN
+		edfi.Program
+			ON ReferenceEnglishLearnerStatusDescriptor.CodeValue = Program.ProgramName
+    WHERE
+		ReferenceEnglishLearnerStatusDescriptor.TableName = 'xref.EnglishLearnerStatus'
     ) AS ReferenceEnglishLearnerStatusDescriptor
 CROSS JOIN (
-    SELECT ReferenceMigrantStatusDescriptor.CodeValue
+    SELECT
+		ReferenceMigrantStatusDescriptor.CodeValue
         ,ReferenceMigrantStatusDescriptor.Description
         ,ReferenceMigrantStatusDescriptor.EdFactsCode
-    FROM edfi.StudentCharacteristicDescriptor AS MigrantStatusDescriptor
-    LEFT JOIN MapReferenceDescriptor ReferenceMigrantStatusDescriptor
-        ON MigrantStatusDescriptor.StudentCharacteristicDescriptorId = ReferenceMigrantStatusDescriptor.DescriptorId
-            AND ReferenceMigrantStatusDescriptor.TableName = 'xref.MigrantStatus'
+		,ReferenceMigrantStatusDescriptor.DescriptorId
+    FROM
+		MapReferenceDescriptor ReferenceMigrantStatusDescriptor
+	INNER JOIN
+		edfi.Program
+			ON ReferenceMigrantStatusDescriptor.CodeValue = Program.ProgramName
+	WHERE
+            ReferenceMigrantStatusDescriptor.TableName = 'xref.MigrantStatus'
     ) AS ReferenceMigrantStatusDescriptor
 CROSS JOIN (
-    SELECT ReferenceMilitaryConnectedStudentIndicatorDescriptor.CodeValue
+    SELECT
+		ReferenceMilitaryConnectedStudentIndicatorDescriptor.CodeValue
         ,ReferenceMilitaryConnectedStudentIndicatorDescriptor.Description
         ,ReferenceMilitaryConnectedStudentIndicatorDescriptor.EdFactsCode
-    FROM edfi.StudentCharacteristicDescriptor AS MilitaryConnectedStudentIndicator
-    LEFT JOIN MapReferenceDescriptor ReferenceMilitaryConnectedStudentIndicatorDescriptor
-        ON MilitaryConnectedStudentIndicator.StudentCharacteristicDescriptorId = ReferenceMilitaryConnectedStudentIndicatorDescriptor.DescriptorId
-            AND ReferenceMilitaryConnectedStudentIndicatorDescriptor.TableName = 'xref.MigrantStatus'
+		,ReferenceMilitaryConnectedStudentIndicatorDescriptor.DescriptorId
+    FROM
+		MapReferenceDescriptor ReferenceMilitaryConnectedStudentIndicatorDescriptor
+	INNER JOIN
+		edfi.StudentCharacteristicDescriptor AS MilitaryConnectedStudentIndicator
+			ON MilitaryConnectedStudentIndicator.StudentCharacteristicDescriptorId = ReferenceMilitaryConnectedStudentIndicatorDescriptor.DescriptorId
+	WHERE
+		ReferenceMilitaryConnectedStudentIndicatorDescriptor.TableName = 'xref.MilitaryConnectedStudentIndicator'
     ) AS ReferenceMilitaryConnectedStudentIndicatorDescriptor
 CROSS JOIN (
-    SELECT ReferenceHomelessPrimaryNighttimeResidenceDescriptor.CodeValue
+    SELECT
+		ReferenceHomelessPrimaryNighttimeResidenceDescriptor.DescriptorId,
+		ReferenceHomelessPrimaryNighttimeResidenceDescriptor.CodeValue
         ,ReferenceHomelessPrimaryNighttimeResidenceDescriptor.Description
         ,ReferenceHomelessPrimaryNighttimeResidenceDescriptor.EdFactsCode
-    FROM edfi.StudentCharacteristicDescriptor AS HomelessPrimaryNighttimeResidence
-    LEFT JOIN MapReferenceDescriptor ReferenceHomelessPrimaryNighttimeResidenceDescriptor
-        ON HomelessPrimaryNighttimeResidence.StudentCharacteristicDescriptorId = ReferenceHomelessPrimaryNighttimeResidenceDescriptor.DescriptorId
-            AND ReferenceHomelessPrimaryNighttimeResidenceDescriptor.TableName = 'xref.HomelessPrimaryNighttimeResidence'
+    FROM 
+		MapReferenceDescriptor ReferenceHomelessPrimaryNighttimeResidenceDescriptor
+    INNER JOIN 
+		edfi.StudentCharacteristicDescriptor AS HomelessPrimaryNighttimeResidence
+			ON HomelessPrimaryNighttimeResidence.StudentCharacteristicDescriptorId = ReferenceHomelessPrimaryNighttimeResidenceDescriptor.DescriptorId
+	WHERE
+		ReferenceHomelessPrimaryNighttimeResidenceDescriptor.TableName = 'xref.HomelessPrimaryNighttimeResidence'
     ) AS ReferenceHomelessPrimaryNighttimeResidenceDescriptor
 CROSS JOIN (
-    SELECT ReferenceHomelessUnaccompaniedYouthStatusDescriptor.CodeValue
+    SELECT
+		ReferenceHomelessUnaccompaniedYouthStatusDescriptor.DescriptorId
+		,ReferenceHomelessUnaccompaniedYouthStatusDescriptor.CodeValue
         ,ReferenceHomelessUnaccompaniedYouthStatusDescriptor.Description
         ,ReferenceHomelessUnaccompaniedYouthStatusDescriptor.EdFactsCode
-    FROM edfi.StudentCharacteristicDescriptor AS HomelessUnaccompaniedYouthStatusCode
-    LEFT JOIN MapReferenceDescriptor ReferenceHomelessUnaccompaniedYouthStatusDescriptor
-        ON HomelessUnaccompaniedYouthStatusCode.StudentCharacteristicDescriptorId = ReferenceHomelessUnaccompaniedYouthStatusDescriptor.DescriptorId
-            AND ReferenceHomelessUnaccompaniedYouthStatusDescriptor.TableName = 'xref.HomelessUnaccompaniedYouthStatus'
+    FROM
+		MapReferenceDescriptor ReferenceHomelessUnaccompaniedYouthStatusDescriptor
+	INNER JOIN
+		edfi.StudentCharacteristicDescriptor AS HomelessUnaccompaniedYouthStatusCode
+			ON HomelessUnaccompaniedYouthStatusCode.StudentCharacteristicDescriptorId = ReferenceHomelessUnaccompaniedYouthStatusDescriptor.DescriptorId
+	WHERE
+		ReferenceHomelessUnaccompaniedYouthStatusDescriptor.TableName = 'xref.HomelessUnaccompaniedYouthStatus'
     ) AS ReferenceHomelessUnaccompaniedYouthStatusDescriptor
 CROSS JOIN (
-    SELECT ReferenceSexDescriptor.CodeValue
+    SELECT
+		ReferenceSexDescriptor.CodeValue
         ,ReferenceSexDescriptor.Description
         ,ReferenceSexDescriptor.EdFactsCode
-    FROM edfi.StudentCharacteristicDescriptor AS SexDescriptor
-    LEFT JOIN MapReferenceDescriptor ReferenceSexDescriptor
-        ON SexDescriptor.StudentCharacteristicDescriptorId = ReferenceSexDescriptor.DescriptorId
-            AND ReferenceSexDescriptor.TableName = 'xref.HomelessUnaccompaniedYouthStatus'
+		,ReferenceSexDescriptor.DescriptorId
+    FROM
+		MapReferenceDescriptor ReferenceSexDescriptor
+	LEFT JOIN
+		edfi.Student
+			ON BirthSexDescriptorId = ReferenceSexDescriptor.DescriptorId
+	WHERE
+		ReferenceSexDescriptor.TableName = 'xref.Sex'
     ) AS ReferenceSexDescriptor;
