@@ -1,0 +1,18 @@
+columnname,datatype
+factk12studentenrollmentkey,text
+schoolyearkey,character varying
+datacollectionkey,text
+seakey,character varying
+ieukey,character varying
+leakey,character varying
+k12schoolkey,character varying
+k12studentkey,text
+k12enrollmentstatuskey,text
+entrygradelevelkey,text
+exitgradelevelkey,text
+enrollmententrydatekey,character varying
+projectedgraduationdatekey,character varying
+k12demographickey,text
+ideastatuskey,text
+studentcount,bigint
+(16 rows)

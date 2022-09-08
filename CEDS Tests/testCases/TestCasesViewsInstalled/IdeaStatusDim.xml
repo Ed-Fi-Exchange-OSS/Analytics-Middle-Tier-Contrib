@@ -1,0 +1,5 @@
+<Test>
+  <Name>IdeaStatusDim</Name>
+  <Query>select 1 AS viewexists from information_schema.tables where table_schema = 'analytics' and (table_name='ceds_ideastatusdim' OR table_name='ceds_ideastatusdim')</Query>
+  <ResultFile>ViewExists.csv</ResultFile>
+</Test>

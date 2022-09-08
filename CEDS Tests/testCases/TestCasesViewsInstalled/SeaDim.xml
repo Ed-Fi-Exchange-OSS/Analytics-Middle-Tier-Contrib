@@ -1,0 +1,6 @@
+<Test>
+  <Name>SeaDim</Name>
+  <Query>select 1 AS viewexists from information_schema.tables where table_schema = 'analytics' and (table_name='ceds_seadim' OR table_name='ceds_seadim')</Query>
+  <ResultFile>ViewExists.csv</ResultFile>
+</Test>
+

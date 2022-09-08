@@ -1,0 +1,27 @@
+columnname,datatype
+seadimkey,text
+seaorganizationname,character varying
+seaidentifiersea,character varying
+stateansicode,text
+stateabbreviationcode,character varying
+stateabbreviationdescription,character varying
+mailingaddresscity,character varying
+mailingaddresspostalcode,character varying
+mailingaddressstateabbreviation,character varying
+mailingaddressstreetnumberandname,character varying
+mailingaddressapartmentroomorsuitenumber,character varying
+mailingaddresscountyansicode,text
+physicaladdresscity,character varying
+physicaladdresspostalcode,character varying
+physicaladdressstateabbreviation,character varying
+physicaladdressstreetnumberandname,character varying
+physicaladdressapartmentroomorsuitenumber,character varying
+physicaladdresscountyansicode,text
+telephonenumber,character varying
+websiteaddress,character varying
+latitude,character varying
+longitude,character varying
+recordstartdatetime,text
+recordenddatetime,text
+lastmodifieddate,timestamp without time zone
+(25 rows)

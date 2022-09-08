@@ -1,0 +1,6 @@
+<Test>
+  <Name>K12ProgramTypeDim</Name>
+  <Query>select 1 AS viewexists from information_schema.tables where table_schema = 'analytics' and (table_name='ceds_k12programtypedim' OR table_name='ceds_k12programtypedim')</Query>
+  <ResultFile>ViewExists.csv</ResultFile>
+</Test>
+
