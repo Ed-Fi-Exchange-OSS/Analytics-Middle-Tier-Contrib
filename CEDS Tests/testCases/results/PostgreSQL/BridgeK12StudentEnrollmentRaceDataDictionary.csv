@@ -1,0 +1,4 @@
+columnname,datatype
+factk12studentenrollmentkey,text
+racekey,character varying
+(2 rows)

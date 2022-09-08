@@ -1,0 +1,5 @@
+"ColumnName","DataType"
+"K12ProgramTypeKey","nvarchar"
+"ProgramTypeCode","nvarchar"
+"ProgramTypeDescription","nvarchar"
+"ProgramTypeDefinition","nvarchar"

@@ -1,0 +1,7 @@
+columnname,datatype
+racekey,text
+racecode,character varying
+racedescription,character varying
+raceedfactscode,character varying
+lastmodifieddate,text
+(5 rows)

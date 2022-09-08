@@ -1,0 +1,47 @@
+columnname,datatype
+leakey,text
+localeducationagencykey,character varying
+operationalstatuseffectivedate,text
+leaname,character varying
+leaidentifiernces,text
+leaidentifiersea,character varying
+nameofinstitution,character varying
+priorleaidentifiersea,text
+seaorganizationname,character varying
+seaidentifiersea,character varying
+stateansicode,text
+stateabbreviationcode,character varying
+stateabbreviationdescription,character varying
+leasupervisoryunionidentificationnumber,text
+reportedfederally,text
+leatypecode,character varying
+leatypedescription,character varying
+leatypeedfactscode,character varying
+mailingaddresscity,character varying
+mailingaddresspostalcode,character varying
+mailingaddressstateabbreviation,character varying
+mailingaddressstreetnumberandname,character varying
+mailingaddressapartmentroomorsuitenumber,character varying
+mailingaddresscountyansicode,text
+physicaladdresscity,character varying
+physicaladdresspostalcode,character varying
+physicaladdressstateabbreviation,character varying
+physicaladdressstreetnumberandname,character varying
+physicaladdressapartmentroomorsuitenumber,character varying
+physicaladdresscountyansicode,text
+telephonenumber,character varying
+websiteaddress,character varying
+outofstateindicator,boolean
+recordstartdatetime,text
+recordenddatetime,text
+leaoperationalstatus,character varying
+leaoperationalstatusedfactscode,integer
+charterleastatus,character varying
+reconstitutedstatus,text
+mckinneyventosubgrantrecipient,text
+ieuorganizationname,character varying
+ieuorganizationidentifiersea,character varying
+latitude,character varying
+longitude,character varying
+effectivedate,text
+(45 rows)
