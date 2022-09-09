@@ -1,0 +1,16 @@
+{
+    "Source": {
+        "Server": "localhost",
+        "Database": "EdFi_Ods_Ceds",
+        "Trusted_Connection": "yes",
+        "Username": "",
+        "Password": ""
+    },
+    "Target": {
+        "Server": "localhost",
+        "Database": "CEDS-Data-Warehouse-V9-1-0-0",
+        "Trusted_Connection": "yes",
+        "Username": "",
+        "Password": ""
+    }
+}
