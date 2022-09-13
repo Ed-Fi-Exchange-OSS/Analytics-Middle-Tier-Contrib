@@ -1,74 +1,80 @@
 [
     {
       "source_view": "analytics.ceds_SchoolYearDim",
-      "select": "[SchoolYear],[SessionBeginDate],[SessionEndDate]",
+      "select": "[SchoolYearKey],[SchoolYear],[SessionBeginDate],[SessionEndDate]",
       "target_view": "[RDS].[DimSchoolYears]",
-      "target_fields": ""
+      "target_fields": "[SchoolYear],[SessionBeginDate],[SessionEndDate]"
     },
     {
       "source_view": "analytics_config.ceds_DataCollectionDim",
-      "select": "[SourceSystemDataCollectionIdentifier],[SourceSystemName],[DataCollectionName],[DataCollectionDescription],[DataCollectionOpenDate],[DataCollectionCloseDate],[DataCollectionAcademicSchoolYear],[DataCollectionSchoolYear]",
+      "select": "DataCollectionDimId,[SourceSystemDataCollectionIdentifier],[SourceSystemName],[DataCollectionName],[DataCollectionDescription],[DataCollectionOpenDate],[DataCollectionCloseDate],[DataCollectionAcademicSchoolYear],[DataCollectionSchoolYear]",
       "target_view": "[RDS].[DimDataCollections]",
-      "target_fields": ""
+      "target_fields": "[SourceSystemDataCollectionIdentifier],[SourceSystemName],[DataCollectionName],[DataCollectionDescription],[DataCollectionOpenDate],[DataCollectionCloseDate],[DataCollectionAcademicSchoolYear],[DataCollectionSchoolYear]"
     },
     {
       "source_view": "analytics.ceds_SeaDim",
-      "select": "[SeaOrganizationName],[SeaIdentifierSea],[StateAnsiCode],[StateAbbreviationCode],[StateAbbreviationDescription],[MailingAddressCity],[MailingAddressPostalCode],[MailingAddressStateAbbreviation],[MailingAddressStreetNumberAndName],[MailingAddressApartmentRoomOrSuiteNumber],[MailingAddressCountyAnsiCode],[PhysicalAddressCity],[PhysicalAddressPostalCode],[PhysicalAddressStateAbbreviation],[PhysicalAddressStreetNumberAndName],[PhysicalAddressApartmentRoomOrSuiteNumber],[PhysicalAddressCountyAnsiCode],[TelephoneNumber],[WebSiteAddress],[RecordStartDateTime],[RecordEndDateTime]",
+      "select": "[SeaDimKey],[SeaOrganizationName],[SeaIdentifierSea],[StateAnsiCode],[StateAbbreviationCode],[StateAbbreviationDescription],[MailingAddressCity],[MailingAddressPostalCode],[MailingAddressStateAbbreviation],[MailingAddressStreetNumberAndName],[MailingAddressApartmentRoomOrSuiteNumber],[MailingAddressCountyAnsiCode],[PhysicalAddressCity],[PhysicalAddressPostalCode],[PhysicalAddressStateAbbreviation],[PhysicalAddressStreetNumberAndName],[PhysicalAddressApartmentRoomOrSuiteNumber],[PhysicalAddressCountyAnsiCode],[TelephoneNumber],[WebSiteAddress],[RecordStartDateTime],[RecordEndDateTime]",
       "target_view": "RDS.DimSeas",
-      "target_fields": ""
+      "target_fields": "[SeaOrganizationName],[SeaIdentifierSea],[StateAnsiCode],[StateAbbreviationCode],[StateAbbreviationDescription],[MailingAddressCity],[MailingAddressPostalCode],[MailingAddressStateAbbreviation],[MailingAddressStreetNumberAndName],[MailingAddressApartmentRoomOrSuiteNumber],[MailingAddressCountyAnsiCode],[PhysicalAddressCity],[PhysicalAddressPostalCode],[PhysicalAddressStateAbbreviation],[PhysicalAddressStreetNumberAndName],[PhysicalAddressApartmentRoomOrSuiteNumber],[PhysicalAddressCountyAnsiCode],[TelephoneNumber],[WebSiteAddress],[RecordStartDateTime],[RecordEndDateTime]"
     },
     {
       "source_view": "analytics.ceds_IeuDim",
-      "select": "[IeuOrganizationName],[IeuOrganizationIdentifierSea],[SeaOrganizationName],[SeaIdentifierSea],[StateANSICode],[StateAbbreviationCode],[StateAbbreviationDescription],[MailingAddressCity],[MailingAddressPostalCode],[MailingAddressStateAbbreviation],[MailingAddressStreetNumberAndName],[MailingAddressCountyAnsiCode],[OutOfStateIndicator],[OrganizationOperationalStatus],[OperationalStatusEffectiveDate],[PhysicalAddressCity],[PhysicalAddressPostalCode],[PhysicalAddressStateAbbreviation],[PhysicalAddressStreetNumberAndName],[PhysicalAddressApartmentRoomOrSuiteNumber],[PhysicalAddressCountyAnsiCode],[TelephoneNumber],[WebSiteAddress],[OrganizationRegionGeoJson],[Latitude],[Longitude],[RecordStartDateTime],[RecordEndDateTime]",
+      "select": "[IeuDimKey],[IeuOrganizationName],[IeuOrganizationIdentifierSea],[SeaOrganizationName],[SeaIdentifierSea],[StateANSICode],[StateAbbreviationCode],[StateAbbreviationDescription],[MailingAddressCity],[MailingAddressPostalCode],[MailingAddressStateAbbreviation],[MailingAddressStreetNumberAndName],[MailingAddressCountyAnsiCode],[OutOfStateIndicator],[OrganizationOperationalStatus],[OperationalStatusEffectiveDate],[PhysicalAddressCity],[PhysicalAddressPostalCode],[PhysicalAddressStateAbbreviation],[PhysicalAddressStreetNumberAndName],[PhysicalAddressCountyAnsiCode],[TelephoneNumber],[WebSiteAddress],[OrganizationRegionGeoJson],[Latitude],[Longitude],[RecordStartDateTime],[RecordEndDateTime]",
       "target_view": "RDS.DimIeus",
-      "target_fields": ""
+      "target_fields": "[IeuOrganizationName],[IeuOrganizationIdentifierSea],[SeaOrganizationName],[SeaIdentifierSea],[StateANSICode],[StateAbbreviationCode],[StateAbbreviationDescription],[MailingAddressCity],[MailingAddressPostalCode],[MailingAddressStateAbbreviation],[MailingAddressStreetNumberAndName],[MailingAddressCountyAnsiCode],[OutOfStateIndicator],[OrganizationOperationalStatus],[OperationalStatusEffectiveDate],[PhysicalAddressCity],[PhysicalAddressPostalCode],[PhysicalAddressStateAbbreviation],[PhysicalAddressStreetNumberAndName],[PhysicalAddressCountyAnsiCode],[TelephoneNumber],[WebSiteAddress],[OrganizationRegionGeoJson],[Latitude],[Longitude],[RecordStartDateTime],[RecordEndDateTime]"
     },
     {
       "source_view": "analytics.ceds_LeaDim",
-      "select": "[LocalEducationAgencyKey],[OperationalStatusEffectiveDate],[LeaName],[LeaIdentifierNces],[LeaIdentifierSea],[NameOfInstitution],[PriorLeaIdentifierSea],[SeaOrganizationName],[SeaIdentifierSea],[StateAnsiCode],[StateAbbreviationCode],[StateAbbreviationDescription],[LeaSupervisoryUnionIdentificationNumber],[ReportedFederally],[LeaTypeCode],[LeaTypeDescription],[LeaTypeEdFactsCode],[MailingAddressCity],[MailingAddressPostalCode],[MailingAddressStateAbbreviation],[MailingAddressStreetNumberAndName],[MailingAddressApartmentRoomOrSuiteNumber],[MailingAddressCountyAnsiCode],[PhysicalAddressCity],[PhysicalAddressPostalCode],[PhysicalAddressStateAbbreviation],[PhysicalAddressStreetNumberAndName],[PhysicalAddressApartmentRoomOrSuiteNumber],[PhysicalAddressCountyAnsiCode],[TelephoneNumber],[WebSiteAddress],[OutOfStateIndicator],[RecordStartDateTime],[RecordEndDateTime],[LEAOperationalStatus],[LEAOperationalStatusEdFactsCode],[CharterLEAStatus],[ReconstitutedStatus],[McKinneyVentoSubgrantRecipient],[IeuOrganizationName],[IeuOrganizationIdentifierSea],[Latitude],[Longitude],[EffectiveDate]",
+      "select": "[LeaKey],[OperationalStatusEffectiveDate],[LeaName],[LeaIdentifierNces],[LeaIdentifierSea],[NameOfInstitution],[PriorLeaIdentifierSea],[SeaOrganizationName],[SeaIdentifierSea],[StateAnsiCode],[StateAbbreviationCode],[StateAbbreviationDescription],[LeaSupervisoryUnionIdentificationNumber],[ReportedFederally],[LeaTypeCode],[LeaTypeDescription],[LeaTypeEdFactsCode],[MailingAddressCity],[MailingAddressPostalCode],[MailingAddressStateAbbreviation],[MailingAddressStreetNumberAndName],[MailingAddressApartmentRoomOrSuiteNumber],[MailingAddressCountyAnsiCode],[PhysicalAddressCity],[PhysicalAddressPostalCode],[PhysicalAddressStateAbbreviation],[PhysicalAddressStreetNumberAndName],[PhysicalAddressApartmentRoomOrSuiteNumber],[PhysicalAddressCountyAnsiCode],[TelephoneNumber],[WebSiteAddress],[OutOfStateIndicator],[RecordStartDateTime],[RecordEndDateTime],[LEAOperationalStatus],[LEAOperationalStatusEdFactsCode],[CharterLEAStatus],[ReconstitutedStatus],[McKinneyVentoSubgrantRecipient],[IeuOrganizationName],[IeuOrganizationIdentifierSea],[Latitude],[Longitude],[EffectiveDate]",
       "target_view": "RDS.DimLeas",
-      "target_fields": ""
+      "target_fields": "[OperationalStatusEffectiveDate],[LeaName],[LeaIdentifierNces],[LeaIdentifierSea],[NameOfInstitution],[PriorLeaIdentifierSea],[SeaOrganizationName],[SeaIdentifierSea],[StateAnsiCode],[StateAbbreviationCode],[StateAbbreviationDescription],[LeaSupervisoryUnionIdentificationNumber],[ReportedFederally],[LeaTypeCode],[LeaTypeDescription],[LeaTypeEdFactsCode],[MailingAddressCity],[MailingAddressPostalCode],[MailingAddressStateAbbreviation],[MailingAddressStreetNumberAndName],[MailingAddressApartmentRoomOrSuiteNumber],[MailingAddressCountyAnsiCode],[PhysicalAddressCity],[PhysicalAddressPostalCode],[PhysicalAddressStateAbbreviation],[PhysicalAddressStreetNumberAndName],[PhysicalAddressApartmentRoomOrSuiteNumber],[PhysicalAddressCountyAnsiCode],[TelephoneNumber],[WebSiteAddress],[OutOfStateIndicator],[RecordStartDateTime],[RecordEndDateTime],[LEAOperationalStatus],[LEAOperationalStatusEdFactsCode],[CharterLEAStatus],[ReconstitutedStatus],[McKinneyVentoSubgrantRecipient],[IeuOrganizationName],[IeuOrganizationIdentifierSea],[Latitude],[Longitude],[EffectiveDate]"
     },
     {
       "source_view": "analytics.ceds_K12SchoolDim",
-      "select": "[SchoolKey],[LeaName],[LeaIdentifierNces],[LeaIdentifierSea],[NameOfInstitution],[SchoolIdentifierNces],[SchoolIdentifierSea],[SeaOrganizationName],[SeaIdentifierSea],[StateAnsiCode],[StateAbbreviationCode],[StateAbbreviationDescription],[PrimaryCharterSchoolAuthorizingOrganizationIdentifierSea],[SecondaryCharterSchoolAuthorizingOrganizationIdentifierSea],[OperationalStatusEffectiveDate],[PriorLeaIdentifierSea],[PriorSchoolIdentifierSea],[CharterSchoolIndicator],[CharterSchoolContractIdNumber],[CharterSchoolContractApprovalDate],[CharterSchoolContractRenewalDate],[ReportedFederally],[LeaTypeCode],[LeaTypeDescription],[LeaTypeEdFactsCode],[LeaTypeId],[SchoolTypeCode],[SchoolTypeDescription],[SchoolTypeEdFactsCode],[SchoolTypeId],[MailingAddressCity],[MailingAddressPostalCode],[MailingAddressStateAbbreviation],[MailingAddressStreetNumberAndName],[MailingAddressApartmentRoomOrSuiteNumber],[MailingAddressCountyAnsiCode],[PhysicalAddressCity],[PhysicalAddressPostalCode],[PhysicalAddressStateAbbreviation],[PhysicalAddressStreetNumberAndName],[PhysicalAddressApartmentRoomOrSuiteNumber],[PhysicalAddressCountyAnsiCode],[TelephoneNumber],[WebSiteAddress],[OutOfStateIndicator],[RecordStartDateTime],[RecordEndDateTime],[SchoolOperationalStatus],[SchoolOperationalStatusEdFactsCode],[CharterSchoolStatus],[ReconstitutedStatus],[IeuOrganizationName],[IeuOrganizationIdentifierSea],[Latitude],[Longitude],[SchoolOperationalStatusEffectiveDate],[AdministrativeFundingControlCode],[AdministrativeFundingControlDescription]",
+      "select": "[K12SchoolKey],[LeaName],[LeaIdentifierNces],[LeaIdentifierSea],[NameOfInstitution],[SchoolIdentifierNces],[SchoolIdentifierSea],[SeaOrganizationName],[SeaIdentifierSea],[StateAnsiCode],[StateAbbreviationCode],[StateAbbreviationDescription],[PrimaryCharterSchoolAuthorizingOrganizationIdentifierSea],[SecondaryCharterSchoolAuthorizingOrganizationIdentifierSea],[OperationalStatusEffectiveDate],[PriorLeaIdentifierSea],[PriorSchoolIdentifierSea],[CharterSchoolIndicator],[CharterSchoolContractIdNumber],[CharterSchoolContractApprovalDate],[CharterSchoolContractRenewalDate],[ReportedFederally],[LeaTypeCode],[LeaTypeDescription],[LeaTypeEdFactsCode],[LeaTypeId],[SchoolTypeCode],[SchoolTypeDescription],[SchoolTypeEdFactsCode],[SchoolTypeId],[MailingAddressCity],[MailingAddressPostalCode],[MailingAddressStateAbbreviation],[MailingAddressStreetNumberAndName],[MailingAddressApartmentRoomOrSuiteNumber],[MailingAddressCountyAnsiCode],[PhysicalAddressCity],[PhysicalAddressPostalCode],[PhysicalAddressStateAbbreviation],[PhysicalAddressStreetNumberAndName],[PhysicalAddressApartmentRoomOrSuiteNumber],[PhysicalAddressCountyAnsiCode],[TelephoneNumber],[WebSiteAddress],[OutOfStateIndicator],[RecordStartDateTime],[RecordEndDateTime],[SchoolOperationalStatus],[CharterSchoolStatus],[ReconstitutedStatus],[IeuOrganizationName],[IeuOrganizationIdentifierSea],[Latitude],[Longitude],[SchoolOperationalStatusEffectiveDate],[AdministrativeFundingControlCode],[AdministrativeFundingControlDescription]",
       "target_view": "RDS.DimK12Schools",
-      "target_fields": ""
+      "target_fields": "[LeaName],[LeaIdentifierNces],[LeaIdentifierSea],[NameOfInstitution],[SchoolIdentifierNces],[SchoolIdentifierSea],[SeaOrganizationName],[SeaIdentifierSea],[StateAnsiCode],[StateAbbreviationCode],[StateAbbreviationDescription],[PrimaryCharterSchoolAuthorizingOrganizationIdentifierSea],[SecondaryCharterSchoolAuthorizingOrganizationIdentifierSea],[OperationalStatusEffectiveDate],[PriorLeaIdentifierSea],[PriorSchoolIdentifierSea],[CharterSchoolIndicator],[CharterSchoolContractIdNumber],[CharterSchoolContractApprovalDate],[CharterSchoolContractRenewalDate],[ReportedFederally],[LeaTypeCode],[LeaTypeDescription],[LeaTypeEdFactsCode],[LeaTypeId],[SchoolTypeCode],[SchoolTypeDescription],[SchoolTypeEdFactsCode],[SchoolTypeId],[MailingAddressCity],[MailingAddressPostalCode],[MailingAddressStateAbbreviation],[MailingAddressStreetNumberAndName],[MailingAddressApartmentRoomOrSuiteNumber],[MailingAddressCountyAnsiCode],[PhysicalAddressCity],[PhysicalAddressPostalCode],[PhysicalAddressStateAbbreviation],[PhysicalAddressStreetNumberAndName],[PhysicalAddressApartmentRoomOrSuiteNumber],[PhysicalAddressCountyAnsiCode],[TelephoneNumber],[WebSiteAddress],[OutOfStateIndicator],[RecordStartDateTime],[RecordEndDateTime],[SchoolOperationalStatus],[CharterSchoolStatus],[ReconstitutedStatus],[IeuOrganizationName],[IeuOrganizationIdentifierSea],[Latitude],[Longitude],[SchoolOperationalStatusEffectiveDate],[AdministrativeFundingControlCode],[AdministrativeFundingControlDescription]"
     },
     {
       "source_view": "analytics.ceds_K12StudentDim",
-      "select": "[StudentSchoolKey],[BirthDate],[Cohort],[FirstName],[LastSurname],[MiddleName],[StudentIdentifierState],[RecordStartDateTime],[RecordEndDateTime]",
+      "select": "[K12StudentKey],[BirthDate],[Cohort],[FirstName],[LastOrSurname],[MiddleName],[StudentIdentifierState],[RecordStartDateTime],[RecordEndDateTime]",
       "target_view": "RDS.DimK12Students",
-      "target_fields": ""
+      "target_fields": "[BirthDate],[Cohort],[FirstName],[LastOrSurname],[MiddleName],[StudentIdentifierState],[RecordStartDateTime],[RecordEndDateTime]"
     },
     {
       "source_view": "analytics.ceds_GradeLevelDim",
-      "select": "[GradeLevelCode],[GradeLevelDescription],[GradeLevelEdFactsCode]",
+      "select": "[GradeLevelKey],[GradeLevelCode],[GradeLevelDescription],[GradeLevelEdFactsCode]",
       "target_view": "RDS.DimGradeLevels",
-      "target_fields": ""
+      "target_fields": "[GradeLevelCode],[GradeLevelDescription],[GradeLevelEdFactsCode]"
     },
     {
       "source_view": "analytics.ceds_IdeaStatusDim",
-      "select": "[BasisOfExitCode],[BasisOfExitDescription],[BasisOfExitEdFactsCode],[BasisOfExitId],[DisabilityCode],[DisabilityDescription],[DisabilityEdFactsCode],[DisabilityId],[EducEnvCode],[EducEnvDescription],[EducEnvEdFactsCode],[EducEnvId]",
+      "select": "[IdeaStatusKey],[BasisOfExitCode],[BasisOfExitDescription],[BasisOfExitEdFactsCode],[DisabilityCode],[DisabilityDescription],[DisabilityEdFactsCode],[EducEnvCode],[EducEnvDescription],[EducEnvEdFactsCode]",
       "target_view": "RDS.DimIdeaStatuses",
-      "target_fields": ""
+      "target_fields": "SpecialEducationExitReasonCode,SpecialEducationExitReasonDescription,SpecialEducationExitReasonEdFactsCode,PrimaryDisabilityTypeCode,PrimaryDisabilityTypeDescription,PrimaryDisabilityTypeEdFactsCode,IdeaEducationalEnvironmentForSchoolAgeCode,IdeaEducationalEnvironmentForSchoolAgeDescription,IdeaEducationalEnvironmentForSchoolAgeEdFactsCode"
     },
     {
       "source_view": "analytics.ceds_K12EnrollmentStatusDim",
-      "select": "[EnrollmentStatusCode],[EnrollmentStatusDescription],[EntryTypeCode],[EntryTypeDescription],[ExitOrWithdrawalTypeCode],[ExitOrWithdrawalTypeDescription],[PostSecondaryEnrollmentStatusCode],[PostSecondaryEnrollmentStatusDescription],[PostSecondaryEnrollmentStatusEdFactsCode],[EdFactsAcademicOrCareerAndTechnicalOutcomeTypeCode],[EdFactsAcademicOrCareerAndTechnicalOutcomeTypeDescription],[EdFactsAcademicOrCareerAndTechnicalOutcomeTypeEdFactsCode],[EdFactsAcademicOrCareerAndTechnicalOutcomeExitTypeCode],[EdFactsAcademicOrCareerAndTechnicalOutcomeExitTypeDescription],[EdFactsAcademicOrCareerAndTechnicalOutcomeExitTypeEdFactsCode]",
+      "select": "[K12EnrollmentStatusKey],[EnrollmentStatusCode],[EnrollmentStatusDescription],[EntryTypeCode],[EntryTypeDescription],[ExitOrWithdrawalTypeCode],[ExitOrWithdrawalTypeDescription],[PostSecondaryEnrollmentStatusCode],[PostSecondaryEnrollmentStatusDescription],[PostSecondaryEnrollmentStatusEdFactsCode],[EdFactsAcademicOrCareerAndTechnicalOutcomeTypeCode],[EdFactsAcademicOrCareerAndTechnicalOutcomeTypeDescription],[EdFactsAcademicOrCareerAndTechnicalOutcomeTypeEdFactsCode],[EdFactsAcademicOrCareerAndTechnicalOutcomeExitTypeCode],[EdFactsAcademicOrCareerAndTechnicalOutcomeExitTypeDescription],[EdFactsAcademicOrCareerAndTechnicalOutcomeExitTypeEdFactsCode]",
       "target_view": "RDS.DimK12EnrollmentStatuses",
-      "target_fields": ""
+      "target_fields": "[EnrollmentStatusCode],[EnrollmentStatusDescription],[EntryTypeCode],[EntryTypeDescription],[ExitOrWithdrawalTypeCode],[ExitOrWithdrawalTypeDescription],[PostSecondaryEnrollmentStatusCode],[PostSecondaryEnrollmentStatusDescription],[PostSecondaryEnrollmentStatusEdFactsCode],[EdFactsAcademicOrCareerAndTechnicalOutcomeTypeCode],[EdFactsAcademicOrCareerAndTechnicalOutcomeTypeDescription],[EdFactsAcademicOrCareerAndTechnicalOutcomeTypeEdFactsCode],[EdFactsAcademicOrCareerAndTechnicalOutcomeExitTypeCode],[EdFactsAcademicOrCareerAndTechnicalOutcomeExitTypeDescription],[EdFactsAcademicOrCareerAndTechnicalOutcomeExitTypeEdFactsCode]"
     },
     {
       "source_view": "analytics.ceds_K12ProgramTypeDim",
-      "select": "[ProgramTypeCode],[ProgramTypeDescription],[ProgramTypeDefinition]",
+      "select": "[K12ProgramTypeKey],[ProgramTypeCode],[ProgramTypeDescription],[ProgramTypeDefinition]",
       "target_view": "RDS.DimK12ProgramTypes",
-      "target_fields": ""
+      "target_fields": "[ProgramTypeCode],[ProgramTypeDescription],[ProgramTypeDefinition]"
     },
     {
       "source_view": "analytics.ceds_RaceDim",
-      "select": "[RaceCode],[RaceDescription],[RaceEdFactsCode]",
+      "select": "[RaceKey],[RaceCode],[RaceDescription],[RaceEdFactsCode]",
       "target_view": "RDS.DimRaces",
-      "target_fields": ""
+      "target_fields": "[RaceCode],[RaceDescription],[RaceEdFactsCode]"
+    },
+    {
+      "source_view": "analytics.ceds_K12DemographicDim",
+      "select": "[K12DemographicKey],[EconomicDisadvantageStatusCode],[EconomicDisadvantageStatusDescription],[EconomicDisadvantageStatusEdFactsCode],[HomelessnessStatusCode],[HomelessnessStatusDescription],[HomelessnessStatusEdFactsCode],[EnglishLearnerStatusCode],[EnglishLearnerStatusDescription],[EnglishLearnerStatusEdFactsCode],[MigrantStatusCode],[MigrantStatusDescription],[MigrantStatusEdFactsCode],[MilitaryConnectedStudentIndicatorCode],[MilitaryConnectedStudentIndicatorDescription],[MilitaryConnectedStudentIndicatorEdFactsCode],[HomelessPrimaryNighttimeResidenceCode],[HomelessPrimaryNighttimeResidenceDescription],[HomelessPrimaryNighttimeResidenceEdFactsCode],[HomelessUnaccompaniedYouthStatusCode],[HomelessUnaccompaniedYouthStatusDescription],[HomelessUnaccompaniedYouthStatusEdFactsCode],[SexCode],[SexDescription],[SexEdFactsCode]",
+      "target_view": "RDS.DimK12Demographics",
+      "target_fields": "[EconomicDisadvantageStatusCode],[EconomicDisadvantageStatusDescription],[EconomicDisadvantageStatusEdFactsCode],[HomelessnessStatusCode],[HomelessnessStatusDescription],[HomelessnessStatusEdFactsCode],[EnglishLearnerStatusCode],[EnglishLearnerStatusDescription],[EnglishLearnerStatusEdFactsCode],[MigrantStatusCode],[MigrantStatusDescription],[MigrantStatusEdFactsCode],[MilitaryConnectedStudentIndicatorCode],[MilitaryConnectedStudentIndicatorDescription],[MilitaryConnectedStudentIndicatorEdFactsCode],[HomelessPrimaryNighttimeResidenceCode],[HomelessPrimaryNighttimeResidenceDescription],[HomelessPrimaryNighttimeResidenceEdFactsCode],[HomelessUnaccompaniedYouthStatusCode],[HomelessUnaccompaniedYouthStatusDescription],[HomelessUnaccompaniedYouthStatusEdFactsCode],[SexCode],[SexDescription],[SexEdFactsCode]"
     }
   ]
