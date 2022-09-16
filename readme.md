@@ -12,6 +12,20 @@ This repository provides a mechanism for community members to share their Views 
 
 The Analytics Middle Tier is an open source project and these views are also available as open source. By default all contributions are available under the terms of the [Apache License, version 2.0](license). Please ensure that you maintain the appropriate licensing to contribute this work for others to reuse. If you wish to use terms other than the Apache 2.0 license then please include the license file with your views.
 
+## Installation
+
+For the installation of Analytics Middle Tier - Contributions, it can be installed by executing the script SetupAndRun.ps1 If the above script is not found the following will be installed:
+
+The process shows the new objects created by the terminal at the moment of execution.
+
+These scripts are available in the CEDS Tests folder., You should be able to verify the configuration of the project with the following code:
+
+- 1. $configure --enable-scripts/install.ps1
+- 2. $configure --enable-scripts/run.ps1
+- 3. $configure --enable-scripts/setup.ps1
+
+Once this is done, the installation process will be finished.
+
 ## Contribution Guidelines
 
 The contribution process for sharing your work is as simple as:
