@@ -29,7 +29,7 @@ CREATE VIEW analytics.ceds_FactK12ProgramParticipation AS
            ,LeaIdentifierNces AS LeaKey
            ,K12SchoolKey AS K12SchoolKey
            ,K12ProgramTypeKey AS K12ProgramTypeKey
-           ,StudentSchoolKey AS K12StudentlKey
+           ,ceds_K12StudentDim.K12StudentKey AS K12StudentKey
            ,K12DemographicKey AS K12DemographicKey
            ,IdeaStatusKey AS IdeaStatusKey
            ,GeneralStudentProgramAssociation.BeginDate AS ProgramParticipationStartDateKey
@@ -177,7 +177,7 @@ CREATE VIEW analytics.ceds_FactK12ProgramParticipation AS
 			'-',
 			K12ProgramTypeKey,
 			'-',
-			K12StudentlKey,
+			K12StudentKey,
 			'-',
 			K12DemographicKey,
 			'-',
@@ -195,7 +195,7 @@ CREATE VIEW analytics.ceds_FactK12ProgramParticipation AS
         ,LeaKey
         ,K12SchoolKey
         ,K12ProgramTypeKey
-        ,K12StudentlKey
+        ,K12StudentKey
         ,K12DemographicKey
         ,IdeaStatusKey
         ,ProgramParticipationStartDateKey
@@ -212,7 +212,7 @@ CREATE VIEW analytics.ceds_FactK12ProgramParticipation AS
         ,LeaKey
         ,K12SchoolKey
         ,K12ProgramTypeKey
-        ,K12StudentlKey
+        ,K12StudentKey
         ,K12DemographicKey
         ,IdeaStatusKey
         ,ProgramParticipationStartDateKey

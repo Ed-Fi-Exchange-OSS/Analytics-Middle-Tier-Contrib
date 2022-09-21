@@ -88,7 +88,7 @@ SELECT
     ,COALESCE(CAST(School.LocalEducationAgencyId as VARCHAR),'') AS LeaIdentifierSea
     ,COALESCE(EducationOrganizationSchool.NameOfInstitution,'') AS NameOfInstitution
    ,'' AS SchoolIdentifierNces
-   ,COALESCE(CAST(EducationOrganizationSEA.EducationOrganizationId AS VARCHAR),'') AS SchoolIdentifierSea
+   ,COALESCE(CAST(School.SchoolId AS VARCHAR),'') AS SchoolIdentifierSea
    ,COALESCE(EducationOrganizationSEA.NameOfInstitution,'') AS SeaOrganizationName
    ,COALESCE(CAST(LocalEducationAgency.StateEducationAgencyId AS VARCHAR),'') AS SeaIdentifierSea
    ,'' AS StateAnsiCode
