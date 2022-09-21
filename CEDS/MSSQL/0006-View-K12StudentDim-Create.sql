@@ -50,7 +50,7 @@ GO
 CREATE OR ALTER VIEW analytics.ceds_K12StudentDim AS
 (
     SELECT
-        CONCAT(Student.StudentUniqueId, '-', StudentSchoolAssociation.SchoolId, '-', StudentSchoolAssociation.ClassOfSchoolYear) as K12StudentKey,
+        CONCAT(Student.StudentUniqueId, '-', StudentSchoolAssociation.SchoolId, '-', StudentSchoolAssociation.EntryDate) as K12StudentKey,
         CONCAT(Student.StudentUniqueId, '-', StudentSchoolAssociation.SchoolId) AS StudentSchoolKey,
         Student.BirthDate,
         StudentSchoolAssociation.ClassOfSchoolYear AS Cohort,

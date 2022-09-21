@@ -15,9 +15,11 @@ GO
 CREATE VIEW analytics.ceds_IeuDim AS
 	WITH OrgEducationAddress AS (
         SELECT
+			EducationOrganizationAddress.AddressTypeDescriptorId,
 			EducationOrganizationAddress.EducationOrganizationId,
             EducationOrganizationAddress.City,
 			EducationOrganizationAddress.PostalCode,
+			EducationOrganizationAddress.StateAbbreviationDescriptorId,
 			StateAbbreviationDesc.CodeValue AS StateAbbreviation,
 			EducationOrganizationAddress.StreetNumberName,
 			EducationOrganizationAddress.ApartmentRoomSuiteNumber,
@@ -42,12 +44,23 @@ CREATE VIEW analytics.ceds_IeuDim AS
     )
 	SELECT
 		CONCAT(
-			EducationOrganization.EducationOrganizationId, 
+			EducationOrganization.EducationOrganizationId,
 			'-', EducationOrganizationAddress.AddressTypeDescriptorId,
 			'-', EducationOrganizationAddress.City,
 			'-', EducationOrganizationAddress.PostalCode,
 			'-', EducationOrganizationAddress.StateAbbreviationDescriptorId,
-			'-', EducationOrganizationAddress.StreetNumberName
+			'-', EducationOrganizationAddress.StreetNumberName,
+			'-', MailingAddress.AddressTypeDescriptorId,
+			'-', MailingAddress.City,
+			'-', MailingAddress.PostalCode,
+			'-', MailingAddress.StateAbbreviationDescriptorId,
+			'-', MailingAddress.StreetNumberName,
+			'-', PhysicalAddress.AddressTypeDescriptorId,
+			'-', PhysicalAddress.City,
+			'-', PhysicalAddress.PostalCode,
+			'-', PhysicalAddress.StateAbbreviationDescriptorId,
+			'-', PhysicalAddress.StreetNumberName,
+			'-',EducationOrganizationInstitutionTelephone.InstitutionTelephoneNumberTypeDescriptorId
 		) AS IeuDimKey,
 		EducationOrganization.NameOfInstitution AS IeuOrganizationName,
 		CAST(EducationServiceCenter.EducationServiceCenterId AS VARCHAR) AS IeuOrganizationIdentifierSea,
@@ -96,11 +109,8 @@ CREATE VIEW analytics.ceds_IeuDim AS
 		edfi.EducationOrganization
 			ON EducationServiceCenter.EducationServiceCenterId = EducationOrganization.EducationOrganizationId
 	INNER JOIN
-		edfi.StateEducationAgency
-			ON EducationServiceCenter.StateEducationAgencyId = StateEducationAgency.StateEducationAgencyId
-	INNER JOIN
 		edfi.EducationOrganization StateEducationOrganization
-			ON EducationServiceCenter.StateEducationAgencyId = StateEducationAgency.StateEducationAgencyId
+			ON EducationServiceCenter.StateEducationAgencyId = StateEducationOrganization.EducationOrganizationId
 	LEFT JOIN
 		edfi.EducationOrganizationAddress
 			ON EducationOrganization.EducationOrganizationId = EducationOrganizationAddress.EducationOrganizationId
