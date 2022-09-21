@@ -31,9 +31,15 @@ AS (
 SELECT DISTINCT CONCAT (
         COALESCE(ReferenceBasisOfExitDescriptor.EdFactsCode, '')
         ,'-'
+		,COALESCE(ReferenceBasisOfExitDescriptor.CodeValue, '')
+        ,'-'
         ,COALESCE(ReferenceDisabilityDescriptor.EdFactsCode, '')
         ,'-'
+        ,COALESCE(ReferenceDisabilityDescriptor.CodeValue, '')
+        ,'-'
         ,COALESCE(ReferenceEducationalEnvironmentDescriptor.EdFactsCode, '')
+		,'-'
+        ,COALESCE(ReferenceEducationalEnvironmentDescriptor.CodeValue, '')
         ) AS IdeaStatusKey
     ,COALESCE(ReferenceBasisOfExitDescriptor.CodeValue, '') AS BasisOfExitCode
     ,COALESCE(ReferenceBasisOfExitDescriptor.Description, '') AS BasisOfExitDescription
@@ -80,3 +86,4 @@ CROSS JOIN
         MapReferenceDescriptor ReferenceEducationalEnvironmentDescriptor
             ON EducationalEnvironmentDescriptor.EducationalEnvironmentDescriptorId = ReferenceEducationalEnvironmentDescriptor.DescriptorId
     WHERE ReferenceEducationalEnvironmentDescriptor.TableName = 'xref.EducationalEnvironmentType') AS ReferenceEducationalEnvironmentDescriptor;
+GO
