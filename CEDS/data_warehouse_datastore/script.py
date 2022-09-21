@@ -1,6 +1,13 @@
+# SPDX-License-Identifier: Apache-2.0
+# Licensed to the Ed-Fi Alliance under one or more agreements.
+# The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
+# See the LICENSE and NOTICES files in the project root for more information.
+
 import pyodbc 
 import json
 import pandas as pd
+
+from factK12_program_participation import factK12_program_participation
 
 # Databases connection string
 def get_configuration():
@@ -43,7 +50,6 @@ def transfer_data(view_info, config) -> pd.DataFrame:
     conn_source = pyodbc.Connection
     conn_target = pyodbc.Connection
     try:
-        print ('go')
         conn_source = pyodbc.connect(
             f'Driver={"SQL Server"};Server={config["Source"]["Server"]};Database={config["Source"]["Database"]};Trusted_Connection={config["Source"]["Trusted_Connection"]};')
         
@@ -67,7 +73,6 @@ def transfer_data(view_info, config) -> pd.DataFrame:
             data.at[index,'id'] = int(identity)
 
         conn_target.commit()
-        cursor_target.close()
         return data
 
     except Exception as error:
@@ -81,6 +86,10 @@ if __name__ == "__main__":
     dataFrames = {}
     config = get_configuration()
     insert_dummy_values(config)
-    for view in get_views():
+    views = get_views()
+    for view in views:
         data = transfer_data(view, config)
         dataFrames[view["source_view"]] = data
+
+    # fact tables:
+    factK12_program_participation(dataFrames, views, config)
