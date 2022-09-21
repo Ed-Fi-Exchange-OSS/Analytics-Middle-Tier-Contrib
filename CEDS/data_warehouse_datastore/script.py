@@ -8,6 +8,7 @@ import json
 import pandas as pd
 
 from factK12_program_participation import factK12_program_participation
+from factK12_student_enrollment import factK12_student_enrollment
 
 # Databases connection string
 def get_configuration():
@@ -93,3 +94,4 @@ if __name__ == "__main__":
 
     # fact tables:
     factK12_program_participation(dataFrames, views, config)
+    factK12_student_enrollment(dataFrames, views, config)

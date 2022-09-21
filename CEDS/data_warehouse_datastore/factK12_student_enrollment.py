@@ -8,48 +8,46 @@ import pyodbc
 # import json
 import pandas as pd
 
-def factK12_program_participation(dataframes = {}, views_info = [], config = None) -> None:
+def factK12_student_enrollment(dataframes = {}, views_info = [], config = None) -> None:
     conn_source = pyodbc.Connection
     # conn_target = pyodbc.Connection
     try:
         conn_source = pyodbc.connect(
             f'Driver={"SQL Server"};Server={config["Source"]["Server"]};Database={config["Source"]["Database"]};Trusted_Connection={config["Source"]["Trusted_Connection"]};')
         query = ("SELECT "\
-                    "[FactK12ProgramParticipationKey]" \
+                    "[FactK12StudentEnrollmentKey]" \
                     ",[SchoolYearKey]" \
-                    ",[DateKey]" \
                     ",[DataCollectionKey]" \
                     ",[SeaKey]" \
                     ",[IeuKey]" \
                     ",[LeaKey]" \
                     ",[K12SchoolKey]" \
-                    ",[K12ProgramTypeKey],"\
-                    "[K12StudentKey]" \
+                    ",[K12StudentKey]" \
+                    ",[K12EnrollmentStatusKey]" \
+                    ",[EntryGradeLevelKey]" \
+                    ",[ExitGradeLevelKey]" \
+                    ",[EnrollmentEntryDateKey]" \
+                    ",[ProjectedGraduationDateKey]" \
                     ",[K12DemographicKey]" \
                     ",[IdeaStatusKey]" \
-                    ",[ProgramParticipationStartDateKey]" \
-                    ",[ProgramParticipationExitDateKey]" \
-                    ",[StudentCount] "\
-                "FROM analytics.ceds_FactK12ProgramParticipation;")
+                    ",[StudentCount]"\
+                "FROM analytics.ceds_FactK12StudentEnrollment;")
         
-        factK12_program_participation_df = pd.read_sql(query, conn_source)
+        factK12_student_enrollment_df = pd.read_sql(query, conn_source)
         
         # School Year Id
         school_year_df = dataframes["analytics.ceds_SchoolYearDim"]
+        school_year_df = school_year_df[['SchoolYearKey','id']]
 
-        factK12_program_participation_df = pd.merge(
-            left=factK12_program_participation_df,
+        factK12_student_enrollment_df = pd.merge(
+            left=factK12_student_enrollment_df,
             right=school_year_df,
             how="left",
             left_on="SchoolYearKey",
             right_on="SchoolYearKey"
         )
 
-        factK12_program_participation_df = factK12_program_participation_df.drop(columns=["SchoolYearKey","SchoolYear","SessionBeginDate","SessionEndDate"])
-        factK12_program_participation_df = factK12_program_participation_df.rename(columns={"id": "SchoolYearId"})
-
-        #  Date Id
-        factK12_program_participation_df["DateId"] = int(datetime.strptime(factK12_program_participation_df["DateKey"], '%m/%d/%y').timestamp())
+        factK12_student_enrollment_df = factK12_student_enrollment_df.rename(columns={"id": "SchoolYearId"})
 
         # SeaId - Pending #
 
@@ -71,20 +69,6 @@ def factK12_program_participation(dataframes = {}, views_info = [], config = Non
 
         factK12_program_participation_df = factK12_program_participation_df.rename(columns={"id": "K12SchoolId"})
 
-        # K12 Program Type Dim
-        k12_programtypes_dim = dataframes["analytics.ceds_K12ProgramTypeDim"]
-        k12_programtypes_dim = k12_programtypes_dim[['K12ProgramTypeKey','id']]
-        
-        factK12_program_participation_df = pd.merge(
-            left=factK12_program_participation_df,
-            right=k12_programtypes_dim,
-            how="left",
-            left_on="K12ProgramTypeKey",
-            right_on="K12ProgramTypeKey"
-        )
-
-        factK12_program_participation_df = factK12_program_participation_df.rename(columns={"id": "K12ProgramTypeId"})
-
         # K12 Student Dim
         k12_student_dim = dataframes["analytics.ceds_K12StudentDim"]
         k12_student_dim = k12_student_dim[['K12StudentKey','id']]
@@ -99,6 +83,78 @@ def factK12_program_participation(dataframes = {}, views_info = [], config = Non
 
         factK12_program_participation_df = factK12_program_participation_df.rename(columns={"id": "K12StudentId"})
 
+        # K12 Enrollment Status Dim
+        k12_entollment_status_dim = dataframes["analytics.ceds_K12EnrollmentStatusDim"]
+        k12_entollment_status_dim = k12_entollment_status_dim[['K12EnrollmentStatusKey','id']]
+        
+        factK12_program_participation_df = pd.merge(
+            left=factK12_program_participation_df,
+            right=k12_entollment_status_dim,
+            how="left",
+            left_on="K12EnrollmentStatusKey",
+            right_on="K12EnrollmentStatusKey"
+        )
+
+        factK12_program_participation_df = factK12_program_participation_df.rename(columns={"id": "K12EnrollmentStatusId"})
+
+        # K12 Entry Grade Level Dim
+        k12_grade_level_dim = dataframes["analytics.ceds_GradeLevelDim"]
+        k12_grade_level_dim = k12_grade_level_dim[['GradeLevelKey','id']]
+        
+        factK12_program_participation_df = pd.merge(
+            left=factK12_program_participation_df,
+            right=k12_grade_level_dim,
+            how="left",
+            left_on="EntryGradeLevelKey",
+            right_on="GradeLevelKey"
+        )
+
+        factK12_program_participation_df = factK12_program_participation_df.rename(columns={"id": "EntryGradeLevelId"})
+
+        # K12 Exit Grade Level Dim
+        k12_grade_level_dim = dataframes["analytics.ceds_GradeLevelDim"]
+        k12_grade_level_dim = k12_grade_level_dim[['GradeLevelKey','id']]
+        
+        factK12_program_participation_df = pd.merge(
+            left=factK12_program_participation_df,
+            right=k12_grade_level_dim,
+            how="left",
+            left_on="ExitGradeLevelKey",
+            right_on="GradeLevelKey"
+        )
+
+        factK12_program_participation_df = factK12_program_participation_df.rename(columns={"id": "ExitGradeLevelId"})
+
+        # K12 Enrollment Entry Date
+        school_year_df = dataframes["analytics.ceds_SchoolYearDim"]
+        school_year_df = school_year_df[['SchoolYearKey','id']]
+
+        factK12_student_enrollment_df = pd.merge(
+            left=factK12_student_enrollment_df,
+            right=school_year_df,
+            how="left",
+            left_on="EnrollmentEntryDateKey",
+            right_on="SchoolYearKey"
+        )
+
+        factK12_student_enrollment_df = factK12_student_enrollment_df.rename(columns={"id": "EnrollmentEntryDateId"})
+
+        # EnrollmentExitDateId Pending #
+
+        # K12 Projected Graduation Date
+        school_year_df = dataframes["analytics.ceds_SchoolYearDim"]
+        school_year_df = school_year_df[['SchoolYearKey','id']]
+        
+        factK12_program_participation_df = pd.merge(
+            left=factK12_program_participation_df,
+            right=school_year_df,
+            how="left",
+            left_on="ProjectedGraduationDateKey",
+            right_on="K12SchoolKey"
+        )
+
+        factK12_program_participation_df = factK12_program_participation_df.rename(columns={"id": "ProjectedGraduationDateId"})
+        
         # K12 Demographic Dim
         k12_demographic_dim = dataframes["analytics.ceds_K12DemographicDim"]
         k12_demographic_dim = k12_demographic_dim[['K12DemographicKey','id']]
@@ -127,12 +183,6 @@ def factK12_program_participation(dataframes = {}, views_info = [], config = Non
 
         factK12_program_participation_df = factK12_program_participation_df.rename(columns={"id": "IdeaStatusId"})
 
-        #  Program Participation Start Date Id
-        factK12_program_participation_df["ProgramParticipationStartDateId"] = int(datetime.strptime(factK12_program_participation_df["ProgramParticipationStartDateKey"], '%m/%d/%y').timestamp())
-        
-        #  Program Participation Exit Date Id
-        factK12_program_participation_df["ProgramParticipationExitDateId"] = int(datetime.strptime(factK12_program_participation_df["ProgramParticipationExitDateKey"], '%m/%d/%y').timestamp())
-        
         conn_target = pyodbc.connect(
             f'Driver={"SQL Server"};Server={config["Target"]["Server"]};Database={config["Target"]["Database"]};Trusted_Connection={config["Target"]["Trusted_Connection"]};')
 
