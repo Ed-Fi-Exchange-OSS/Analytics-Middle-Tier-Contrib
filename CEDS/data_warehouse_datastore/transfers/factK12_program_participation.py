@@ -4,33 +4,28 @@
 # See the LICENSE and NOTICES files in the project root for more information.
 
 from datetime import datetime
-import pyodbc 
-# import json
 import pandas as pd
 
-def factK12_program_participation(dataframes = {}, views_info = [], config = None) -> None:
-    conn_source = pyodbc.Connection
-    # conn_target = pyodbc.Connection
+
+def factK12_program_participation(dataframes = {}, conn_source, conn_target) -> None:
     try:
-        conn_source = pyodbc.connect(
-            f'Driver={"SQL Server"};Server={config["Source"]["Server"]};Database={config["Source"]["Database"]};Trusted_Connection={config["Source"]["Trusted_Connection"]};')
-        query = ("SELECT "\
-                    "[FactK12ProgramParticipationKey]" \
-                    ",[SchoolYearKey]" \
-                    ",[DateKey]" \
-                    ",[DataCollectionKey]" \
-                    ",[SeaKey]" \
-                    ",[IeuKey]" \
-                    ",[LeaKey]" \
-                    ",[K12SchoolKey]" \
-                    ",[K12ProgramTypeKey],"\
-                    "[K12StudentKey]" \
-                    ",[K12DemographicKey]" \
-                    ",[IdeaStatusKey]" \
-                    ",[ProgramParticipationStartDateKey]" \
-                    ",[ProgramParticipationExitDateKey]" \
-                    ",[StudentCount] "\
-                "FROM analytics.ceds_FactK12ProgramParticipation;")
+        query = ("SELECT \
+                    [FactK12ProgramParticipationKey] \
+                    ,[SchoolYearKey] \
+                    ,[DateKey] \
+                    ,[DataCollectionKey] \
+                    ,[SeaKey] \
+                    ,[IeuKey] \
+                    ,[LeaKey] \
+                    ,[K12SchoolKey] \
+                    ,[K12ProgramTypeKey], \
+                    [K12StudentKey] \
+                    ,[K12DemographicKey] \
+                    ,[IdeaStatusKey] \
+                    ,[ProgramParticipationStartDateKey] \
+                    ,[ProgramParticipationExitDateKey] \
+                    ,[StudentCount] \
+                FROM analytics.ceds_FactK12ProgramParticipation;")
         
         factK12_program_participation_df = pd.read_sql(query, conn_source)
         
@@ -59,7 +54,7 @@ def factK12_program_participation(dataframes = {}, views_info = [], config = Non
 
         # K12 School Dim
         k12_school_dim = dataframes["analytics.ceds_K12SchoolDim"]
-        k12_school_dim = k12_school_dim[['K12SchoolKey','id']]
+        k12_school_dim = k12_school_dim[['K12SchoolKey', 'id']]
         
         factK12_program_participation_df = pd.merge(
             left=factK12_program_participation_df,
@@ -133,50 +128,44 @@ def factK12_program_participation(dataframes = {}, views_info = [], config = Non
         #  Program Participation Exit Date Id
         factK12_program_participation_df["ProgramParticipationExitDateId"] = int(datetime.strptime(factK12_program_participation_df["ProgramParticipationExitDateKey"], '%m/%d/%y').timestamp())
         
-        conn_target = pyodbc.connect(
-            f'Driver={"SQL Server"};Server={config["Target"]["Server"]};Database={config["Target"]["Database"]};Trusted_Connection={config["Target"]["Trusted_Connection"]};')
-
         cursor_target = conn_target.cursor()
         
         for index, row in factK12_program_participation_df.iterrows():
-            cursor_target.execute(f"INSERT INTO RDS.FactK12ProgramParticipations (" \
-                    "[SchoolYearId]" \
-                    ",[DateId]" \
-                    ",[DataCollectionId]" \
-                    ",[SeaId]" \
-                    ",[IeuId]" \
-                    ",[LeaId]" \
-                    ",[K12SchoolId]" \
-                    ",[K12ProgramTypeId]" \
-                    ",[K12StudentId]" \
-                    ",[K12DemographicId]" \
-                    ",[IdeaStatusId]" \
-                    ",[ProgramParticipationStartDateId]" \
-                    ",[ProgramParticipationExitDateId]" \
-                    ",[StudentCount]" \
-                "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)", 
-                    row.SchoolYearId
-                    ,row.DateKey
-                    ,row.DataCollectionKey
-                    ,row.SeaKey
-                    ,row.IeuKey
-                    ,row.LeaKey
-                    ,row.K12SchoolId
-                    ,row.K12ProgramTypeKey
-                    ,row.K12StudentId
-                    ,row.K12DemographicKey
-                    ,row.IdeaStatusKey
-                    ,row.ProgramParticipationStartDateKey
-                    ,row.ProgramParticipationExitDateKey
-                    ,row.StudentCount
+            cursor_target.execute("INSERT INTO RDS.FactK12ProgramParticipations ( \
+                    [SchoolYearId] \
+                    ,[DateId] \
+                    ,[DataCollectionId] \
+                    ,[SeaId] \
+                    ,[IeuId] \
+                    ,[LeaId] \
+                    ,[K12SchoolId] \
+                    ,[K12ProgramTypeId] \
+                    ,[K12StudentId] \
+                    ,[K12DemographicId] \
+                    ,[IdeaStatusId] \
+                    ,[ProgramParticipationStartDateId] \
+                    ,[ProgramParticipationExitDateId] \
+                    ,[StudentCount] \
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                    row.SchoolYearId,
+                    row.DateKey,
+                    row.DataCollectionKey,
+                    row.SeaKey,
+                    row.IeuKey,
+                    row.LeaKey,
+                    row.K12SchoolId,
+                    row.K12ProgramTypeKey,
+                    row.K12StudentId,
+                    row.K12DemographicKey,
+                    row.IdeaStatusKey,
+                    row.ProgramParticipationStartDateKey,
+                    row.ProgramParticipationExitDateKey,
+                    row.StudentCount
             )
 
         conn_target.commit()
-        cursor_target.close()
 
     except Exception as error:
-        print (error)
+        print(error)
         
-    finally:
-        conn_source.close()
-        conn_target.close()
+    

@@ -4,34 +4,30 @@
 # See the LICENSE and NOTICES files in the project root for more information.
 
 from datetime import datetime
-import pyodbc 
-# import json
 import pandas as pd
+from common.helpers import question_marks
 
-def factK12_student_enrollment(dataframes = {}, views_info = [], config = None) -> None:
-    conn_source = pyodbc.Connection
-    # conn_target = pyodbc.Connection
+
+def factK12_student_enrollment(dataframes = {}, conn_source, conn_target) -> None:
     try:
-        conn_source = pyodbc.connect(
-            f'Driver={"SQL Server"};Server={config["Source"]["Server"]};Database={config["Source"]["Database"]};Trusted_Connection={config["Source"]["Trusted_Connection"]};')
-        query = ("SELECT "\
-                    "[FactK12StudentEnrollmentKey]" \
-                    ",[SchoolYearKey]" \
-                    ",[DataCollectionKey]" \
-                    ",[SeaKey]" \
-                    ",[IeuKey]" \
-                    ",[LeaKey]" \
-                    ",[K12SchoolKey]" \
-                    ",[K12StudentKey]" \
-                    ",[K12EnrollmentStatusKey]" \
-                    ",[EntryGradeLevelKey]" \
-                    ",[ExitGradeLevelKey]" \
-                    ",[EnrollmentEntryDateKey]" \
-                    ",[ProjectedGraduationDateKey]" \
-                    ",[K12DemographicKey]" \
-                    ",[IdeaStatusKey]" \
-                    ",[StudentCount]"\
-                "FROM analytics.ceds_FactK12StudentEnrollment;")
+        query = ("SELECT \
+                    FactK12StudentEnrollmentKey \
+                    ,SchoolYearKey \
+                    ,DataCollectionKey \
+                    ,SeaKey \
+                    ,IeuKey \
+                    ,LeaKey \
+                    ,K12SchoolKey \
+                    ,K12StudentKey \
+                    ,K12EnrollmentStatusKey \
+                    ,EntryGradeLevelKey \
+                    ,ExitGradeLevelKey \
+                    ,EnrollmentEntryDateKey \
+                    ,ProjectedGraduationDateKey \
+                    ,K12DemographicKey \
+                    ,IdeaStatusKey \
+                    ,StudentCount \
+                FROM analytics.ceds_FactK12StudentEnrollment;")
         
         factK12_student_enrollment_df = pd.read_sql(query, conn_source)
         
@@ -183,28 +179,25 @@ def factK12_student_enrollment(dataframes = {}, views_info = [], config = None) 
 
         factK12_program_participation_df = factK12_program_participation_df.rename(columns={"id": "IdeaStatusId"})
 
-        conn_target = pyodbc.connect(
-            f'Driver={"SQL Server"};Server={config["Target"]["Server"]};Database={config["Target"]["Database"]};Trusted_Connection={config["Target"]["Trusted_Connection"]};')
-
         cursor_target = conn_target.cursor()
         
         for index, row in factK12_program_participation_df.iterrows():
-            cursor_target.execute(f"INSERT INTO RDS.FactK12ProgramParticipations (" \
-                    "[SchoolYearId]" \
-                    ",[DateId]" \
-                    ",[DataCollectionId]" \
-                    ",[SeaId]" \
-                    ",[IeuId]" \
-                    ",[LeaId]" \
-                    ",[K12SchoolId]" \
-                    ",[K12ProgramTypeId]" \
-                    ",[K12StudentId]" \
-                    ",[K12DemographicId]" \
-                    ",[IdeaStatusId]" \
-                    ",[ProgramParticipationStartDateId]" \
-                    ",[ProgramParticipationExitDateId]" \
-                    ",[StudentCount]" \
-                "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)", 
+            cursor_target.execute(f"INSERT INTO RDS.FactK12ProgramParticipations ( \
+                    SchoolYearId \
+                    ,DateId \
+                    ,DataCollectionId \
+                    ,SeaId \
+                    ,IeuId \
+                    ,LeaId \
+                    ,K12SchoolId \
+                    ,K12ProgramTypeId \
+                    ,K12StudentId \
+                    ,K12DemographicId \
+                    ,IdeaStatusId \
+                    ,ProgramParticipationStartDateId \
+                    ,ProgramParticipationExitDateId \
+                    ,StudentCount \
+                VALUES ({question_marks(14)})", 
                     row.SchoolYearId
                     ,row.DateKey
                     ,row.DataCollectionKey
@@ -222,11 +215,6 @@ def factK12_student_enrollment(dataframes = {}, views_info = [], config = None) 
             )
 
         conn_target.commit()
-        cursor_target.close()
 
     except Exception as error:
         print (error)
-        
-    finally:
-        conn_source.close()
-        conn_target.close()
