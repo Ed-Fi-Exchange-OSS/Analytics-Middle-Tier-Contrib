@@ -22,10 +22,16 @@ CREATE VIEW analytics.ceds_IdeaStatusDim
     SELECT DISTINCT CONCAT (
             COALESCE(ReferenceBasisOfExitDescriptor.EdFactsCode, '')
             ,'-'
+            ,COALESCE(ReferenceBasisOfExitDescriptor.CodeValue, '')
+            ,'-'
             ,COALESCE(ReferenceDisabilityDescriptor.EdFactsCode, '')
             ,'-'
+            ,COALESCE(ReferenceDisabilityDescriptor.CodeValue, '')
+            ,'-'
             ,COALESCE(ReferenceEducationalEnvironmentDescriptor.EdFactsCode, '')
-            ) AS IdeaStatusKey
+            ,'-'
+            ,COALESCE(ReferenceEducationalEnvironmentDescriptor.CodeValue, '')
+        ) AS IdeaStatusKey
         ,COALESCE(ReferenceBasisOfExitDescriptor.CodeValue, '') AS BasisOfExitCode
         ,COALESCE(ReferenceBasisOfExitDescriptor.Description, '') AS BasisOfExitDescription
         ,COALESCE(ReferenceBasisOfExitDescriptor.EdFactsCode, '') AS BasisOfExitEdFactsCode

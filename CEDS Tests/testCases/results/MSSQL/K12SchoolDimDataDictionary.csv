@@ -1,5 +1,5 @@
 "ColumnName","DataType"
-"K12SchoolKey","varchar"
+"K12SchoolKey","nvarchar"
 "SchoolKey","int"
 "LeaName","nvarchar"
 "LeaIdentifierNces","varchar"

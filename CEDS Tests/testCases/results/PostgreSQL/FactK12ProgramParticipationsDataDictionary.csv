@@ -8,7 +8,7 @@ ieukey,character varying
 leakey,text
 k12schoolkey,text
 k12programtypekey,text
-k12studentlkey,text
+k12studentkey,text
 k12demographickey,text
 ideastatuskey,text
 programparticipationstartdatekey,date

@@ -66,12 +66,12 @@ CREATE VIEW analytics.ceds_IeuDim AS
 		COALESCE(MailingAddress.StateAbbreviation, '') AS MailingAddressStateAbbreviation,
 		COALESCE(MailingAddress.StreetNumberName, '') AS MailingAddressStreetNumberAndName,
 		'' AS MailingAddressCountyAnsiCode,
-		CAST((CASE 
+		(CASE 
 			WHEN PhysicalAddress.StateAbbreviation IS NULL
-				THEN 1
+				THEN true
 			ELSE
-				0
-		END) AS BIT) AS OutOfStateIndicator,
+				false
+		END) AS OutOfStateIndicator,
 		OperationalStatusDescriptor.CodeValue AS OrganizationOperationalStatus,
 		'' as OperationalStatusEffectiveDate,
 		COALESCE(PhysicalAddress.City, '') AS PhysicalAddressCity,

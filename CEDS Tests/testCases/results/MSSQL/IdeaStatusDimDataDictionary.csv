@@ -1,5 +1,5 @@
 "ColumnName","DataType"
-"IdeaStatusKey","varchar"
+"IdeaStatusKey","nvarchar"
 "BasisOfExitCode","nvarchar"
 "BasisOfExitDescription","nvarchar"
 "BasisOfExitEdFactsCode","varchar"
