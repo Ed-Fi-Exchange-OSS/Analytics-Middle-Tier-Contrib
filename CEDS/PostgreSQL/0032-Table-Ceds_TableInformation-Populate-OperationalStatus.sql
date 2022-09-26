@@ -9,11 +9,11 @@ WITH SOURCE AS (SELECT Descriptor.DescriptorId
 	, ceds_TableReference.TableId
 FROM
 	(VALUES
-		('Added', 'Active'),
-		('Changed', 'Active'),
-		('Active', 'Active'),
-		('New', 'Active'),
-		('Reopened', 'Active')
+		('Added', '4'),
+		('Changed', '5'),
+		('Active', '1'),
+		('New', '3'),
+		('Reopened', '8')
 	) MapReference (CodeValue, EdFactsCode)
 INNER JOIN 
 	edfi.Descriptor 

@@ -5,6 +5,7 @@
 
 from datetime import datetime
 import pandas as pd
+from common.helpers import question_marks
 
 
 def factK12_program_participation(dataframes = {}, conn_source, conn_target) -> None:
@@ -131,7 +132,7 @@ def factK12_program_participation(dataframes = {}, conn_source, conn_target) -> 
         cursor_target = conn_target.cursor()
         
         for index, row in factK12_program_participation_df.iterrows():
-            cursor_target.execute("INSERT INTO RDS.FactK12ProgramParticipations ( \
+            cursor_target.execute(f"INSERT INTO RDS.FactK12ProgramParticipations ( \
                     [SchoolYearId] \
                     ,[DateId] \
                     ,[DataCollectionId] \
@@ -146,7 +147,7 @@ def factK12_program_participation(dataframes = {}, conn_source, conn_target) -> 
                     ,[ProgramParticipationStartDateId] \
                     ,[ProgramParticipationExitDateId] \
                     ,[StudentCount] \
-                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                VALUES ({question_marks(14)})",
                     row.SchoolYearId,
                     row.DateKey,
                     row.DataCollectionKey,
