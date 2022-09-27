@@ -24,9 +24,9 @@ CREATE VIEW analytics.ceds_FactK12ProgramParticipation AS
            ,SchoolYearKey
            ,'' AS DateKey
            ,'' AS DataCollectionKey
-           ,IeuOrganizationIdentifierSea AS SeaKey
-           ,LeaIdentifierSea AS IeuKey
-           ,LeaIdentifierNces AS LeaKey
+           ,ceds_IeuDim.IeuDimKey AS IeuKey
+           ,ceds_SeaDim.SeaDimKey AS SeaKey
+           ,ceds_LeaDim.LeaKey AS LeaKey
            ,K12SchoolKey AS K12SchoolKey
            ,K12ProgramTypeKey AS K12ProgramTypeKey
            ,ceds_K12StudentDim.K12StudentKey AS K12StudentKey
@@ -45,6 +45,18 @@ CREATE VIEW analytics.ceds_FactK12ProgramParticipation AS
             analytics.ceds_K12SchoolDim
         ON
             ceds_K12SchoolDim.SchoolIdentifierSea = StudentSpecialEducationProgramAssociation.EducationOrganizationId
+		INNER JOIN
+			analytics.ceds_IeuDim
+		ON
+			ceds_K12SchoolDim.IeuOrganizationIdentifierSea = ceds_IeuDim.IeuOrganizationIdentifierSea
+		INNER JOIN
+			analytics.ceds_SeaDim
+		ON
+			ceds_K12SchoolDim.SeaIdentifierSea = ceds_SeaDim.SeaIdentifierSea
+		INNER JOIN
+			analytics.ceds_LeaDim
+		ON
+			ceds_K12SchoolDim.LeaIdentifierSea = ceds_LeaDim.LeaIdentifierSea
         INNER JOIN
             edfi.ProgramTypeDescriptor
         ON

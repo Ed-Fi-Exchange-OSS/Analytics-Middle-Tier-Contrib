@@ -9,7 +9,7 @@ WITH source AS (VALUES
 INSERT INTO 
     analytics_config.ceds_DataCollectionDim
 (
-	DataCollectionDimId
+	DataCollectionDimKey
 	, DataCollectionName
 	, DataCollectionDescription
 )

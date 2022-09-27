@@ -1,5 +1,5 @@
 "ColumnName","DataType"
-"LeaKey","varchar"
+"LeaKey","nvarchar"
 "LocalEducationAgencyKey","varchar"
 "OperationalStatusEffectiveDate","varchar"
 "LeaName","nvarchar"

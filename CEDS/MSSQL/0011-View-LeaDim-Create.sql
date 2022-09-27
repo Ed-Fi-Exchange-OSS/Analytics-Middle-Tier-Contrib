@@ -17,6 +17,7 @@ CREATE VIEW analytics.ceds_LeaDim AS
 WITH OrganizationAddress
     AS (
         SELECT LocalEducationAgency.LocalEducationAgencyId
+			,EducationOrganizationAddress.AddressTypeDescriptorId
             ,EducationOrganizationAddress.City AS AddressCity
             ,EducationOrganizationAddress.PostalCode AS AddressPostalCode
             ,Descriptor.CodeValue AS AddressStateAbbreviation
@@ -57,7 +58,24 @@ WITH OrganizationAddress
 SELECT 
     CONCAT(
 	    EducationOrganizationLEA.EducationOrganizationId
-		,'-',EducationOrganizationSEA.EducationOrganizationId
+		,'-',LocalEducationAgency.StateEducationAgencyId
+		,'-',EducationOrganizationAddress.AddressTypeDescriptorId
+		,'-',EducationOrganizationAddress.City
+		,'-',EducationOrganizationAddress.PostalCode
+		,'-',EducationOrganizationAddress.StateAbbreviationDescriptorId
+		,'-',EducationOrganizationAddress.StreetNumberName
+		,'-',EducationOrganizationCategory.EducationOrganizationCategoryDescriptorId
+		,'-',MailingAddress.AddressTypeDescriptorId
+		,'-',MailingAddress.AddressCity
+		,'-',MailingAddress.AddressPostalCode
+		,'-',MailingAddress.StateAbbreviationDescriptorId
+		,'-',MailingAddress.AddressStreetNumberAndName
+		,'-',PhysicalAddress.AddressTypeDescriptorId
+		,'-',PhysicalAddress.AddressCity
+		,'-',PhysicalAddress.AddressPostalCode
+		,'-',PhysicalAddress.StateAbbreviationDescriptorId
+		,'-',PhysicalAddress.AddressStreetNumberAndName
+		,'-',EducationOrganizationInstitutionTelephone.InstitutionTelephoneNumberTypeDescriptorId
 	) as LeaKey
     ,CAST(EducationOrganizationLEA.EducationOrganizationId AS VARCHAR) as LocalEducationAgencyKey
     ,'' AS OperationalStatusEffectiveDate

@@ -3,31 +3,31 @@
 -- The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 -- See the LICENSE and NOTICES files in the project root for more information.
 MERGE INTO analytics_config.ceds_DataCollectionDim AS Target
-USING (SELECT DataCollectionDimId
+USING (SELECT DataCollectionDimKey
 			, DataCollectionName
 			, DataCollectionDescription
 FROM
 	(VALUES
 		(1,'EdFi ODS','Membership Source System'),
 		(2,'EdFi ODS','SPED Source System')
-	) ReferenceTableName (DataCollectionDimId
+	) ReferenceTableName (DataCollectionDimKey
 			, DataCollectionName
 			, DataCollectionDescription)
-)  Source(DataCollectionDimId
+)  Source(DataCollectionDimKey
 			, DataCollectionName
 			, DataCollectionDescription)
-ON TARGET.DataCollectionDimId = Source.DataCollectionDimId
+ON TARGET.DataCollectionDimKey = Source.DataCollectionDimKey
 WHEN NOT MATCHED BY TARGET
 THEN
       INSERT
 	  (
-		DataCollectionDimId
+		DataCollectionDimKey
 		, DataCollectionName
 		, DataCollectionDescription
 	  )
 	  VALUES
       (
-        Source.DataCollectionDimId
+        Source.DataCollectionDimKey
 		, Source.DataCollectionName
 		, Source.DataCollectionDescription
       );

@@ -10,7 +10,7 @@ IF NOT EXISTS (
         )
 BEGIN
     CREATE TABLE analytics_config.ceds_DataCollectionDim (
-        DataCollectionDimId INT NOT NULL,
+        DataCollectionDimKey INT NOT NULL,
         SourceSystemDataCollectionIdentifier INT NULL,
         SourceSystemName VARCHAR(100) NULL,
         DataCollectionName VARCHAR(100) NOT NULL,
@@ -19,6 +19,6 @@ BEGIN
         DataCollectionCloseDate DATETIME NULL,
         DataCollectionAcademicSchoolYear VARCHAR(7) NULL,
         DataCollectionSchoolYear VARCHAR(7) NULL,
-        CONSTRAINT PK_ceds_DataCollectionDim PRIMARY KEY CLUSTERED (DataCollectionDimId ASC)
+        CONSTRAINT PK_ceds_DataCollectionDim PRIMARY KEY CLUSTERED (DataCollectionDimKey ASC)
         )
 END;

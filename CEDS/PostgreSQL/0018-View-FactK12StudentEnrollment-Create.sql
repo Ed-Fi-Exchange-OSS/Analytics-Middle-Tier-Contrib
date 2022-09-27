@@ -25,19 +25,19 @@ AS
 		SELECT
 			ceds_SchoolYearDim.SchoolYearKey AS SchoolYearKey,
 			'' AS DataCollectionKey,
-			ceds_K12SchoolDim.SeaIdentifierSea AS SeaKey,
-			ceds_K12SchoolDim.IeuOrganizationIdentifierSea AS IeuKey,
-			ceds_K12SchoolDim.LeaIdentifierSea AS LeaKey,
-			ceds_K12SchoolDim.SchoolIdentifierSea AS K12SchoolKey,
+			ceds_IeuDim.IeuDimKey AS IeuKey,
+            ceds_SeaDim.SeaDimKey AS SeaKey,
+            ceds_LeaDim.LeaKey AS LeaKey,
+            K12SchoolKey AS K12SchoolKey,
 			ceds_K12StudentDim.K12StudentKey AS K12StudentKey,
 			ceds_K12EnrollmentStatusDim.K12EnrollmentStatusKey AS K12EnrollmentStatusKey,
 			ceds_GradeLevelDim.GradeLevelKey AS EntryGradeLevelKey,
 			ceds_GradeLevelDim.GradeLevelKey AS ExitGradeLevelKey,
-			SchoolYearsDim_ExitWithdrawDate.SchoolYearKey AS EnrollmentEntryDateKey,
+			SchoolYearsDim_EntryDate.SchoolYearKey AS EnrollmentEntryDateKey,
+			SchoolYearsDim_ExitWithdrawDate.SchoolYearKey AS EnrollmentExitDateKey,
 			ceds_SchoolYearDim_SchoolYear.SchoolYearKey AS ProjectedGraduationDateKey,
 			ceds_K12DemographicDim.K12DemographicKey AS K12DemographicKey,
 			'' AS IdeaStatusKey
-
 		FROM
 			analytics.ceds_SchoolYearDim
 		INNER JOIN 
@@ -46,6 +46,18 @@ AS
 		INNER JOIN
 			analytics.ceds_K12SchoolDim
 				ON edfi.StudentSchoolAssociation.SchoolId::TEXT = ceds_K12SchoolDim.SchoolIdentifierSea
+		INNER JOIN
+			analytics.ceds_IeuDim
+		ON
+			ceds_K12SchoolDim.IeuOrganizationIdentifierSea = ceds_IeuDim.IeuOrganizationIdentifierSea
+		INNER JOIN
+			analytics.ceds_SeaDim
+		ON
+			ceds_K12SchoolDim.SeaIdentifierSea = ceds_SeaDim.SeaIdentifierSea
+		INNER JOIN
+			analytics.ceds_LeaDim
+		ON
+			ceds_K12SchoolDim.LeaIdentifierSea = ceds_LeaDim.LeaIdentifierSea
 		INNER JOIN
 			edfi.Student
 				ON StudentSchoolAssociation.StudentUSI = Student.StudentUSI
@@ -85,6 +97,9 @@ AS
 		INNER JOIN
 			analytics.ceds_GradeLevelDim
 				ON EntryGradeLevelDescriptor.CodeValue = ceds_GradeLevelDim.GradeLevelCode
+		INNER JOIN
+			analytics.ceds_SchoolYearDim SchoolYearsDim_EntryDate
+				ON StudentSchoolAssociation.EntryDate BETWEEN TO_DATE(SchoolYearsDim_EntryDate.SessionBeginDate, 'MM-DD-YYYY') AND TO_DATE(SchoolYearsDim_EntryDate.SessionEndDate, 'MM-DD-YYYY')
 		INNER JOIN
 			analytics.ceds_SchoolYearDim SchoolYearsDim_ExitWithdrawDate
 				ON StudentSchoolAssociation.ExitWithdrawDate BETWEEN TO_DATE(SchoolYearsDim_ExitWithdrawDate.SessionBeginDate, 'MM-DD-YYYY') AND TO_DATE(SchoolYearsDim_ExitWithdrawDate.SessionEndDate, 'MM-DD-YYYY')
@@ -186,6 +201,8 @@ AS
 			'-',
 			EnrollmentEntryDateKey,
 			'-',
+			EnrollmentExitDateKey,
+			'-',
 			ProjectedGraduationDateKey,
 			'-',
 			K12DemographicKey,
@@ -203,6 +220,7 @@ AS
 		EntryGradeLevelKey,
 		ExitGradeLevelKey,
 		EnrollmentEntryDateKey,
+		EnrollmentExitDateKey,
 		ProjectedGraduationDateKey,
 		K12DemographicKey,
 		IdeaStatusKey,
@@ -221,7 +239,7 @@ AS
 		EntryGradeLevelKey,
 		ExitGradeLevelKey,
 		EnrollmentEntryDateKey,
+		EnrollmentExitDateKey,
 		ProjectedGraduationDateKey,
 		K12DemographicKey,
 		IdeaStatusKey
-

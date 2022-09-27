@@ -32,19 +32,19 @@ CREATE VIEW analytics.ceds_FactK12StudentEnrollment AS
 		SELECT 
 			ceds_SchoolYearDim.SchoolYearKey AS SchoolYearKey,
 			'' AS DataCollectionKey,
-			ceds_K12SchoolDim.SeaIdentifierSea AS SeaKey,
-			ceds_K12SchoolDim.IeuOrganizationIdentifierSea AS IeuKey,
-			ceds_K12SchoolDim.LeaIdentifierSea AS LeaKey,
-			ceds_K12SchoolDim.SchoolIdentifierSea AS K12SchoolKey,
+			ceds_IeuDim.IeuDimKey AS IeuKey,
+            ceds_SeaDim.SeaDimKey AS SeaKey,
+            ceds_LeaDim.LeaKey AS LeaKey,
+            K12SchoolKey AS K12SchoolKey,
 			ceds_K12StudentDim.K12StudentKey AS K12StudentKey,
 			ceds_K12EnrollmentStatusDim.K12EnrollmentStatusKey AS K12EnrollmentStatusKey,
 			ceds_GradeLevelDim.GradeLevelKey AS EntryGradeLevelKey,
 			ceds_GradeLevelDim.GradeLevelKey AS ExitGradeLevelKey,
-			SchoolYearsDim_ExitWithdrawDate.SchoolYearKey AS EnrollmentEntryDateKey,
+			SchoolYearsDim_EntryDate.SchoolYearKey AS EnrollmentEntryDateKey,
+			SchoolYearsDim_ExitWithdrawDate.SchoolYearKey AS EnrollmentExitDateKey,
 			ceds_SchoolYearDim_SchoolYear.SchoolYearKey AS ProjectedGraduationDateKey,
 			ceds_K12DemographicDim.K12DemographicKey AS K12DemographicKey,
 			'' AS IdeaStatusKey
-
 		FROM
 			analytics.ceds_SchoolYearDim
 		INNER JOIN 
@@ -54,12 +54,23 @@ CREATE VIEW analytics.ceds_FactK12StudentEnrollment AS
 			analytics.ceds_K12SchoolDim
 				ON edfi.StudentSchoolAssociation.SchoolId = ceds_K12SchoolDim.SchoolIdentifierSea
 		INNER JOIN
+			analytics.ceds_IeuDim
+		ON
+			ceds_K12SchoolDim.IeuOrganizationIdentifierSea = ceds_IeuDim.IeuOrganizationIdentifierSea
+		INNER JOIN
+			analytics.ceds_SeaDim
+		ON
+			ceds_K12SchoolDim.SeaIdentifierSea = ceds_SeaDim.SeaIdentifierSea
+		INNER JOIN
+			analytics.ceds_LeaDim
+		ON
+			ceds_K12SchoolDim.LeaIdentifierSea = ceds_LeaDim.LeaIdentifierSea
+		INNER JOIN
 			edfi.Student
 				ON StudentSchoolAssociation.StudentUSI = Student.StudentUSI
 		INNER JOIN
 			analytics.ceds_K12StudentDim
 				ON Student.StudentUniqueId = ceds_K12StudentDim.StudentIdentifierState
-		--
 		LEFT JOIN
 			edfi.Descriptor EntryTypeDescriptor
 				ON StudentSchoolAssociation.EntryTypeDescriptorId = EntryTypeDescriptor.DescriptorId
@@ -92,6 +103,9 @@ CREATE VIEW analytics.ceds_FactK12StudentEnrollment AS
 		INNER JOIN
 			analytics.ceds_GradeLevelDim
 				ON EntryGradeLevelDescriptor.CodeValue = ceds_GradeLevelDim.GradeLevelCode
+		INNER JOIN
+			analytics.ceds_SchoolYearDim SchoolYearsDim_EntryDate
+				ON StudentSchoolAssociation.EntryDate BETWEEN CONVERT(date, SchoolYearsDim_EntryDate.SessionBeginDate) AND CONVERT(date, SchoolYearsDim_EntryDate.SessionEndDate)
 		INNER JOIN
 			analytics.ceds_SchoolYearDim SchoolYearsDim_ExitWithdrawDate
 				ON StudentSchoolAssociation.ExitWithdrawDate BETWEEN CONVERT(date, SchoolYearsDim_ExitWithdrawDate.SessionBeginDate) AND CONVERT(date, SchoolYearsDim_ExitWithdrawDate.SessionEndDate)
@@ -193,6 +207,8 @@ CREATE VIEW analytics.ceds_FactK12StudentEnrollment AS
 			'-',
 			EnrollmentEntryDateKey,
 			'-',
+			EnrollmentExitDateKey,
+			'-',
 			ProjectedGraduationDateKey,
 			'-',
 			K12DemographicKey,
@@ -210,6 +226,7 @@ CREATE VIEW analytics.ceds_FactK12StudentEnrollment AS
 		EntryGradeLevelKey,
 		ExitGradeLevelKey,
 		EnrollmentEntryDateKey,
+		EnrollmentExitDateKey,
 		ProjectedGraduationDateKey,
 		K12DemographicKey,
 		IdeaStatusKey,
@@ -228,6 +245,7 @@ CREATE VIEW analytics.ceds_FactK12StudentEnrollment AS
 		EntryGradeLevelKey,
 		ExitGradeLevelKey,
 		EnrollmentEntryDateKey,
+		EnrollmentExitDateKey,
 		ProjectedGraduationDateKey,
 		K12DemographicKey,
 		IdeaStatusKey
