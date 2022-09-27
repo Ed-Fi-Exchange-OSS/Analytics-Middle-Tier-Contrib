@@ -1,15 +1,18 @@
 columnname,datatype
 ideastatuskey,text
-basisofexitcode,character varying
-basisofexitdescription,character varying
-basisofexitedfactscode,character varying
-basisofexitid,text
-disabilitycode,character varying
-disabilitydescription,character varying
-disabilityedfactscode,character varying
-disabilityid,text
-educenvcode,character varying
-educenvdescription,character varying
-educenvedfactscode,character varying
-educenvid,text
-(13 rows)
+specialeducationexitreasoncode,character varying
+specialeducationexitreasondescription,character varying
+specialeducationexitreasonedfactscode,character varying
+primarydisabilitytypecode,character varying
+primarydisabilitytypedescription,character varying
+primarydisabilitytypeedfactscode,character varying
+ideaeducationalenvironmentforschoolagecode,character varying
+ideaeducationalenvironmentforschoolagedescription,character varying
+ideaeducationalenvironmentforschoolageedfactscode,character varying
+ideaeducationalenvironmentforearlychildhoodcode,character varying
+ideaeducationalenvironmentforearlychildhooddescription,character varying
+ideaeducationalenvironmentforearlychildhoodedfactscode,character varying
+ideaindicatorcode,text
+ideaindicatordescription,text
+ideaindicatoredfactscode,text
+(16 rows)

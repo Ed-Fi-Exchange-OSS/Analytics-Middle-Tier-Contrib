@@ -20,7 +20,7 @@ CREATE OR REPLACE VIEW analytics.ceds_K12StudentDim AS
         Student.BirthDate,
         StudentSchoolAssociation.ClassOfSchoolYear AS Cohort,
         Student.FirstName,
-        Student.LastSurname,
+        Student.LastSurname AS LastOrSurname,
         COALESCE(Student.MiddleName, '') AS MiddleName,
         Student.StudentUniqueId AS StudentIdentifierState,
         '' AS RecordStartDateTime,

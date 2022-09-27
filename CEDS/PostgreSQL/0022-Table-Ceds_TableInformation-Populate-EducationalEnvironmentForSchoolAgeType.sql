@@ -3,8 +3,7 @@
 -- The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 -- See the LICENSE and NOTICES files in the project root for more information.
 
-MERGE INTO analytics_config.ceds_TableInformation AS Target
-USING (SELECT Descriptor.DescriptorId
+WITH SOURCE AS (SELECT Descriptor.DescriptorId
 	, Descriptor.CodeValue
 	, MapReference.EdFactsCode
 	, ceds_TableReference.TableId
@@ -30,24 +29,19 @@ INNER JOIN
 			AND Descriptor.Namespace like '%/EducationalEnvironmentDescriptor'
 INNER JOIN 
 	analytics_config.ceds_TableReference
-		ON ceds_TableReference.TableName = 'xref.EducationalEnvironmentType'
-) AS Source(DescriptorId, CodeValue, EdFactsCode, TableId)
-ON TARGET.CodeValue = Source.CodeValue
-	AND TARGET.EdFactsCode = Source.EdFactsCode
-	AND TARGET.TableId = Source.TableId
-    WHEN NOT MATCHED BY TARGET
-    THEN
-      INSERT
+		ON ceds_TableReference.TableName = 'xref.EducationalEnvironmentForSchoolAgeType'
+) 
+INSERT INTO analytics_config.ceds_TableInformation
 	  (
 		DescriptorId
 		, CodeValue
 		, EdFactsCode
 		, TableId
 	  )
-      VALUES
-      (
+    SELECT
         Source.DescriptorId
-		, Source.CodeValue
-		, Source.EdFactsCode
-		, Source.TableId
-      );
+		  , Source.CodeValue
+		  , Source.EdFactsCode
+		  , Source.TableId
+    FROM Source
+ON CONFLICT DO NOTHING;

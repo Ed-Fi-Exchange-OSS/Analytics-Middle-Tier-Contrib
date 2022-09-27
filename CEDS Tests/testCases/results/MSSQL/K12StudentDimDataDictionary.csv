@@ -4,7 +4,7 @@
 "BirthDate","date"
 "Cohort","smallint"
 "FirstName","nvarchar"
-"LastSurname","nvarchar"
+"LastOrSurname","nvarchar"
 "MiddleName","nvarchar"
 "StudentIdentifierState","nvarchar"
 "RecordStartDateTime","varchar"
