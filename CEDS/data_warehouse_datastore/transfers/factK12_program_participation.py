@@ -8,7 +8,10 @@ import pandas as pd
 from common.helpers import question_marks
 
 
-def factK12_program_participation(dataframes = {}, conn_source, conn_target) -> None:
+def factK12_program_participation(dataframes={}, conn_source=None, conn_target=None) -> None:
+
+    print("Inserting FactK12ProgramParticipations... ", end='')
+
     try:
         query = ("SELECT \
                     FactK12ProgramParticipationKey \
@@ -27,101 +30,128 @@ def factK12_program_participation(dataframes = {}, conn_source, conn_target) -> 
                     ,ProgramParticipationExitDateKey \
                     ,StudentCount \
                 FROM analytics.ceds_FactK12ProgramParticipation;")
-        
+
         factK12_program_participation_df = pd.read_sql(query, conn_source)
-        
+
         # School Year Dim
-        school_year_df = dataframes["analytics.ceds_SchoolYearDim"]
+        school_year_df = dataframes["dim_schools_years"]
 
         factK12_program_participation_df = pd.merge(
             left=factK12_program_participation_df,
             right=school_year_df,
             how="left",
             left_on="SchoolYearKey",
-            right_on="SchoolYearKey"
+            right_on="SchoolYearKey",
+            suffixes=('', 'right')
         )
 
         # Sea Dim
-        k12_seas_dim = dataframes["analytics.dim_seas"]
+        k12_seas_dim = dataframes["dim_seas"]
         factK12_program_participation_df = pd.merge(
             left=factK12_program_participation_df,
             right=k12_seas_dim,
             how="left",
             left_on="SeaKey",
-            right_on="SeaDimKey"
+            right_on="SeaDimKey",
+            suffixes=('', 'right')
         )
 
         # Ieu Dim
-        k12_ieus_dim = dataframes["analytics.dim_ieus"]
+        k12_ieus_dim = dataframes["dim_ieus"]
         factK12_program_participation_df = pd.merge(
             left=factK12_program_participation_df,
             right=k12_ieus_dim,
             how="left",
             left_on="IeuKey",
-            right_on="IeuDimKey"
+            right_on="IeuDimKey",
+            suffixes=('', 'right')
         )
 
         # Lea Dim
-        k12_leas_dim = dataframes["analytics.dim_leas"]
+        k12_leas_dim = dataframes["dim_leas"]
         factK12_program_participation_df = pd.merge(
             left=factK12_program_participation_df,
             right=k12_leas_dim,
             how="left",
-            left_on="IeuKey",
-            right_on="IeuDimKey"
+            left_on="LeaKey",
+            right_on="LeaKey",
+            suffixes=('', 'right')
         )
 
         # K12 School Dim
-        k12_school_dim = dataframes["analytics.ceds_K12SchoolDim"]
+        k12_school_dim = dataframes["dim_k12schools"]
         factK12_program_participation_df = pd.merge(
             left=factK12_program_participation_df,
             right=k12_school_dim,
             how="left",
             left_on="K12SchoolKey",
-            right_on="K12SchoolKey"
+            right_on="K12SchoolKey",
+            suffixes=('', 'right')
+        )
+
+        # Program Type
+        k12_program_type_dim = dataframes["dim_k12program_types"]
+        factK12_program_participation_df = pd.merge(
+            left=factK12_program_participation_df,
+            right=k12_program_type_dim,
+            how="left",
+            left_on="K12ProgramTypeKey",
+            right_on="K12ProgramTypeKey",
+            suffixes=('', 'right')
         )
 
         # K12 Student Dim
-        k12_student_dim = dataframes["analytics.ceds_K12StudentDim"]
+        k12_student_dim = dataframes["dim_k12students"]
         factK12_program_participation_df = pd.merge(
             left=factK12_program_participation_df,
             right=k12_student_dim,
             how="left",
             left_on="K12StudentKey",
-            right_on="K12StudentKey"
+            right_on="K12StudentKey",
+            suffixes=('', 'right')
         )
 
         # K12 Demographic Dim
-        k12_demographic_dim = dataframes["analytics.ceds_K12DemographicDim"]
+        k12_demographic_dim = dataframes["dim_K12demographics"]
         
         factK12_program_participation_df = pd.merge(
             left=factK12_program_participation_df,
             right=k12_demographic_dim,
             how="left",
             left_on="K12DemographicKey",
-            right_on="K12DemographicKey"
+            right_on="K12DemographicKey",
+            suffixes=('', 'right')
         )
 
         # K12 Idea Status Dim
-        k12_idea_status_dim = dataframes["analytics.ceds_IdeaStatusDim"]
+        k12_idea_status_dim = dataframes["dim_idea_statuses"]
         
         factK12_program_participation_df = pd.merge(
             left=factK12_program_participation_df,
             right=k12_idea_status_dim,
             how="left",
             left_on="IdeaStatusKey",
-            right_on="IdeaStatusKey"
+            right_on="IdeaStatusKey",
+            suffixes=('', 'right')
         )
 
+        factK12_program_participation_df.to_csv("C:/GAP/EdFi/BIA-1210/factK12_program_participation_df.csv")
+
         #  Program Participation Start Date Id
-        factK12_program_participation_df["ProgramParticipationStartDateId"] = int(datetime.strptime(factK12_program_participation_df["ProgramParticipationStartDateKey"], '%m/%d/%y').timestamp())
-        
+        # factK12_program_participation_df["ProgramParticipationStartDateId"] = int(datetime.strptime(factK12_program_participation_df["ProgramParticipationStartDateKey"], '%m/%d/%y').timestamp())
+
         #  Program Participation Exit Date Id
-        factK12_program_participation_df["ProgramParticipationExitDateId"] = int(datetime.strptime(factK12_program_participation_df["ProgramParticipationExitDateKey"], '%m/%d/%y').timestamp())
-        
+        # factK12_program_participation_df["ProgramParticipationExitDateId"] = int(datetime.strptime(factK12_program_participation_df["ProgramParticipationExitDateKey"], '%m/%d/%y').timestamp())
+
         cursor_target = conn_target.cursor()
-        
+
         for index, row in factK12_program_participation_df.iterrows():
+
+            # row.ProgramParticipationStartDateId = int(datetime.strptime(row.ProgramParticipationStartDateKey, '%m/%d/%y').timestamp())
+            row.ProgramParticipationStartDateId = int(datetime.strptime(row.ProgramParticipationStartDateKey, '%Y-%m-%d').timestamp())
+            # row.ProgramParticipationExitDateId = int(datetime.strptime(row.ProgramParticipationExitDateKey, '%m/%d/%y').timestamp())
+            row.ProgramParticipationExitDateId = int(datetime.strptime(row.ProgramParticipationExitDateKey, '%Y-%m-%d').timestamp())
+
             cursor_target.execute(f"INSERT INTO RDS.FactK12ProgramParticipations ( \
                     SchoolYearId \
                     ,DateId \
@@ -136,25 +166,27 @@ def factK12_program_participation(dataframes = {}, conn_source, conn_target) -> 
                     ,IdeaStatusId \
                     ,ProgramParticipationStartDateId \
                     ,ProgramParticipationExitDateId \
-                    ,StudentCount \
+                    ,StudentCount) \
                 VALUES ({question_marks(14)})",
                     row.SchoolYearId,
-                    row.DateKey,
-                    row.DataCollectionKey,
-                    row.SeaKey,
-                    row.IeuKey,
-                    row.LeaKey,
+                    1,
+                    1,
+                    row.SeaDimId,
+                    row.IeuDimId,
+                    row.LeaId,
                     row.K12SchoolId,
-                    row.K12ProgramTypeKey,
+                    row.K12ProgramTypeId,
                     row.K12StudentId,
-                    row.K12DemographicKey,
-                    row.IdeaStatusKey,
-                    row.ProgramParticipationStartDateKey,
-                    row.ProgramParticipationExitDateKey,
+                    1,
+                    row.IdeaStatusId,
+                    row.ProgramParticipationStartDateId,
+                    row.ProgramParticipationExitDateId,
                     row.StudentCount
             )
 
         conn_target.commit()
+
+        print("Done!")
 
     except Exception as error:
         print(error)

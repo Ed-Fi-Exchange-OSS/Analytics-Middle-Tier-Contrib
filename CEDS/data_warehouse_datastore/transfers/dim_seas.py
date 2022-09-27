@@ -69,7 +69,7 @@ def dim_seas(conn_source, conn_target) -> pd.DataFrame:
     data = data[['SeaDimId', 'SeaDimKey']]
 
     conn_target.commit()
-    
+
     print("Done!")
 
     return data
