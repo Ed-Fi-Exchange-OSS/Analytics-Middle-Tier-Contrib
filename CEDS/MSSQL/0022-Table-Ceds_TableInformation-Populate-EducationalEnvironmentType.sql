@@ -10,19 +10,27 @@ USING (SELECT Descriptor.DescriptorId
 	, ceds_TableReference.TableId
 FROM
 	(VALUES
-		('Added', 'Active'),
-		('Changed', 'Active'),
-		('Active', 'Active'),
-		('New', 'Active'),
-		('Reopened', 'Active')
-	) MapReference (CodeValue, EdFactsCode)
+		('Classroom',''),
+		('Homebound',''),
+		('Hospital class',''),
+		('In-school suspension',''),
+		('Laboratory',''),
+		('Mainstream (Special Education)',''),
+		('Off-school center',''),
+		('Pull-out class',''),
+		('Resource room',''),
+		('Self-contained (Special Education)',''),
+		('Self-study',''),
+		('Shop',''),
+		('Single sex classroom','')
+) MapReference (CodeValue, EdFactsCode)
 INNER JOIN 
 	edfi.Descriptor 
 		ON MapReference.CodeValue = Descriptor.CodeValue
-			AND Descriptor.Namespace like '%/OperationalStatusDescriptor'
+			AND Descriptor.Namespace like '%/EducationalEnvironmentDescriptor'
 INNER JOIN 
 	analytics_config.ceds_TableReference
-		ON ceds_TableReference.TableName = 'xref.OperationalStatus'
+		ON ceds_TableReference.TableName = 'xref.EducationalEnvironmentType'
 ) AS Source(DescriptorId, CodeValue, EdFactsCode, TableId)
 ON TARGET.CodeValue = Source.CodeValue
 	AND TARGET.EdFactsCode = Source.EdFactsCode
