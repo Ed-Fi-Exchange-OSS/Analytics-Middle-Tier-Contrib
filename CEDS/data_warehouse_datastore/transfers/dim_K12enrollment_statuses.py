@@ -53,9 +53,9 @@ def dim_K12enrollment_statuses(conn_source, conn_target) -> pd.DataFrame:
             EdFactsAcademicOrCareerAndTechnicalOutcomeExitTypeEdFactsCode)  \
         VALUES ({question_marks(15)});", *row_insert)
         identity = cursor_target.execute("SELECT @@IDENTITY AS id;").fetchone()[0]
-        data.at[index, 'id'] = int(identity)
+        data.at[index, 'K12EnrollmentStatusId'] = int(identity)
 
-    data = data[['id', 'K12EnrollmentStatusKey']]
+    data = data[['K12EnrollmentStatusId', 'K12EnrollmentStatusKey']]
 
     conn_target.commit()
     

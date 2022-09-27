@@ -9,7 +9,7 @@ from common.helpers import question_marks
 
 def dim_k12students(conn_source, conn_target) -> pd.DataFrame:
 
-    print("Inserting DimK12Students... ", end = '')
+    print("Inserting DimK12Students... ", end='')
 
     data = pd.read_sql("SELECT \
             K12StudentKey, \
@@ -38,9 +38,9 @@ def dim_k12students(conn_source, conn_target) -> pd.DataFrame:
             RecordStartDateTime, \
             RecordEndDateTime) VALUES ({question_marks(8)});", *row_insert)
         identity = cursor_target.execute("SELECT @@IDENTITY AS id;").fetchone()[0]
-        data.at[index, 'id'] = int(identity)
+        data.at[index, 'K12StudentId'] = int(identity)
 
-    data = data[['id', 'K12StudentKey']]
+    data = data[['K12StudentId', 'K12StudentKey']]
 
     conn_target.commit()
     

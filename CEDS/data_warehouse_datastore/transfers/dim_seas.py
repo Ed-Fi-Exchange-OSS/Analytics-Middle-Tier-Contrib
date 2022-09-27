@@ -9,7 +9,7 @@ from common.helpers import question_marks
 
 def dim_seas(conn_source, conn_target) -> pd.DataFrame:
 
-    print("Inserting DimSeas... ", end = '')
+    print("Inserting DimSeas... ", end='')
 
     data = pd.read_sql("SELECT \
             SeaDimKey, \
@@ -64,9 +64,9 @@ def dim_seas(conn_source, conn_target) -> pd.DataFrame:
                 RecordStartDateTime, \
                 RecordEndDateTime) VALUES ({question_marks(21)});", *row_insert)
         identity = cursor_target.execute("SELECT @@IDENTITY AS id;").fetchone()[0]
-        data.at[index, 'id'] = int(identity)
+        data.at[index, 'SeaDimId'] = int(identity)
 
-    data = data[['id', 'SeaDimKey']]
+    data = data[['SeaDimId', 'SeaDimKey']]
 
     conn_target.commit()
     

@@ -9,7 +9,7 @@ from common.helpers import question_marks
 
 def dim_races(conn_source, conn_target) -> pd.DataFrame:
 
-    print("Inserting DimRaces... ", end = '')
+    print("Inserting DimRaces... ", end='')
 
     data = pd.read_sql("SELECT \
             RaceKey, \
@@ -28,9 +28,9 @@ def dim_races(conn_source, conn_target) -> pd.DataFrame:
             RaceDescription, \
             RaceEdFactsCode) VALUES ({question_marks(3)});", *row_insert)
         identity = cursor_target.execute("SELECT @@IDENTITY AS id;").fetchone()[0]
-        data.at[index, 'id'] = int(identity)
+        data.at[index, 'RaceId'] = int(identity)
 
-    data = data[['id', 'RaceKey']]
+    data = data[['RaceId', 'RaceKey']]
 
     conn_target.commit()
     

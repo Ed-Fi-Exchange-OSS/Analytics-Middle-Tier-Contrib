@@ -28,9 +28,9 @@ def dim_k12program_types(conn_source, conn_target) -> pd.DataFrame:
             ProgramTypeDescription, \
             ProgramTypeDefinition) VALUES ({question_marks(3)});", *row_insert)
         identity = cursor_target.execute("SELECT @@IDENTITY AS id;").fetchone()[0]
-        data.at[index, 'id'] = int(identity)
+        data.at[index, 'K12ProgramTypeId'] = int(identity)
 
-    data = data[['id', 'K12ProgramTypeKey']]
+    data = data[['K12ProgramTypeId', 'K12ProgramTypeKey']]
 
     conn_target.commit()
     

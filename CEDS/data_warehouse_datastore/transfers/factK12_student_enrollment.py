@@ -33,7 +33,6 @@ def factK12_student_enrollment(dataframes = {}, conn_source, conn_target) -> Non
         
         # School Year Id
         school_year_df = dataframes["analytics.ceds_SchoolYearDim"]
-        school_year_df = school_year_df[['SchoolYearKey','id']]
 
         factK12_student_enrollment_df = pd.merge(
             left=factK12_student_enrollment_df,
@@ -43,145 +42,141 @@ def factK12_student_enrollment(dataframes = {}, conn_source, conn_target) -> Non
             right_on="SchoolYearKey"
         )
 
-        factK12_student_enrollment_df = factK12_student_enrollment_df.rename(columns={"id": "SchoolYearId"})
+        # Sea Dim
+        k12_seas_dim = dataframes["analytics.dim_seas"]
+        factK12_student_enrollment_df = pd.merge(
+            left=factK12_student_enrollment_df,
+            right=k12_seas_dim,
+            how="left",
+            left_on="SeaKey",
+            right_on="SeaDimKey"
+        )
 
-        # SeaId - Pending #
+        # Ieu Dim
+        k12_ieus_dim = dataframes["analytics.dim_ieus"]
+        factK12_student_enrollment_df = pd.merge(
+            left=factK12_student_enrollment_df,
+            right=k12_ieus_dim,
+            how="left",
+            left_on="IeuKey",
+            right_on="IeuDimKey"
+        )
 
-        # IeuId - Pending #
-
-        # LeaId - Pending #
+        # Lea Dim
+        k12_leas_dim = dataframes["analytics.dim_leas"]
+        factK12_student_enrollment_df = pd.merge(
+            left=factK12_student_enrollment_df,
+            right=k12_leas_dim,
+            how="left",
+            left_on="IeuKey",
+            right_on="IeuDimKey"
+        )
 
         # K12 School Dim
         k12_school_dim = dataframes["analytics.ceds_K12SchoolDim"]
-        k12_school_dim = k12_school_dim[['K12SchoolKey','id']]
-        
-        factK12_program_participation_df = pd.merge(
-            left=factK12_program_participation_df,
+        factK12_student_enrollment_df = pd.merge(
+            left=factK12_student_enrollment_df,
             right=k12_school_dim,
             how="left",
             left_on="K12SchoolKey",
             right_on="K12SchoolKey"
         )
 
-        factK12_program_participation_df = factK12_program_participation_df.rename(columns={"id": "K12SchoolId"})
-
         # K12 Student Dim
         k12_student_dim = dataframes["analytics.ceds_K12StudentDim"]
-        k12_student_dim = k12_student_dim[['K12StudentKey','id']]
-        
-        factK12_program_participation_df = pd.merge(
-            left=factK12_program_participation_df,
+        factK12_student_enrollment_df = pd.merge(
+            left=factK12_student_enrollment_df,
             right=k12_student_dim,
             how="left",
             left_on="K12StudentKey",
             right_on="K12StudentKey"
         )
 
-        factK12_program_participation_df = factK12_program_participation_df.rename(columns={"id": "K12StudentId"})
-
         # K12 Enrollment Status Dim
         k12_entollment_status_dim = dataframes["analytics.ceds_K12EnrollmentStatusDim"]
-        k12_entollment_status_dim = k12_entollment_status_dim[['K12EnrollmentStatusKey','id']]
-        
-        factK12_program_participation_df = pd.merge(
-            left=factK12_program_participation_df,
+        factK12_student_enrollment_df = pd.merge(
+            left=factK12_student_enrollment_df,
             right=k12_entollment_status_dim,
             how="left",
             left_on="K12EnrollmentStatusKey",
             right_on="K12EnrollmentStatusKey"
         )
 
-        factK12_program_participation_df = factK12_program_participation_df.rename(columns={"id": "K12EnrollmentStatusId"})
+        factK12_student_enrollment_df = factK12_student_enrollment_df.rename(columns={"id": "K12EnrollmentStatusId"})
 
         # K12 Entry Grade Level Dim
         k12_grade_level_dim = dataframes["analytics.ceds_GradeLevelDim"]
-        k12_grade_level_dim = k12_grade_level_dim[['GradeLevelKey','id']]
-        
-        factK12_program_participation_df = pd.merge(
-            left=factK12_program_participation_df,
+        factK12_student_enrollment_df = pd.merge(
+            left=factK12_student_enrollment_df,
             right=k12_grade_level_dim,
             how="left",
             left_on="EntryGradeLevelKey",
             right_on="GradeLevelKey"
         )
 
-        factK12_program_participation_df = factK12_program_participation_df.rename(columns={"id": "EntryGradeLevelId"})
-
         # K12 Exit Grade Level Dim
         k12_grade_level_dim = dataframes["analytics.ceds_GradeLevelDim"]
-        k12_grade_level_dim = k12_grade_level_dim[['GradeLevelKey','id']]
-        
-        factK12_program_participation_df = pd.merge(
-            left=factK12_program_participation_df,
+        factK12_student_enrollment_df = pd.merge(
+            left=factK12_student_enrollment_df,
             right=k12_grade_level_dim,
             how="left",
             left_on="ExitGradeLevelKey",
             right_on="GradeLevelKey"
         )
 
-        factK12_program_participation_df = factK12_program_participation_df.rename(columns={"id": "ExitGradeLevelId"})
-
-        # K12 Enrollment Entry Date
-        school_year_df = dataframes["analytics.ceds_SchoolYearDim"]
-        school_year_df = school_year_df[['SchoolYearKey','id']]
-
+        # Enrollment Entry Date
+        enrollment_entry_date_df = dataframes["analytics.ceds_SchoolYearDim"]
         factK12_student_enrollment_df = pd.merge(
             left=factK12_student_enrollment_df,
-            right=school_year_df,
+            right=enrollment_entry_date_df,
             how="left",
             left_on="EnrollmentEntryDateKey",
             right_on="SchoolYearKey"
         )
 
-        factK12_student_enrollment_df = factK12_student_enrollment_df.rename(columns={"id": "EnrollmentEntryDateId"})
-
-        # EnrollmentExitDateId Pending #
+        # Enrollment Exit Date
+        enrollment_exit_date_df = dataframes["analytics.ceds_SchoolYearDim"]
+        factK12_student_enrollment_df = pd.merge(
+            left=factK12_student_enrollment_df,
+            right=enrollment_exit_date_df,
+            how="left",
+            left_on="EnrollmentExitDateKey",
+            right_on="SchoolYearKey"
+        )
 
         # K12 Projected Graduation Date
-        school_year_df = dataframes["analytics.ceds_SchoolYearDim"]
-        school_year_df = school_year_df[['SchoolYearKey','id']]
-        
-        factK12_program_participation_df = pd.merge(
-            left=factK12_program_participation_df,
-            right=school_year_df,
+        projected_graduation_date_df = dataframes["analytics.ceds_SchoolYearDim"]
+        factK12_student_enrollment_df = pd.merge(
+            left=factK12_student_enrollment_df,
+            right=projected_graduation_date_df,
             how="left",
             left_on="ProjectedGraduationDateKey",
             right_on="K12SchoolKey"
         )
-
-        factK12_program_participation_df = factK12_program_participation_df.rename(columns={"id": "ProjectedGraduationDateId"})
         
         # K12 Demographic Dim
         k12_demographic_dim = dataframes["analytics.ceds_K12DemographicDim"]
-        k12_demographic_dim = k12_demographic_dim[['K12DemographicKey','id']]
-        
-        factK12_program_participation_df = pd.merge(
-            left=factK12_program_participation_df,
+        factK12_student_enrollment_df = pd.merge(
+            left=factK12_student_enrollment_df,
             right=k12_demographic_dim,
             how="left",
             left_on="K12DemographicKey",
             right_on="K12DemographicKey"
         )
 
-        factK12_program_participation_df = factK12_program_participation_df.rename(columns={"id": "K12DemographicId"})
-
         # K12 Idea Status Dim
         k12_idea_status_dim = dataframes["analytics.ceds_IdeaStatusDim"]
-        k12_idea_status_dim = k12_idea_status_dim[['IdeaStatusKey','id']]
-        
-        factK12_program_participation_df = pd.merge(
-            left=factK12_program_participation_df,
+        factK12_student_enrollment_df = pd.merge(
+            left=factK12_student_enrollment_df,
             right=k12_idea_status_dim,
             how="left",
             left_on="IdeaStatusKey",
             right_on="IdeaStatusKey"
         )
 
-        factK12_program_participation_df = factK12_program_participation_df.rename(columns={"id": "IdeaStatusId"})
-
         cursor_target = conn_target.cursor()
         
-        for index, row in factK12_program_participation_df.iterrows():
+        for index, row in factK12_student_enrollment_df.iterrows():
             cursor_target.execute(f"INSERT INTO RDS.FactK12ProgramParticipations ( \
                     SchoolYearId \
                     ,DateId \

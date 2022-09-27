@@ -108,9 +108,9 @@ def dim_leas(conn_source, conn_target) -> pd.DataFrame:
             Longitude, \
             EffectiveDate) VALUES ({question_marks(43)});", *row_insert)
         identity = cursor_target.execute("SELECT @@IDENTITY AS id;").fetchone()[0]
-        data.at[index, 'id'] = int(identity)
+        data.at[index, 'LeaId'] = int(identity)
 
-    data = data[['id', 'LeaKey']]
+    data = data[['LeaId', 'LeaKey']]
 
     conn_target.commit()
     

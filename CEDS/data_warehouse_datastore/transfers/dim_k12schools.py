@@ -133,9 +133,9 @@ def dim_k12schools(conn_source, conn_target) -> pd.DataFrame:
             AdministrativeFundingControlCode, \
             AdministrativeFundingControlDescription) VALUES ({question_marks(56)});", *row_insert)
         identity = cursor_target.execute("SELECT @@IDENTITY AS id;").fetchone()[0]
-        data.at[index, 'id'] = int(identity)
+        data.at[index, 'K12SchoolId'] = int(identity)
 
-    data = data[['id', 'K12SchoolKey']]
+    data = data[['K12SchoolId', 'K12SchoolKey']]
 
     conn_target.commit()
     

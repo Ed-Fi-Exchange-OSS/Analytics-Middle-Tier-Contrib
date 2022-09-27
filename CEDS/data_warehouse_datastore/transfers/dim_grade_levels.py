@@ -9,7 +9,7 @@ from common.helpers import question_marks
 
 def dim_grade_levels(conn_source, conn_target) -> pd.DataFrame:
 
-    print("Inserting DimGradeLevels... ", end = '')
+    print("Inserting DimGradeLevels... ", end='')
 
     data = pd.read_sql("SELECT \
             GradeLevelKey, \
@@ -28,9 +28,9 @@ def dim_grade_levels(conn_source, conn_target) -> pd.DataFrame:
             GradeLevelDescription, \
             GradeLevelEdFactsCode) VALUES ({question_marks(3)});", *row_insert)
         identity = cursor_target.execute("SELECT @@IDENTITY AS id;").fetchone()[0]
-        data.at[index, 'id'] = int(identity)
+        data.at[index, 'GradeLevelId'] = int(identity)
 
-    data = data[['id', 'GradeLevelKey']]
+    data = data[['GradeLevelId', 'GradeLevelKey']]
 
     conn_target.commit()
     

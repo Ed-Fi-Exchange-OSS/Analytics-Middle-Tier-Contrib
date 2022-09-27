@@ -76,9 +76,9 @@ def dim_ieus(conn_source, conn_target) -> pd.DataFrame:
             RecordStartDateTime, \
             RecordEndDateTime ) VALUES ({question_marks(27)});", *row_insert)
         identity = cursor_target.execute("SELECT @@IDENTITY AS id;").fetchone()[0]
-        data.at[index, 'id'] = int(identity)
+        data.at[index, 'IeuDimId'] = int(identity)
 
-    data = data[['id', 'IeuDimKey']]
+    data = data[['IeuDimId', 'IeuDimKey']]
 
     conn_target.commit()
     

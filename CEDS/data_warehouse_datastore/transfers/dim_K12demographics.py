@@ -70,9 +70,9 @@ def dim_K12demographics(conn_source, conn_target) -> pd.DataFrame:
             SexDescription, \
             SexEdFactsCode) VALUES ({question_marks(24)});", *row_insert)
         identity = cursor_target.execute("SELECT @@IDENTITY AS id;").fetchone()[0]
-        data.at[index, 'id'] = int(identity)
+        data.at[index, 'K12DemographicId'] = int(identity)
 
-    data = data[['id', 'K12DemographicKey']]
+    data = data[['K12DemographicId', 'K12DemographicKey']]
 
     conn_target.commit()
     

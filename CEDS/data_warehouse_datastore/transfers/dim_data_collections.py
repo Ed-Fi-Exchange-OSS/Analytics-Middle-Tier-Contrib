@@ -9,10 +9,10 @@ from common.helpers import question_marks
 
 def dim_data_collections(conn_source, conn_target) -> pd.DataFrame:
 
-    print("Inserting DimDataCollections... ", end = '')
+    print("Inserting DimDataCollections... ", end='')
 
     data = pd.read_sql("SELECT \
-            DataCollectionDimId, \
+            DataCollectionDimKey, \
             SourceSystemDataCollectionIdentifier, \
             SourceSystemName, \
             DataCollectionName, \
@@ -39,9 +39,9 @@ def dim_data_collections(conn_source, conn_target) -> pd.DataFrame:
                 DataCollectionSchoolYear) \
             VALUES ({question_marks(8)});", *row_insert)
         identity = cursor_target.execute("SELECT @@IDENTITY AS id;").fetchone()[0]
-        data.at[index, 'id'] = int(identity)
+        data.at[index, 'DataCollectionDimId'] = int(identity)
 
-    data = data[['id', 'DataCollectionDimId']]
+    data = data[['DataCollectionDimId', 'DataCollectionDimKey']]
 
     conn_target.commit()
 
