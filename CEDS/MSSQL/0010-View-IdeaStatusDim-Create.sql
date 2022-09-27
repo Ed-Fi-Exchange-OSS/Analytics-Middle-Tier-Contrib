@@ -30,23 +30,44 @@ AS (
     )
 SELECT DISTINCT CONCAT (
         COALESCE(ReferenceBasisOfExitDescriptor.EdFactsCode, '')
+		,'-'
+		,COALESCE(ReferenceBasisOfExitDescriptor.CodeValue, '')
         ,'-'
         ,COALESCE(ReferenceDisabilityDescriptor.EdFactsCode, '')
+		,'-'
+		,COALESCE(ReferenceDisabilityDescriptor.CodeValue, '')
         ,'-'
         ,COALESCE(ReferenceEducationalEnvironmentDescriptor.EdFactsCode, '')
+		,'-'
+		,COALESCE(ReferenceEducationalEnvironmentDescriptor.CodeValue, '')
         ) AS IdeaStatusKey
-    ,COALESCE(ReferenceBasisOfExitDescriptor.CodeValue, '') AS BasisOfExitCode
-    ,COALESCE(ReferenceBasisOfExitDescriptor.Description, '') AS BasisOfExitDescription
-    ,COALESCE(ReferenceBasisOfExitDescriptor.EdFactsCode, '') AS BasisOfExitEdFactsCode
-    ,'' AS BasisOfExitId
-    ,COALESCE(ReferenceDisabilityDescriptor.CodeValue, '') AS DisabilityCode
-    ,COALESCE(ReferenceDisabilityDescriptor.Description, '') AS DisabilityDescription
-    ,COALESCE(ReferenceDisabilityDescriptor.EdFactsCode, '') AS DisabilityEdFactsCode
-    ,'' AS DisabilityId
-    ,COALESCE(ReferenceEducationalEnvironmentDescriptor.CodeValue, '') AS EducEnvCode
-    ,COALESCE(ReferenceEducationalEnvironmentDescriptor.Description, '') AS EducEnvDescription
-    ,COALESCE(ReferenceEducationalEnvironmentDescriptor.EdFactsCode, '') AS EducEnvEdFactsCode
-    ,'' AS EducEnvId
+    ,COALESCE(ReferenceBasisOfExitDescriptor.CodeValue, '') AS SpecialEducationExitReasonCode
+    ,COALESCE(ReferenceBasisOfExitDescriptor.Description, '') AS SpecialEducationExitReasonDescription
+    ,COALESCE(ReferenceBasisOfExitDescriptor.EdFactsCode, '') AS SpecialEducationExitReasonEdFactsCode
+    ,COALESCE(ReferenceDisabilityDescriptor.CodeValue, '') AS PrimaryDisabilityTypeCode
+    ,COALESCE(ReferenceDisabilityDescriptor.Description, '') AS PrimaryDisabilityTypeDescription
+    ,COALESCE(ReferenceDisabilityDescriptor.EdFactsCode, '') AS PrimaryDisabilityTypeEdFactsCode
+    ,COALESCE(ReferenceEducationalEnvironmentDescriptor.CodeValue, '') AS IdeaEducationalEnvironmentForSchoolAgeCode
+    ,COALESCE(ReferenceEducationalEnvironmentDescriptor.Description, '') AS IdeaEducationalEnvironmentForSchoolAgeDescription
+    ,COALESCE(ReferenceEducationalEnvironmentDescriptor.EdFactsCode, '') AS IdeaEducationalEnvironmentForSchoolAgeEdFactsCode
+	,COALESCE(ReferenceEducationalEnvironmentDescriptor.CodeValue, '') AS IdeaEducationalEnvironmentForEarlyChildhoodCode
+    ,COALESCE(ReferenceEducationalEnvironmentDescriptor.Description, '') AS IdeaEducationalEnvironmentForEarlyChildhoodDescription
+    ,COALESCE(ReferenceEducationalEnvironmentDescriptor.EdFactsCode, '') AS IdeaEducationalEnvironmentForEarlyChildhoodEdFactsCode
+	,CASE
+		WHEN ReferenceEducationalEnvironmentDescriptor.EdFactsCode IS NOT NULL 
+			THEN 'YES'
+		ELSE 'NO'
+	END AS IdeaIndicatorCode
+	,CASE
+		WHEN ReferenceEducationalEnvironmentDescriptor.EdFactsCode IS NOT NULL 
+			THEN 'YES'
+		ELSE 'NO'
+	END AS IdeaIndicatorDescription
+	,CASE
+		WHEN ReferenceEducationalEnvironmentDescriptor.EdFactsCode IS NOT NULL 
+			THEN 'YES'
+		ELSE 'NO'
+	END AS IdeaIndicatorEdFactsCode
 FROM 
     (SELECT ReferenceBasisOfExitDescriptor.CodeValue
             ,ReferenceBasisOfExitDescriptor.Description
@@ -79,4 +100,4 @@ CROSS JOIN
     LEFT JOIN
         MapReferenceDescriptor ReferenceEducationalEnvironmentDescriptor
             ON EducationalEnvironmentDescriptor.EducationalEnvironmentDescriptorId = ReferenceEducationalEnvironmentDescriptor.DescriptorId
-    WHERE ReferenceEducationalEnvironmentDescriptor.TableName = 'xref.EducationalEnvironmentType') AS ReferenceEducationalEnvironmentDescriptor;
+    WHERE ReferenceEducationalEnvironmentDescriptor.TableName = 'xref.EducationalEnvironmentForSchoolAgeType') AS ReferenceEducationalEnvironmentDescriptor;

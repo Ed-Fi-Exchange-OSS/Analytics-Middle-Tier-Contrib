@@ -93,8 +93,8 @@ CREATE VIEW analytics.ceds_FactK12ProgramParticipation AS
 		INNER JOIN
 			analytics.ceds_IdeaStatusDim
 				ON
-					ReasonExitedDescriptor.CodeValue = ceds_IdeaStatusDim.BasisOfExitCode
-					AND ceds_IdeaStatusDim.DisabilityCode = StudentSpecialEducationProgramAssociationDisabilityDescriptor.CodeValue
+					ReasonExitedDescriptor.CodeValue = ceds_IdeaStatusDim.SpecialEducationExitReasonCode
+					AND ceds_IdeaStatusDim.PrimaryDisabilityTypeCode = StudentSpecialEducationProgramAssociationDisabilityDescriptor.CodeValue
         LEFT JOIN
             edfi.StudentEducationOrganizationAssociation
         ON

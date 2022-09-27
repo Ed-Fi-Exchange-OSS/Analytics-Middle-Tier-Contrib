@@ -9,23 +9,29 @@ from common.helpers import question_marks
 
 def dim_idea_statuses(conn_source, conn_target) -> pd.DataFrame:
 
-    print("Inserting DimIdeaStatuses... ", end = '')
+    print("Inserting DimIdeaStatuses... ", end='')
 
     data = pd.read_sql("SELECT \
             IdeaStatusKey, \
-            BasisOfExitCode, \
-            BasisOfExitDescription, \
-            BasisOfExitEdFactsCode, \
-            DisabilityCode, \
-            DisabilityDescription, \
-            DisabilityEdFactsCode, \
-            EducEnvCode, \
-            EducEnvDescription, \
-            EducEnvEdFactsCode  \
+            SpecialEducationExitReasonCode, \
+            SpecialEducationExitReasonDescription, \
+            SpecialEducationExitReasonEdFactsCode, \
+            PrimaryDisabilityTypeCode, \
+            PrimaryDisabilityTypeDescription, \
+            PrimaryDisabilityTypeEdFactsCode, \
+            IdeaEducationalEnvironmentForSchoolAgeCode, \
+            IdeaEducationalEnvironmentForSchoolAgeDescription, \
+            IdeaEducationalEnvironmentForSchoolAgeEdFactsCode,  \
+            IdeaEducationalEnvironmentForEarlyChildhoodCode, \
+            IdeaEducationalEnvironmentForEarlyChildhoodDescription, \
+            IdeaEducationalEnvironmentForEarlyChildhoodEdFactsCode, \
+            IdeaIndicatorCode, \
+            IdeaIndicatorDescription, \
+            IdeaIndicatorEdFactsCode \
         FROM analytics.ceds_IdeaStatusDim;", conn_source)
-    
+
     cursor_target = conn_target.cursor()
-    
+
     for index, row in data.iterrows():
         row_insert = row[1:]
 
@@ -38,14 +44,20 @@ def dim_idea_statuses(conn_source, conn_target) -> pd.DataFrame:
             PrimaryDisabilityTypeEdFactsCode, \
             IdeaEducationalEnvironmentForSchoolAgeCode, \
             IdeaEducationalEnvironmentForSchoolAgeDescription, \
-            IdeaEducationalEnvironmentForSchoolAgeEdFactsCode) VALUES ({question_marks(9)});", *row_insert)
+            IdeaEducationalEnvironmentForSchoolAgeEdFactsCode, \
+            IdeaEducationalEnvironmentForEarlyChildhoodCode, \
+            IdeaEducationalEnvironmentForEarlyChildhoodDescription, \
+            IdeaEducationalEnvironmentForEarlyChildhoodEdFactsCode, \
+            IdeaIndicatorCode, \
+            IdeaIndicatorDescription, \
+            IdeaIndicatorEdFactsCode) VALUES ({question_marks(15)});", *row_insert)
         identity = cursor_target.execute("SELECT @@IDENTITY AS id;").fetchone()[0]
         data.at[index, 'id'] = int(identity)
 
     data = data[['id', 'IdeaStatusKey']]
 
     conn_target.commit()
-    
+
     print("Done!")
 
     return data
