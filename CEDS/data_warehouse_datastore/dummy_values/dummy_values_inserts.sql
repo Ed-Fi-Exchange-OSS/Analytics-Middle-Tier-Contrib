@@ -69,6 +69,20 @@ END
 SET IDENTITY_INSERT [RDS].[DimK12EnrollmentStatuses] OFF
 
 -------------------------------
+-- DimProgramTypes
+-------------------------------
+
+SET IDENTITY_INSERT [RDS].[DimK12ProgramTypes] ON
+
+IF NOT EXISTS (SELECT 1 FROM [RDS].[DimK12ProgramTypes] WHERE DimK12ProgramTypeId = -1)
+BEGIN
+	INSERT INTO [RDS].[DimK12ProgramTypes] (DimK12ProgramTypeId, ProgramTypeCode)
+		VALUES (-1, 'MISSING')
+END
+
+SET IDENTITY_INSERT [RDS].[DimK12ProgramTypes] OFF
+
+-------------------------------
 -- DimK12Demographics
 -------------------------------
 
@@ -76,10 +90,24 @@ SET IDENTITY_INSERT [RDS].[DimK12Demographics] ON
 
 IF NOT EXISTS (SELECT 1 FROM [RDS].[DimK12Demographics] WHERE [DimK12DemographicId] = -1)
 BEGIN
-	INSERT INTO [RDS].[DimK12Demographics] ([DimK12DemographicId],[EconomicDisadvantageStatusCode],[HomelessnessStatusCode],[EnglishLearnerStatusCode],[MigrantStatusCode],[MilitaryConnectedStudentIndicatorCode],[HomelessPrimaryNighttimeResidenceCode],[HomelessUnaccompaniedYouthStatusCode],[SexCode]) 
-		VALUES (-1,'MISSING','MISSING','MISSING','MISSING','MISSING','MISSING','MISSING','MISSING')
+	INSERT INTO [RDS].[DimK12Demographics] ([DimK12DemographicId],
+		[EconomicDisadvantageStatusCode],
+		[EconomicDisadvantageStatusEdFactsCode],
+		[HomelessnessStatusCode],
+		[HomelessnessStatusEdFactsCode],
+		[EnglishLearnerStatusCode],
+		[EnglishLearnerStatusEdFactsCode],
+		[MigrantStatusCode],
+		[MigrantStatusEdFactsCode],
+		[MilitaryConnectedStudentIndicatorCode],
+		[MilitaryConnectedStudentIndicatorEdFactsCode],
+		[HomelessPrimaryNighttimeResidenceCode],
+		[HomelessPrimaryNighttimeResidenceEdFactsCode],
+		[HomelessUnaccompaniedYouthStatusCode],
+		[HomelessUnaccompaniedYouthStatusEdFactsCode],
+		[SexCode],
+		[SexEdFactsCode]) 
+	VALUES (-1,'-1','MISSING','-1','MISSING','-1','MISSING','-1','MISSING','-1','MISSING','-1','MISSING','-1','MISSING','-1','MISSING')
 END
 
 SET IDENTITY_INSERT [RDS].[DimK12Demographics] OFF
-
-

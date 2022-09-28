@@ -113,7 +113,6 @@ def factK12_program_participation(dataframes={}, conn_source=None, conn_target=N
 
         # K12 Demographic Dim
         k12_demographic_dim = dataframes["dim_K12demographics"]
-        
         factK12_program_participation_df = pd.merge(
             left=factK12_program_participation_df,
             right=k12_demographic_dim,
@@ -125,7 +124,6 @@ def factK12_program_participation(dataframes={}, conn_source=None, conn_target=N
 
         # K12 Idea Status Dim
         k12_idea_status_dim = dataframes["dim_idea_statuses"]
-        
         factK12_program_participation_df = pd.merge(
             left=factK12_program_participation_df,
             right=k12_idea_status_dim,
@@ -135,21 +133,19 @@ def factK12_program_participation(dataframes={}, conn_source=None, conn_target=N
             suffixes=('', 'right')
         )
 
+        factK12_program_participation_df = factK12_program_participation_df.fillna('')
+
+        factK12_program_participation_df.loc[factK12_program_participation_df["K12DemographicId"] == "", "K12DemographicId"] = '-1'
+        factK12_program_participation_df.loc[factK12_program_participation_df["K12ProgramTypeId"] == "", "K12ProgramTypeId"] = '-1'
+        factK12_program_participation_df.loc[factK12_program_participation_df["IdeaStatusId"] == "", "IdeaStatusId"] = '-1'
+
         factK12_program_participation_df.to_csv("C:/GAP/EdFi/BIA-1210/factK12_program_participation_df.csv")
-
-        #  Program Participation Start Date Id
-        # factK12_program_participation_df["ProgramParticipationStartDateId"] = int(datetime.strptime(factK12_program_participation_df["ProgramParticipationStartDateKey"], '%m/%d/%y').timestamp())
-
-        #  Program Participation Exit Date Id
-        # factK12_program_participation_df["ProgramParticipationExitDateId"] = int(datetime.strptime(factK12_program_participation_df["ProgramParticipationExitDateKey"], '%m/%d/%y').timestamp())
 
         cursor_target = conn_target.cursor()
 
         for index, row in factK12_program_participation_df.iterrows():
 
-            # row.ProgramParticipationStartDateId = int(datetime.strptime(row.ProgramParticipationStartDateKey, '%m/%d/%y').timestamp())
             row.ProgramParticipationStartDateId = int(datetime.strptime(row.ProgramParticipationStartDateKey, '%Y-%m-%d').timestamp())
-            # row.ProgramParticipationExitDateId = int(datetime.strptime(row.ProgramParticipationExitDateKey, '%m/%d/%y').timestamp())
             row.ProgramParticipationExitDateId = int(datetime.strptime(row.ProgramParticipationExitDateKey, '%Y-%m-%d').timestamp())
 
             cursor_target.execute(f"INSERT INTO RDS.FactK12ProgramParticipations ( \
@@ -169,7 +165,7 @@ def factK12_program_participation(dataframes={}, conn_source=None, conn_target=N
                     ,StudentCount) \
                 VALUES ({question_marks(14)})",
                     row.SchoolYearId,
-                    1,
+                    -1,
                     1,
                     row.SeaDimId,
                     row.IeuDimId,
@@ -177,7 +173,7 @@ def factK12_program_participation(dataframes={}, conn_source=None, conn_target=N
                     row.K12SchoolId,
                     row.K12ProgramTypeId,
                     row.K12StudentId,
-                    1,
+                    row.K12DemographicId,
                     row.IdeaStatusId,
                     row.ProgramParticipationStartDateId,
                     row.ProgramParticipationExitDateId,

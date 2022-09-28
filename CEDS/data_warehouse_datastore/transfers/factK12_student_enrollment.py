@@ -8,7 +8,10 @@ import pandas as pd
 from common.helpers import question_marks
 
 
-def factK12_student_enrollment(dataframes = {}, conn_source=None, conn_target=None) -> None:
+def factK12_student_enrollment(dataframes={}, conn_source=None, conn_target=None) -> None:
+
+    print("Inserting FactK12StudentEnrollments... ", end='')
+
     try:
         query = ("SELECT \
                     FactK12StudentEnrollmentKey \
@@ -23,14 +26,15 @@ def factK12_student_enrollment(dataframes = {}, conn_source=None, conn_target=No
                     ,EntryGradeLevelKey \
                     ,ExitGradeLevelKey \
                     ,EnrollmentEntryDateKey \
+                    ,EnrollmentExitDateKey \
                     ,ProjectedGraduationDateKey \
                     ,K12DemographicKey \
                     ,IdeaStatusKey \
                     ,StudentCount \
                 FROM analytics.ceds_FactK12StudentEnrollment;")
-        
+
         factK12_student_enrollment_df = pd.read_sql(query, conn_source)
-        
+
         # School Year Id
         school_year_df = dataframes["dim_schools_years"]
 
@@ -42,7 +46,7 @@ def factK12_student_enrollment(dataframes = {}, conn_source=None, conn_target=No
             how="left",
             left_on="SchoolYearKey",
             right_on="SchoolYearKey",
-            suffixes=('', 'right')
+            suffixes=('', '_school_year')
         )
 
         factK12_student_enrollment_df["dim_seas"] = '|'
@@ -55,7 +59,7 @@ def factK12_student_enrollment(dataframes = {}, conn_source=None, conn_target=No
             how="left",
             left_on="SeaKey",
             right_on="SeaDimKey",
-            suffixes=('', 'right')
+            suffixes=('', '_dim_seas')
         )
 
         factK12_student_enrollment_df["dim_ieus"] = '|'
@@ -68,7 +72,7 @@ def factK12_student_enrollment(dataframes = {}, conn_source=None, conn_target=No
             how="left",
             left_on="IeuKey",
             right_on="IeuDimKey",
-            suffixes=('', 'right')
+            suffixes=('', '_dim_ieus')
         )
 
         factK12_student_enrollment_df["dim_leas"] = '|'
@@ -81,7 +85,7 @@ def factK12_student_enrollment(dataframes = {}, conn_source=None, conn_target=No
             how="left",
             left_on="LeaKey",
             right_on="LeaKey",
-            suffixes=('', 'right')
+            suffixes=('', '_dim_leas')
         )
 
         factK12_student_enrollment_df["dim_k12schools"] = '|'
@@ -94,7 +98,7 @@ def factK12_student_enrollment(dataframes = {}, conn_source=None, conn_target=No
             how="left",
             left_on="K12SchoolKey",
             right_on="K12SchoolKey",
-            suffixes=('', 'right')
+            suffixes=('', '_schools')
         )
 
         factK12_student_enrollment_df["dim_k12students"] = '|'
@@ -107,7 +111,7 @@ def factK12_student_enrollment(dataframes = {}, conn_source=None, conn_target=No
             how="left",
             left_on="K12StudentKey",
             right_on="K12StudentKey",
-            suffixes=('', 'right')
+            suffixes=('', '_students')
         )
 
         factK12_student_enrollment_df["dim_K12enrollment_statuses"] = '|'
@@ -120,7 +124,7 @@ def factK12_student_enrollment(dataframes = {}, conn_source=None, conn_target=No
             how="left",
             left_on="K12EnrollmentStatusKey",
             right_on="K12EnrollmentStatusKey",
-            suffixes=('', 'right')
+            suffixes=('', '_enrollment_status')
         )
 
         factK12_student_enrollment_df["EntryGradeLevel"] = '|'
@@ -133,7 +137,7 @@ def factK12_student_enrollment(dataframes = {}, conn_source=None, conn_target=No
             how="left",
             left_on="EntryGradeLevelKey",
             right_on="GradeLevelKey",
-            suffixes=('', 'right')
+            suffixes=('', '_entry_grade')
         )
 
         factK12_student_enrollment_df["ExitGradeLevel"] = '|'
@@ -146,33 +150,33 @@ def factK12_student_enrollment(dataframes = {}, conn_source=None, conn_target=No
             how="left",
             left_on="ExitGradeLevelKey",
             right_on="GradeLevelKey",
-            suffixes=('', 'right')
+            suffixes=('', '_exit_grade')
         )
 
         factK12_student_enrollment_df["EnrollmentEntryDate"] = '|'
 
         # Enrollment Entry Date
-        enrollment_entry_date_df = dataframes["dim_schools_years"]
+        enrollment_date_df = dataframes["dim_schools_years"]
         factK12_student_enrollment_df = pd.merge(
             left=factK12_student_enrollment_df,
-            right=enrollment_entry_date_df,
+            right=enrollment_date_df,
             how="left",
             left_on="EnrollmentEntryDateKey",
             right_on="SchoolYearKey",
-            suffixes=('', 'right')
+            suffixes=('', '_enrollment_entry')
         )
 
         factK12_student_enrollment_df["EnrollmentExitDate"] = '|'
 
         # Enrollment Exit Date
-        enrollment_exit_date_df = dataframes["dim_schools_years"]
+        enrollment_date_df = dataframes["dim_schools_years"]
         factK12_student_enrollment_df = pd.merge(
             left=factK12_student_enrollment_df,
-            right=enrollment_exit_date_df,
+            right=enrollment_date_df,
             how="left",
             left_on="EnrollmentExitDateKey",
             right_on="SchoolYearKey",
-            suffixes=('', 'right')
+            suffixes=('', '_enrollment_exit')
         )
 
         factK12_student_enrollment_df["ProjectedGraduationDate"] = '|'
@@ -184,12 +188,12 @@ def factK12_student_enrollment(dataframes = {}, conn_source=None, conn_target=No
             right=projected_graduation_date_df,
             how="left",
             left_on="ProjectedGraduationDateKey",
-            right_on="K12SchoolKey",
-            suffixes=('', 'right')
+            right_on="SchoolYearKey",
+            suffixes=('', '_projected_graduation')
         )
 
         factK12_student_enrollment_df["dim_K12demographics"] = '|'
-        
+
         # K12 Demographic Dim
         k12_demographic_dim = dataframes["dim_K12demographics"]
         factK12_student_enrollment_df = pd.merge(
@@ -198,7 +202,7 @@ def factK12_student_enrollment(dataframes = {}, conn_source=None, conn_target=No
             how="left",
             left_on="K12DemographicKey",
             right_on="K12DemographicKey",
-            suffixes=('', 'right')
+            suffixes=('', '_demographics')
         )
 
         factK12_student_enrollment_df["dim_idea_statuses"] = '|'
@@ -211,51 +215,62 @@ def factK12_student_enrollment(dataframes = {}, conn_source=None, conn_target=No
             how="left",
             left_on="IdeaStatusKey",
             right_on="IdeaStatusKey",
-            suffixes=('', 'right')
+            suffixes=('', '_idea_status')
         )
+
+        factK12_student_enrollment_df = factK12_student_enrollment_df.fillna('')
+
+        factK12_student_enrollment_df.loc[factK12_student_enrollment_df["GradeLevelId"] == "", "GradeLevelId"] = '-1'
+        factK12_student_enrollment_df.loc[factK12_student_enrollment_df["GradeLevelId_exit_grade"] == "", "GradeLevelId_exit_grade"] = '-1'
+        factK12_student_enrollment_df.loc[factK12_student_enrollment_df["K12EnrollmentStatusId"] == "", "K12EnrollmentStatusId"] = '-1'
+        factK12_student_enrollment_df.loc[factK12_student_enrollment_df["SchoolYearId_projected_graduation"] == "", "SchoolYearId_projected_graduation"] = '-1'
+        factK12_student_enrollment_df.loc[factK12_student_enrollment_df["K12DemographicId"] == "", "K12DemographicId"] = '-1'
+        factK12_student_enrollment_df.loc[factK12_student_enrollment_df["IdeaStatusId"] == "", "IdeaStatusId"] = '-1'
 
         factK12_student_enrollment_df.to_csv("C:/GAP/EdFi/BIA-1210/factK12_student_enrollment_df.csv")
 
-        # cursor_target = conn_target.cursor()
-        
-        # for index, row in factK12_student_enrollment_df.iterrows():
-        #     cursor_target.execute(f"INSERT INTO RDS.FactK12ProgramParticipations ( \
-        #             SchoolYearId \
-        #             ,DataCollectionId \
-        #             ,SeaId \
-        #             ,IeuId \
-        #             ,LeaId \
-        #             ,K12SchoolId \
-        #             ,K12StudentId \
-        #             ,K12EnrollmentStatusId \
-        #             ,EntryGradeLevelId \
-        #             ,ExitGradeLevelId \
-        #             ,EnrollmentEntryDateId \
-        #             ,EnrollmentExitDateId \
-        #             ,ProjectedGraduationDateId \
-        #             ,K12DemographicId \
-        #             ,IdeaStatusId \
-        #             ,StudentCount \
-        #         VALUES ({question_marks(14)})", 
-        #             row.SchoolYearId
-        #             ,1
-        #             ,row.SeaKey
-        #             ,row.IeuKey
-        #             ,row.LeaKey
-        #             ,row.K12SchoolId
-        #             ,row.K12StudentId
-        #             ,1
-        #             ,row.EntryGradeLevelId
-        #             ,row.ExitGradeLevelId
-        #             ,row.EnrollmentEntryDateKey
-        #             ,row.EnrollmentExitDateKey
-        #             ,1
-        #             ,1
-        #             ,1
-        #             ,row.StudentCount
-        #     )
+        cursor_target = conn_target.cursor()
 
-        # conn_target.commit()
+        for index, row in factK12_student_enrollment_df.iterrows():
+            cursor_target.execute(f"INSERT INTO RDS.FactK12ProgramParticipations ( \
+                    SchoolYearId \
+                    ,1 \
+                    ,SeaId \
+                    ,IeuId \
+                    ,LeaId \
+                    ,K12SchoolId \
+                    ,K12StudentId \
+                    ,K12EnrollmentStatusId \
+                    ,EntryGradeLevelId \
+                    ,ExitGradeLevelId \
+                    ,EnrollmentEntryDateId \
+                    ,EnrollmentExitDateId \
+                    ,ProjectedGraduationDateId \
+                    ,K12DemographicId \
+                    ,IdeaStatusId \
+                    ,StudentCount \
+                VALUES ({question_marks(16)})",
+                    row.SchoolYearId,
+                    1,
+                    row.SeaDimId,
+                    row.IeuDimId,
+                    row.LeaId,
+                    row.K12SchoolId,
+                    row.K12StudentId,
+                    row.K12EnrollmentStatusId,
+                    row.GradeLevelId,
+                    row.GradeLevelId_exit_grade,
+                    row.SchoolYearId_enrollment_entry,
+                    row.SchoolYearId_enrollment_exit,
+                    row.SchoolYearId_projected_graduation,
+                    row.K12DemographicId,
+                    row.IdeaStatusId,
+                    row.StudentCount
+            )
+
+        conn_target.commit()
+
+        print("Done!")
 
     except Exception as error:
-        print (error)
+        print(error)
