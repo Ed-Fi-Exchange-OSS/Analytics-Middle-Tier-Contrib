@@ -28,10 +28,19 @@ CREATE VIEW analytics.ceds_FactK12ProgramParticipation AS
            ,ceds_SeaDim.SeaDimKey AS SeaKey
            ,ceds_LeaDim.LeaKey AS LeaKey
            ,K12SchoolKey AS K12SchoolKey
-           ,K12ProgramTypeKey AS K12ProgramTypeKey
+		   ,CASE
+				WHEN ceds_K12ProgramTypeDim.K12ProgramTypeKey IS NULL THEN '-1'
+				ELSE ceds_K12ProgramTypeDim.K12ProgramTypeKey
+			END AS K12ProgramTypeKey
            ,ceds_K12StudentDim.K12StudentKey AS K12StudentKey
-           ,K12DemographicKey AS K12DemographicKey
-           ,IdeaStatusKey AS IdeaStatusKey
+		   ,CASE
+				WHEN ceds_K12DemographicDim.K12DemographicKey IS NULL THEN '-1'
+				ELSE ceds_K12DemographicDim.K12DemographicKey
+			END AS K12DemographicKey
+           ,CASE
+				WHEN ceds_IdeaStatusDim.IdeaStatusKey IS NULL THEN '-1'
+				ELSE ceds_IdeaStatusDim.IdeaStatusKey
+			END AS IdeaStatusKey
            ,GeneralStudentProgramAssociation.BeginDate AS ProgramParticipationStartDateKey
            ,GeneralStudentProgramAssociation.EndDate AS ProgramParticipationExitDateKey
         FROM

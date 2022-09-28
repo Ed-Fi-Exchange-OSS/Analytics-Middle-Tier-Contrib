@@ -38,12 +38,24 @@ CREATE VIEW analytics.ceds_FactK12StudentEnrollment AS
             K12SchoolKey AS K12SchoolKey,
 			ceds_K12StudentDim.K12StudentKey AS K12StudentKey,
 			ceds_K12EnrollmentStatusDim.K12EnrollmentStatusKey AS K12EnrollmentStatusKey,
-			ceds_GradeLevelDim.GradeLevelKey AS EntryGradeLevelKey,
-			ceds_GradeLevelDim.GradeLevelKey AS ExitGradeLevelKey,
+			CASE
+				WHEN ceds_GradeLevelDim.GradeLevelKey IS NULL THEN '-1'
+				ELSE ceds_GradeLevelDim.GradeLevelKey
+			END AS EntryGradeLevelKey,
+			CASE
+				WHEN ceds_GradeLevelDim.GradeLevelKey IS NULL THEN '-1'
+				ELSE ceds_GradeLevelDim.GradeLevelKey
+			END AS ExitGradeLevelKey,
 			SchoolYearsDim_EntryDate.SchoolYearKey AS EnrollmentEntryDateKey,
 			SchoolYearsDim_ExitWithdrawDate.SchoolYearKey AS EnrollmentExitDateKey,
-			ceds_SchoolYearDim_SchoolYear.SchoolYearKey AS ProjectedGraduationDateKey,
-			ceds_K12DemographicDim.K12DemographicKey AS K12DemographicKey,
+			CASE
+				WHEN ceds_SchoolYearDim_SchoolYear.SchoolYearKey IS NULL THEN '-1'
+				ELSE ceds_SchoolYearDim_SchoolYear.SchoolYearKey
+			END AS ProjectedGraduationDateKey,
+			CASE
+				WHEN ceds_K12DemographicDim.K12DemographicKey IS NULL THEN '-1'
+				ELSE ceds_K12DemographicDim.K12DemographicKey
+			END AS K12DemographicKey,
 			'' AS IdeaStatusKey
 		FROM
 			analytics.ceds_SchoolYearDim
