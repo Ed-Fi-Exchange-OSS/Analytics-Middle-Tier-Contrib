@@ -12,6 +12,16 @@ This repository provides a mechanism for community members to share their Views 
 
 The Analytics Middle Tier is an open source project and these views are also available as open source. By default all contributions are available under the terms of the [Apache License, version 2.0](license). Please ensure that you maintain the appropriate licensing to contribute this work for others to reuse. If you wish to use terms other than the Apache 2.0 license then please include the license file with your views.
 
+## Installation
+
+For the installation of Analytics Middle Tier - Contributions, it can be installed by going to the installer folder and run.
+
+- `Installer.ps1`
+  
+It will start the installation process for **MSSQL** & **PostgreSQL**, once it is ready the following message will appear on the screen saying:
+
+`CEDS Views Installed.`
+
 ## Contribution Guidelines
 
 The contribution process for sharing your work is as simple as:
