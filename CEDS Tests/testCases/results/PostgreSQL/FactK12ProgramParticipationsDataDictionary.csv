@@ -3,8 +3,8 @@ factk12programparticipationkey,text
 schoolyearkey,character varying
 datekey,text
 datacollectionkey,text
-seakey,character varying
-ieukey,character varying
+seakey,text
+ieukey,text
 leakey,text
 k12schoolkey,text
 k12programtypekey,text
