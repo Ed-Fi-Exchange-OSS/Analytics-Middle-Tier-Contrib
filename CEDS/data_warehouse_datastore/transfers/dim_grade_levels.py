@@ -9,7 +9,7 @@ from common.helpers import question_marks
 
 def dim_grade_levels(conn_source, conn_target) -> pd.DataFrame:
 
-    print("Inserting DimGradeLevels... ", end='')
+    print("Transfer DimGradeLevels... ", end='')
 
     data = pd.read_sql("SELECT \
             GradeLevelKey, \

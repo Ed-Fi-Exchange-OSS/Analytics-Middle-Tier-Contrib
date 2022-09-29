@@ -9,7 +9,7 @@ from common.helpers import question_marks
 
 def dim_K12demographics(conn_source, conn_target) -> pd.DataFrame:
     
-    print("Inserting DimK12Demographics... ", end = '')
+    print("Transfer DimK12Demographics... ", end = '')
 
     data = pd.read_sql("SELECT  \
             K12DemographicKey, \

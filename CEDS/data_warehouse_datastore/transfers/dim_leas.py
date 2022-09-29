@@ -9,7 +9,7 @@ from common.helpers import question_marks
 
 def dim_leas(conn_source, conn_target) -> pd.DataFrame:
 
-    print("Inserting DimLeas... ", end = '')
+    print("Transfer DimLeas... ", end = '')
 
     data = pd.read_sql("SELECT  \
             LeaKey, \

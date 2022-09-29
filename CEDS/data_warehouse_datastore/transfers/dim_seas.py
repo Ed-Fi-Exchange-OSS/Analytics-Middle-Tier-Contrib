@@ -9,7 +9,7 @@ from common.helpers import question_marks
 
 def dim_seas(conn_source, conn_target) -> pd.DataFrame:
 
-    print("Inserting DimSeas... ", end='')
+    print("Transfer DimSeas... ", end='')
 
     data = pd.read_sql("SELECT \
             SeaDimKey, \

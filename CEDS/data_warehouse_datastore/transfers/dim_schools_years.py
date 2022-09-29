@@ -9,7 +9,7 @@ from common.helpers import question_marks
 
 def dim_schools_years(conn_source, conn_target) -> pd.DataFrame:
 
-    print("Inserting DimSchoolYears... ", end='')
+    print("Transfer DimSchoolYears... ", end='')
 
     data = pd.read_sql("SELECT \
             SchoolYearKey, \

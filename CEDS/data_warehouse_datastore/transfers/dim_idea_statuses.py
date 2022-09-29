@@ -9,7 +9,7 @@ from common.helpers import question_marks
 
 def dim_idea_statuses(conn_source, conn_target) -> pd.DataFrame:
 
-    print("Inserting DimIdeaStatuses... ", end='')
+    print("Transfer DimIdeaStatuses... ", end='')
 
     data = pd.read_sql("SELECT \
             IdeaStatusKey, \

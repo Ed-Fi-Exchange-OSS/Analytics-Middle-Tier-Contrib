@@ -10,7 +10,7 @@ from common.helpers import question_marks
 
 def factK12_program_participation(dataframes={}, conn_source=None, conn_target=None) -> None:
 
-    print("Inserting FactK12ProgramParticipations... ", end='')
+    print("Transfer FactK12ProgramParticipations... ", end='')
 
     try:
         query = ("SELECT \

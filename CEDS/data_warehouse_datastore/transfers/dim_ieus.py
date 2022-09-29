@@ -9,7 +9,7 @@ from common.helpers import question_marks
 
 def dim_ieus(conn_source, conn_target) -> pd.DataFrame:
 
-    print("Inserting DimIeus... ", end = '')
+    print("Transfer DimIeus... ", end = '')
 
     data = pd.read_sql("SELECT  \
             IeuDimKey, \

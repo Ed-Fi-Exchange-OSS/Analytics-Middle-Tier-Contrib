@@ -9,7 +9,7 @@ from common.helpers import question_marks
 
 def dim_data_collections(conn_source, conn_target) -> pd.DataFrame:
 
-    print("Inserting DimDataCollections... ", end='')
+    print("Transfer DimDataCollections... ", end='')
 
     data = pd.read_sql("SELECT \
             DataCollectionDimKey, \

@@ -1,17 +1,20 @@
 
-# Analytics Middle Tier - Contributions
+# Ed-Fi Ods to CEDS Data Warehouse data transfer script.
 
 We these scripts we are able to transfer data from the `Ed-Fi Ods` to the [CEDS Data Warehouse](https://github.com/CEDStandards/CEDS-Data-Warehouse)
 
 ## Usage Guidelines
 
 1. First step is setting up the connection string configuration. 
-To do that, rename the `configuration.json.example` to `configuration.json` file with the appropriate values based on your environment settings. 
+	To do that, rename the `configuration.json.example` file to `configuration.json` with the appropriate values based on your environment settings. 
 
-3. After that, execute `main.py` script
+2. Then install the required modules. Take a look at the [Third party modules used](#Third-party-modules-used) Third party modules used section. 
+
+3. Finally, execute `main.py` script
 	```powershell
 	py main.py
 	```
+
 ## Third party modules used
 
 1. [Pyodbc](https://pypi.org/project/pyodbc/)

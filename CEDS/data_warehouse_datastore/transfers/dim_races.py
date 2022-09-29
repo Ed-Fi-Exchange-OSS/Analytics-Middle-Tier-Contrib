@@ -9,7 +9,7 @@ from common.helpers import question_marks
 
 def dim_races(conn_source, conn_target) -> pd.DataFrame:
 
-    print("Inserting DimRaces... ", end='')
+    print("Transfer DimRaces... ", end='')
 
     data = pd.read_sql("SELECT \
             RaceKey, \
