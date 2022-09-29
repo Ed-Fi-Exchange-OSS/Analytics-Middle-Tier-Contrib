@@ -232,9 +232,9 @@ def factK12_student_enrollment(dataframes={}, conn_source=None, conn_target=None
         cursor_target = conn_target.cursor()
 
         for index, row in factK12_student_enrollment_df.iterrows():
-            cursor_target.execute(f"INSERT INTO RDS.FactK12ProgramParticipations ( \
+            cursor_target.execute(f"INSERT INTO RDS.FactK12StudentEnrollments ( \
                     SchoolYearId \
-                    ,1 \
+                    ,DataCollectionId \
                     ,SeaId \
                     ,IeuId \
                     ,LeaId \
@@ -248,7 +248,7 @@ def factK12_student_enrollment(dataframes={}, conn_source=None, conn_target=None
                     ,ProjectedGraduationDateId \
                     ,K12DemographicId \
                     ,IdeaStatusId \
-                    ,StudentCount \
+                    ,StudentCount) \
                 VALUES ({question_marks(16)})",
                     row.SchoolYearId,
                     1,
