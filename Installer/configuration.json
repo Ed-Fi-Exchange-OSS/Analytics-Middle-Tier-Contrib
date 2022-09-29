@@ -1,4 +1,5 @@
 {
+    "databaseName": "SQLServer",
     "SQLServer": {
         "ConnectionString": {
             "Host": "localhost,1433",
