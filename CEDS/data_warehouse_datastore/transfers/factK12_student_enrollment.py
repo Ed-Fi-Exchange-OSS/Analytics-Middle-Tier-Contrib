@@ -227,8 +227,6 @@ def factK12_student_enrollment(dataframes={}, conn_source=None, conn_target=None
         factK12_student_enrollment_df.loc[factK12_student_enrollment_df["K12DemographicId"] == "", "K12DemographicId"] = '-1'
         factK12_student_enrollment_df.loc[factK12_student_enrollment_df["IdeaStatusId"] == "", "IdeaStatusId"] = '-1'
 
-        factK12_student_enrollment_df.to_csv("C:/GAP/EdFi/BIA-1210/factK12_student_enrollment_df.csv")
-
         cursor_target = conn_target.cursor()
 
         for index, row in factK12_student_enrollment_df.iterrows():

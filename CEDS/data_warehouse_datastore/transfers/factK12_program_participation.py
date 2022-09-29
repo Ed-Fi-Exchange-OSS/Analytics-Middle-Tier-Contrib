@@ -139,8 +139,6 @@ def factK12_program_participation(dataframes={}, conn_source=None, conn_target=N
         factK12_program_participation_df.loc[factK12_program_participation_df["K12ProgramTypeId"] == "", "K12ProgramTypeId"] = '-1'
         factK12_program_participation_df.loc[factK12_program_participation_df["IdeaStatusId"] == "", "IdeaStatusId"] = '-1'
 
-        factK12_program_participation_df.to_csv("C:/GAP/EdFi/BIA-1210/factK12_program_participation_df.csv")
-
         cursor_target = conn_target.cursor()
 
         for index, row in factK12_program_participation_df.iterrows():
