@@ -38,10 +38,10 @@ if __name__ == "__main__":
 
     try:
         conn_source = pyodbc.connect(
-            f'Driver={"SQL Server"};Server={config["Source"]["Server"]};Database={config["Source"]["Database"]};Trusted_Connection={config["Source"]["Trusted_Connection"]};')
+            f'Driver={"SQL Server"};Server={config["OdsConfig"]["Server"]};Database={config["OdsConfig"]["Database"]};Trusted_Connection={config["OdsConfig"]["Trusted_Connection"]};')
 
         conn_target = pyodbc.connect(
-            f'Driver={"SQL Server"};Server={config["Target"]["Server"]};Database={config["Target"]["Database"]};Trusted_Connection={config["Target"]["Trusted_Connection"]};')
+            f'Driver={"SQL Server"};Server={config["CedsConfig"]["Server"]};Database={config["CedsConfig"]["Database"]};Trusted_Connection={config["CedsConfig"]["Trusted_Connection"]};')
 
         dataFrames["dim_schools_years"] = dim_schools_years(conn_source, conn_target)
         dataFrames["dim_data_collections"] = dim_data_collections(conn_source, conn_target)

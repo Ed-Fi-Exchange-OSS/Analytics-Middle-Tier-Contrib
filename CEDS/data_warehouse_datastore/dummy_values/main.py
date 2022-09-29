@@ -12,7 +12,7 @@ def insert_dummy_values(config):
     try:
         print("Inserting dummy values... ", end='')
         conn_target = pyodbc.connect(
-            f'Driver={"SQL Server"};Server={config["Target"]["Server"]};Database={config["Target"]["Database"]};Trusted_Connection={config["Target"]["Trusted_Connection"]};')
+            f'Driver={"SQL Server"};Server={config["CedsConfig"]["Server"]};Database={config["CedsConfig"]["Database"]};Trusted_Connection={config["CedsConfig"]["Trusted_Connection"]};')
 
         with open(f'{os.getcwd()}/dummy_values/dummy_values_inserts.sql', 'r') as file:
             sql_script = file.read()
