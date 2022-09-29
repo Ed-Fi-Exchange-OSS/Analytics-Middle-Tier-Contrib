@@ -24,7 +24,7 @@ from transfers.dim_K12demographics import dim_K12demographics
 from transfers.dim_races import dim_races
 
 # Fact views
-# from transfers.factK12_program_participation import factK12_program_participation
+from transfers.factK12_program_participation import factK12_program_participation
 from transfers.factK12_student_enrollment import factK12_student_enrollment
 
 import warnings
@@ -58,7 +58,7 @@ if __name__ == "__main__":
         dataFrames["dim_races"] = dim_races(conn_source, conn_target)
 
         # fact tables:
-        # factK12_program_participation(dataFrames, conn_source, conn_target)
+        factK12_program_participation(dataFrames, conn_source, conn_target)
         factK12_student_enrollment(dataFrames, conn_source, conn_target)
 
     except Exception as error:
