@@ -1,5 +1,20 @@
 {
-    "databaseName": "SQLServer",
+    "Server": "SQLServer",
+    "ODSDatabaseInstaller" : {
+        "DownloadLocation": "C:\\temp\\downloads\\",
+        "MSSQL": {
+            "packageDetails": {
+                "packageName": "EdFi.Suite3.Ods.Minimal.Template",
+                "version": "5.4.114"
+            }
+        },
+        "PostgreSQL": {
+            "packageDetails": {
+                "packageName": "EdFi.Suite3.Ods.Minimal.Template.PostgreSQL",
+                "version": "5.4.99"
+            }
+        }
+    },
     "SQLServer": {
         "ConnectionString": {
             "Host": "localhost,1433",

@@ -18,13 +18,18 @@ Import-Module -Force "$PSScriptRoot\scripts\MigratorModules\EdFi-CedsViews.psm1"
 Import-Module -Force "$PSScriptRoot\scripts\MigratorModules\EdFi-AMT.psm1" -ArgumentList $configuration
 Import-Module -Force "$PSScriptRoot\scripts\Utilities.psm1" -ArgumentList $configuration
 
-$databaseName = $configuration.databaseName
+$server = $configuration.Server
 
-if ($null -eq $databaseName) {
-    $databaseName = "SQLServer"
+# print $server value
+
+Write-Host "Server: $server" -ForegroundColor Cyan
+
+
+if ($null -eq $server) {
+    $server = "SQLServer"
 }
 
-if ($databaseName -eq "SQLServer") {
+if ($server -eq "SQLServer") {
     Write-Host "Installing AMT for MSSQL..." -ForegroundColor Cyan
 
     $parameters = @{
