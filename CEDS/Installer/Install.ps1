@@ -20,10 +20,7 @@ Import-Module -Force "$PSScriptRoot\scripts\Utilities.psm1" -ArgumentList $confi
 
 $server = $configuration.Server
 
-# print $server value
-
 Write-Host "Server: $server" -ForegroundColor Cyan
-
 
 if ($null -eq $server) {
     $server = "SQLServer"
@@ -44,6 +41,14 @@ if ($server -eq "SQLServer") {
     Install-amt @parameters
     
     Write-Host "AMT has been installed for MSSQL" -ForegroundColor Cyan
+
+    Write-Host "Installing CEDS Collection for MSSQL..." -ForegroundColor Cyan
+    
+    $connectionString = Get-ConnectionStringMSSQL
+    
+    Install-CedsViews $connectionString "$PSScriptRoot\..\MSSQL\"
+    
+    Write-Host "CEDS Collection has been installed for MSSQL" -ForegroundColor Cyan
 }
 else {
     Write-Host "Installing AMT for PostgreSQL..." -ForegroundColor Cyan
@@ -60,14 +65,6 @@ else {
     Install-amt @parameters
     
     Write-Host "AMT has been installed for PostgreSQL" -ForegroundColor Cyan
-    
-    Write-Host "Installing CEDS Collection for MSSQL..." -ForegroundColor Cyan
-    
-    $connectionString = Get-ConnectionStringMSSQL
-    
-    Install-CedsViews $connectionString "$PSScriptRoot\..\CEDS\MSSQL\"
-    
-    Write-Host "CEDS Collection has been installed for MSSQL" -ForegroundColor Cyan
     
     Write-Host "Installing CEDS Collection for PostgreSQL..." -ForegroundColor Cyan
     
