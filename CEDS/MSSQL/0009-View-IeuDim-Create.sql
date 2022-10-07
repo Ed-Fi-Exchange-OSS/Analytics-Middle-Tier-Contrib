@@ -26,6 +26,10 @@ AS (
         , EducationOrganizationAddress.StreetNumberName
         , EducationOrganizationAddress.ApartmentRoomSuiteNumber
         , DescriptorConstant.ConstantName
+        , StateAbbreviationDesc.CodeValue AS StateAbbreviationCode
+        , StateAbbreviationDesc.Description AS StateAbbreviationDescription
+        , Latitude
+        , Longitude
     FROM edfi.EducationOrganizationAddress
     INNER JOIN edfi.Descriptor AS AddressType
         ON EducationOrganizationAddress.AddressTypeDescriptorId = AddressType.DescriptorId
@@ -120,7 +124,7 @@ SELECT ROW_NUMBER() OVER (
     , RecordEndDateTime
     , LastModifiedDate
 FROM (
-    SELECT DISTINCT CONCAT (
+    SELECT CONCAT (
             EducationOrganization.EducationOrganizationId
             , '-'
             , CAST(EducationServiceCenter.EducationServiceCenterId AS VARCHAR)
@@ -132,8 +136,8 @@ FROM (
         , StateEducationOrganization.NameOfInstitution AS SeaOrganizationName
         , CAST(EducationServiceCenter.StateEducationAgencyId AS VARCHAR) AS SeaIdentifierSea
         , '' AS StateANSICode
-        , COALESCE(StateAbbreviationDesc.CodeValue, '') AS StateAbbreviationCode
-        , COALESCE(StateAbbreviationDesc.Description, '') AS StateAbbreviationDescription
+        , COALESCE(PhysicalAddress.StateAbbreviationCode, '') AS StateAbbreviationCode
+        , COALESCE(PhysicalAddress.StateAbbreviationDescription, '') AS StateAbbreviationDescription
         , COALESCE(MailingAddress.City, '') AS MailingAddressCity
         , COALESCE(MailingAddress.PostalCode, '') AS MailingAddressPostalCode
         , COALESCE(MailingAddress.StateAbbreviation, '') AS MailingAddressStateAbbreviation
@@ -157,15 +161,14 @@ FROM (
         , COALESCE(OrganizationPhone.TelephoneNumber, '') AS TelephoneNumber
         , COALESCE(EducationOrganization.WebSite, '') AS WebSiteAddress
         , '' AS OrganizationRegionGeoJson
-        , COALESCE(EducationOrganizationAddress.Latitude, '') AS Latitude
-        , COALESCE(EducationOrganizationAddress.Longitude, '') AS Longitude
+        , COALESCE(PhysicalAddress.Latitude, '') AS Latitude
+        , COALESCE(PhysicalAddress.Longitude, '') AS Longitude
         , '' AS RecordStartDateTime
         , '' AS RecordEndDateTime
         , (
             SELECT MAX(MaxLastModifiedDate)
             FROM (
                 VALUES (EducationOrganization.LastModifiedDate)
-                    , (StateAbbreviationDesc.LastModifiedDate)
                 ) AS VALUE(MaxLastModifiedDate)
             ) AS LastModifiedDate
     FROM edfi.EducationServiceCenter
@@ -173,12 +176,6 @@ FROM (
         ON EducationServiceCenter.EducationServiceCenterId = EducationOrganization.EducationOrganizationId
     INNER JOIN edfi.EducationOrganization StateEducationOrganization
         ON EducationServiceCenter.StateEducationAgencyId = StateEducationOrganization.EducationOrganizationId
-    LEFT JOIN edfi.EducationOrganizationAddress
-        ON EducationOrganization.EducationOrganizationId = EducationOrganizationAddress.EducationOrganizationId
-    LEFT JOIN edfi.StateAbbreviationDescriptor
-        ON EducationOrganizationAddress.StateAbbreviationDescriptorId = StateAbbreviationDescriptor.StateAbbreviationDescriptorId
-    LEFT JOIN edfi.Descriptor StateAbbreviationDesc
-        ON StateAbbreviationDescriptor.StateAbbreviationDescriptorId = StateAbbreviationDesc.DescriptorId
     LEFT JOIN edfi.Descriptor OperationalStatusDescriptor
         ON EducationOrganization.OperationalStatusDescriptorId = OperationalStatusDescriptor.DescriptorId
     LEFT JOIN OrgEducationAddress AS MailingAddress

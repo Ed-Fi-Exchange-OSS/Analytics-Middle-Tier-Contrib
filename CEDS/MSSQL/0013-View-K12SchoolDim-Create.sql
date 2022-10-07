@@ -28,6 +28,8 @@ AS (
         , COALESCE(EducationOrganizationAddress.Latitude, '') AS Latitude
         , COALESCE(EducationOrganizationAddress.Longitude, '') AS Longitude
         , EducationOrganizationAddress.StateAbbreviationDescriptorId
+        , StateAbbreviationDescriptor.CodeValue AS StateAbbreviationCode
+        , StateAbbreviationDescriptor.Description AS StateAbbreviationDescription
     FROM edfi.School
     INNER JOIN edfi.EducationOrganizationAddress
         ON School.SchoolId = EducationOrganizationAddress.EducationOrganizationId
@@ -37,6 +39,8 @@ AS (
         ON Descriptor.DescriptorId = DescriptorMap.DescriptorId
     INNER JOIN analytics_config.DescriptorConstant
         ON DescriptorConstant.DescriptorConstantId = DescriptorMap.DescriptorConstantId
+    LEFT JOIN edfi.Descriptor AS StateAbbreviationDescriptor
+        ON StateAbbreviationDescriptor.DescriptorId = EducationOrganizationAddress.StateAbbreviationDescriptorId
     )
     , OrganizationPhone
 AS (
@@ -131,183 +135,118 @@ SELECT '-1' AS K12SchoolDimId
 UNION ALL
 
 SELECT ROW_NUMBER() OVER (
-        ORDER BY K12SchoolKey
+        ORDER BY School.SchoolId
         ) AS K12SchoolDimId
-    , K12SchoolKey
-    , SchoolKey
-    , LeaName
-    , LeaIdentifierNces
-    , LeaIdentifierSea
-    , NameOfInstitution
-    , SchoolIdentifierNces
-    , SchoolIdentifierSea
-    , SeaOrganizationName
-    , SeaIdentifierSea
-    , StateAnsiCode
-    , StateAbbreviationCode
-    , StateAbbreviationDescription
-    , PrimaryCharterSchoolAuthorizingOrganizationIdentifierSea
-    , SecondaryCharterSchoolAuthorizingOrganizationIdentifierSea
-    , OperationalStatusEffectiveDate
-    , PriorLeaIdentifierSea
-    , PriorSchoolIdentifierSea
-    , CharterSchoolIndicator
-    , CharterSchoolContractIdNumber
-    , CharterSchoolContractApprovalDate
-    , CharterSchoolContractRenewalDate
-    , ReportedFederally
-    , LeaTypeCode
-    , LeaTypeDescription
-    , LeaTypeEdFactsCode
-    , LeaTypeId
-    , SchoolTypeCode
-    , SchoolTypeDescription
-    , SchoolTypeEdFactsCode
-    , SchoolTypeId
-    , MailingAddressCity
-    , MailingAddressPostalCode
-    , MailingAddressStateAbbreviation
-    , MailingAddressStreetNumberAndName
-    , MailingAddressApartmentRoomOrSuiteNumber
-    , MailingAddressCountyAnsiCode
-    , PhysicalAddressCity
-    , PhysicalAddressPostalCode
-    , PhysicalAddressStateAbbreviation
-    , PhysicalAddressStreetNumberAndName
-    , PhysicalAddressApartmentRoomOrSuiteNumber
-    , PhysicalAddressCountyAnsiCode
-    , TelephoneNumber
-    , WebSiteAddress
-    , OutOfStateIndicator
-    , RecordStartDateTime
-    , RecordEndDateTime
-    , SchoolOperationalStatus
-    , SchoolOperationalStatusEdFactsCode
-    , CharterSchoolStatus
-    , ReconstitutedStatus
-    , IeuOrganizationName
-    , IeuOrganizationIdentifierSea
-    , Latitude
-    , Longitude
-    , SchoolOperationalStatusEffectiveDate
-    , AdministrativeFundingControlCode
-    , AdministrativeFundingControlDescription
-FROM (
-    SELECT DISTINCT School.SchoolId AS K12SchoolKey
-        , EducationOrganizationSchool.EducationOrganizationId AS SchoolKey
-        , COALESCE(EducationOrganizationLEA.NameOfInstitution, '') AS LeaName
-        , '' AS LeaIdentifierNces
-        , COALESCE(CAST(School.LocalEducationAgencyId AS VARCHAR), '') AS LeaIdentifierSea
-        , COALESCE(EducationOrganizationSchool.NameOfInstitution, '') AS NameOfInstitution
-        , '' AS SchoolIdentifierNces
-        , COALESCE(CAST(School.SchoolId AS VARCHAR), '') AS SchoolIdentifierSea
-        , COALESCE(EducationOrganizationSEA.NameOfInstitution, '') AS SeaOrganizationName
-        , COALESCE(CAST(LocalEducationAgency.StateEducationAgencyId AS VARCHAR), '') AS SeaIdentifierSea
-        , '' AS StateAnsiCode
-        , COALESCE(StateAbbreviationDescriptor.CodeValue, '') AS StateAbbreviationCode
-        , COALESCE(StateAbbreviationDescriptor.Description, '') AS StateAbbreviationDescription
-        , '' AS PrimaryCharterSchoolAuthorizingOrganizationIdentifierSea
-        , '' AS SecondaryCharterSchoolAuthorizingOrganizationIdentifierSea
-        , '' AS OperationalStatusEffectiveDate
-        , '' AS PriorLeaIdentifierSea
-        , '' AS PriorSchoolIdentifierSea
-        , CAST((
-                CASE 
-                    WHEN School.CharterStatusDescriptorId IS NOT NULL
-                        THEN 1
-                    ELSE 0
-                    END
-                ) AS BIT) AS CharterSchoolIndicator
-        , '' AS CharterSchoolContractIdNumber
-        , '' AS CharterSchoolContractApprovalDate
-        , '' AS CharterSchoolContractRenewalDate
-        , CAST(0 AS BIT) AS ReportedFederally
-        , COALESCE(OrganizationCategoryLEADescriptor.CodeValue, '') AS LeaTypeCode
-        , COALESCE(OrganizationCategoryLEADescriptor.Description, '') AS LeaTypeDescription
-        , COALESCE(MapReferenceOrganizationCategoryLEADescriptor.EdFactsCode, '') AS LeaTypeEdFactsCode
-        , - 1 AS LeaTypeId
-        , COALESCE(OrganizationCategorySchoolDescriptor.CodeValue, '') AS SchoolTypeCode
-        , COALESCE(OrganizationCategorySchoolDescriptor.Description, '') AS SchoolTypeDescription
-        , COALESCE(MapReferenceOrganizationCategorySchoolDescriptor.EdFactsCode, '') AS SchoolTypeEdFactsCode
-        , - 1 AS SchoolTypeId
-        , COALESCE(MailingAddress.AddressCity, '') AS MailingAddressCity
-        , COALESCE(MailingAddress.AddressPostalCode, '') AS MailingAddressPostalCode
-        , COALESCE(MailingAddress.AddressStateAbbreviation, '') AS MailingAddressStateAbbreviation
-        , COALESCE(MailingAddress.AddressStreetNumberAndName, '') AS MailingAddressStreetNumberAndName
-        , COALESCE(MailingAddress.AddressApartmentRoomOrSuiteNumber, '') AS MailingAddressApartmentRoomOrSuiteNumber
-        , '' AS MailingAddressCountyAnsiCode
-        , COALESCE(PhysicalAddress.AddressCity, '') AS PhysicalAddressCity
-        , COALESCE(PhysicalAddress.AddressPostalCode, '') AS PhysicalAddressPostalCode
-        , COALESCE(PhysicalAddress.AddressStateAbbreviation, '') AS PhysicalAddressStateAbbreviation
-        , COALESCE(PhysicalAddress.AddressStreetNumberAndName, '') AS PhysicalAddressStreetNumberAndName
-        , COALESCE(PhysicalAddress.AddressApartmentRoomOrSuiteNumber, '') PhysicalAddressApartmentRoomOrSuiteNumber
-        , '' AS PhysicalAddressCountyAnsiCode
-        , COALESCE(OrganizationPhone.TelephoneNumber, '') AS TelephoneNumber
-        , COALESCE(EducationOrganizationSchool.WebSite, '') AS WebSiteAddress
-        , CAST((
-                CASE 
-                    WHEN PhysicalAddress.StateAbbreviationDescriptorId IS NULL
-                        THEN 1
-                    ELSE 0
-                    END
-                ) AS BIT) AS OutOfStateIndicator
-        , '' AS RecordStartDateTime
-        , '' AS RecordEndDateTime
-        , COALESCE(SchoolOperationStatusDescriptor.CodeValue, '') AS SchoolOperationalStatus
-        , COALESCE(MapReferenceSchoolOperationStatusDescriptor.EdFactsCode, '') AS SchoolOperationalStatusEdFactsCode
-        , COALESCE(CharterSchoolStatusDescriptor.CodeValue, '') AS CharterSchoolStatus
-        , '' AS ReconstitutedStatus
-        , COALESCE(IeuOrganization.NameOfInstitution, '') AS IeuOrganizationName
-        , COALESCE(CAST(LocalEducationAgency.EducationServiceCenterId AS VARCHAR), '') AS IeuOrganizationIdentifierSea
-        , COALESCE(PhysicalAddress.Latitude, '') AS Latitude
-        , COALESCE(PhysicalAddress.Longitude, '') AS Longitude
-        , '' AS SchoolOperationalStatusEffectiveDate
-        , COALESCE(AdministrativeFundingControlDescriptor.CodeValue, '') AS AdministrativeFundingControlCode
-        , COALESCE(AdministrativeFundingControlDescriptor.Description, '') AS AdministrativeFundingControlDescription
-    FROM edfi.School
-    LEFT JOIN edfi.EducationOrganization AS EducationOrganizationLEA
-        ON School.LocalEducationAgencyId = EducationOrganizationLEA.EducationOrganizationId
-    LEFT JOIN edfi.EducationOrganization AS EducationOrganizationSchool
-        ON School.SchoolId = EducationOrganizationSchool.EducationOrganizationId
-    LEFT JOIN edfi.LocalEducationAgency
-        ON School.LocalEducationAgencyId = LocalEducationAgency.LocalEducationAgencyId
-    LEFT JOIN edfi.EducationOrganization AS EducationOrganizationSEA
-        ON LocalEducationAgency.StateEducationAgencyId = EducationOrganizationSEA.EducationOrganizationId
-    LEFT JOIN edfi.EducationOrganizationAddress
-        ON School.SchoolId = EducationOrganizationAddress.EducationOrganizationId
-    LEFT JOIN edfi.Descriptor AS StateAbbreviationDescriptor
-        ON StateAbbreviationDescriptor.DescriptorId = EducationOrganizationAddress.StateAbbreviationDescriptorId
-    LEFT JOIN edfi.EducationOrganizationCategory AS EducationOrganizationCategoryLEA
-        ON School.LocalEducationAgencyId = EducationOrganizationCategoryLEA.EducationOrganizationId
-    LEFT JOIN edfi.Descriptor AS OrganizationCategoryLEADescriptor
-        ON OrganizationCategoryLEADescriptor.DescriptorId = EducationOrganizationCategoryLEA.EducationOrganizationCategoryDescriptorId
-    LEFT JOIN MapReferenceDescriptor AS MapReferenceOrganizationCategoryLEADescriptor
-        ON MapReferenceOrganizationCategoryLEADescriptor.DescriptorId = OrganizationCategoryLEADescriptor.DescriptorId
-            AND MapReferenceOrganizationCategoryLEADescriptor.TableName = 'xref.LEAType'
-    LEFT JOIN edfi.EducationOrganizationCategory AS EducationOrganizationCategorySchool
-        ON School.SchoolId = EducationOrganizationCategorySchool.EducationOrganizationId
-    LEFT JOIN edfi.Descriptor AS OrganizationCategorySchoolDescriptor
-        ON OrganizationCategorySchoolDescriptor.DescriptorId = EducationOrganizationCategorySchool.EducationOrganizationCategoryDescriptorId
-    LEFT JOIN MapReferenceDescriptor AS MapReferenceOrganizationCategorySchoolDescriptor
-        ON MapReferenceOrganizationCategorySchoolDescriptor.DescriptorId = OrganizationCategorySchoolDescriptor.DescriptorId
-            AND MapReferenceOrganizationCategorySchoolDescriptor.TableName = 'xref.LEAType'
-    LEFT JOIN OrganizationAddress AS MailingAddress
-        ON School.SchoolId = MailingAddress.SchoolId
-            AND MailingAddress.AddressType = 'Address.Mailing'
-    LEFT JOIN OrganizationAddress AS PhysicalAddress
-        ON School.SchoolId = PhysicalAddress.SchoolId
-            AND PhysicalAddress.AddressType = 'Address.Physical'
-    LEFT JOIN OrganizationPhone
-        ON School.SchoolId = OrganizationPhone.SchoolId
-    LEFT JOIN edfi.Descriptor AS SchoolOperationStatusDescriptor
-        ON EducationOrganizationSchool.OperationalStatusDescriptorId = SchoolOperationStatusDescriptor.DescriptorId
-    LEFT JOIN MapReferenceDescriptor AS MapReferenceSchoolOperationStatusDescriptor
-        ON MapReferenceSchoolOperationStatusDescriptor.DescriptorId = SchoolOperationStatusDescriptor.DescriptorId
-            AND MapReferenceSchoolOperationStatusDescriptor.TableName = 'xref.OperationalStatus'
-    LEFT JOIN edfi.Descriptor AS CharterSchoolStatusDescriptor
-        ON School.CharterStatusDescriptorId = CharterSchoolStatusDescriptor.DescriptorId
-    LEFT JOIN edfi.EducationOrganization AS IeuOrganization
-        ON LocalEducationAgency.EducationServiceCenterId = IeuOrganization.EducationOrganizationId
-    LEFT JOIN edfi.Descriptor AS AdministrativeFundingControlDescriptor
-        ON School.AdministrativeFundingControlDescriptorId = AdministrativeFundingControlDescriptor.DescriptorId
-    ) AS SchoolDim;
+    , School.SchoolId AS K12SchoolKey
+    , EducationOrganizationSchool.EducationOrganizationId AS SchoolKey
+    , COALESCE(EducationOrganizationLEA.NameOfInstitution, '') AS LeaName
+    , '' AS LeaIdentifierNces
+    , COALESCE(CAST(School.LocalEducationAgencyId AS VARCHAR), '') AS LeaIdentifierSea
+    , COALESCE(EducationOrganizationSchool.NameOfInstitution, '') AS NameOfInstitution
+    , '' AS SchoolIdentifierNces
+    , COALESCE(CAST(School.SchoolId AS VARCHAR), '') AS SchoolIdentifierSea
+    , COALESCE(EducationOrganizationSEA.NameOfInstitution, '') AS SeaOrganizationName
+    , COALESCE(CAST(LocalEducationAgency.StateEducationAgencyId AS VARCHAR), '') AS SeaIdentifierSea
+    , '' AS StateAnsiCode
+    , COALESCE(PhysicalAddress.StateAbbreviationCode, '') AS StateAbbreviationCode
+    , COALESCE(PhysicalAddress.StateAbbreviationDescription, '') AS StateAbbreviationDescription
+    , '' AS PrimaryCharterSchoolAuthorizingOrganizationIdentifierSea
+    , '' AS SecondaryCharterSchoolAuthorizingOrganizationIdentifierSea
+    , '' AS OperationalStatusEffectiveDate
+    , '' AS PriorLeaIdentifierSea
+    , '' AS PriorSchoolIdentifierSea
+    , CAST((
+            CASE 
+                WHEN School.CharterStatusDescriptorId IS NOT NULL
+                    THEN 1
+                ELSE 0
+                END
+            ) AS BIT) AS CharterSchoolIndicator
+    , '' AS CharterSchoolContractIdNumber
+    , '' AS CharterSchoolContractApprovalDate
+    , '' AS CharterSchoolContractRenewalDate
+    , CAST(0 AS BIT) AS ReportedFederally
+    , COALESCE(OrganizationCategoryLEADescriptor.CodeValue, '') AS LeaTypeCode
+    , COALESCE(OrganizationCategoryLEADescriptor.Description, '') AS LeaTypeDescription
+    , COALESCE(MapReferenceOrganizationCategoryLEADescriptor.EdFactsCode, '') AS LeaTypeEdFactsCode
+    , - 1 AS LeaTypeId
+    , COALESCE(OrganizationCategorySchoolDescriptor.CodeValue, '') AS SchoolTypeCode
+    , COALESCE(OrganizationCategorySchoolDescriptor.Description, '') AS SchoolTypeDescription
+    , COALESCE(MapReferenceOrganizationCategorySchoolDescriptor.EdFactsCode, '') AS SchoolTypeEdFactsCode
+    , - 1 AS SchoolTypeId
+    , COALESCE(MailingAddress.AddressCity, '') AS MailingAddressCity
+    , COALESCE(MailingAddress.AddressPostalCode, '') AS MailingAddressPostalCode
+    , COALESCE(MailingAddress.AddressStateAbbreviation, '') AS MailingAddressStateAbbreviation
+    , COALESCE(MailingAddress.AddressStreetNumberAndName, '') AS MailingAddressStreetNumberAndName
+    , COALESCE(MailingAddress.AddressApartmentRoomOrSuiteNumber, '') AS MailingAddressApartmentRoomOrSuiteNumber
+    , '' AS MailingAddressCountyAnsiCode
+    , COALESCE(PhysicalAddress.AddressCity, '') AS PhysicalAddressCity
+    , COALESCE(PhysicalAddress.AddressPostalCode, '') AS PhysicalAddressPostalCode
+    , COALESCE(PhysicalAddress.AddressStateAbbreviation, '') AS PhysicalAddressStateAbbreviation
+    , COALESCE(PhysicalAddress.AddressStreetNumberAndName, '') AS PhysicalAddressStreetNumberAndName
+    , COALESCE(PhysicalAddress.AddressApartmentRoomOrSuiteNumber, '') PhysicalAddressApartmentRoomOrSuiteNumber
+    , '' AS PhysicalAddressCountyAnsiCode
+    , COALESCE(OrganizationPhone.TelephoneNumber, '') AS TelephoneNumber
+    , COALESCE(EducationOrganizationSchool.WebSite, '') AS WebSiteAddress
+    , CAST((
+            CASE 
+                WHEN PhysicalAddress.StateAbbreviationDescriptorId IS NULL
+                    THEN 1
+                ELSE 0
+                END
+            ) AS BIT) AS OutOfStateIndicator
+    , '' AS RecordStartDateTime
+    , '' AS RecordEndDateTime
+    , COALESCE(SchoolOperationStatusDescriptor.CodeValue, '') AS SchoolOperationalStatus
+    , COALESCE(MapReferenceSchoolOperationStatusDescriptor.EdFactsCode, '') AS SchoolOperationalStatusEdFactsCode
+    , COALESCE(CharterSchoolStatusDescriptor.CodeValue, '') AS CharterSchoolStatus
+    , '' AS ReconstitutedStatus
+    , COALESCE(IeuOrganization.NameOfInstitution, '') AS IeuOrganizationName
+    , COALESCE(CAST(LocalEducationAgency.EducationServiceCenterId AS VARCHAR), '') AS IeuOrganizationIdentifierSea
+    , COALESCE(PhysicalAddress.Latitude, '') AS Latitude
+    , COALESCE(PhysicalAddress.Longitude, '') AS Longitude
+    , '' AS SchoolOperationalStatusEffectiveDate
+    , COALESCE(AdministrativeFundingControlDescriptor.CodeValue, '') AS AdministrativeFundingControlCode
+    , COALESCE(AdministrativeFundingControlDescriptor.Description, '') AS AdministrativeFundingControlDescription
+FROM edfi.School
+LEFT JOIN edfi.EducationOrganization AS EducationOrganizationLEA
+    ON School.LocalEducationAgencyId = EducationOrganizationLEA.EducationOrganizationId
+LEFT JOIN edfi.EducationOrganization AS EducationOrganizationSchool
+    ON School.SchoolId = EducationOrganizationSchool.EducationOrganizationId
+LEFT JOIN edfi.LocalEducationAgency
+    ON School.LocalEducationAgencyId = LocalEducationAgency.LocalEducationAgencyId
+LEFT JOIN edfi.EducationOrganization AS EducationOrganizationSEA
+    ON LocalEducationAgency.StateEducationAgencyId = EducationOrganizationSEA.EducationOrganizationId
+LEFT JOIN edfi.EducationOrganizationCategory AS EducationOrganizationCategoryLEA
+    ON School.LocalEducationAgencyId = EducationOrganizationCategoryLEA.EducationOrganizationId
+LEFT JOIN edfi.Descriptor AS OrganizationCategoryLEADescriptor
+    ON OrganizationCategoryLEADescriptor.DescriptorId = EducationOrganizationCategoryLEA.EducationOrganizationCategoryDescriptorId
+LEFT JOIN MapReferenceDescriptor AS MapReferenceOrganizationCategoryLEADescriptor
+    ON MapReferenceOrganizationCategoryLEADescriptor.DescriptorId = OrganizationCategoryLEADescriptor.DescriptorId
+        AND MapReferenceOrganizationCategoryLEADescriptor.TableName = 'xref.LEAType'
+LEFT JOIN edfi.EducationOrganizationCategory AS EducationOrganizationCategorySchool
+    ON School.SchoolId = EducationOrganizationCategorySchool.EducationOrganizationId
+LEFT JOIN edfi.Descriptor AS OrganizationCategorySchoolDescriptor
+    ON OrganizationCategorySchoolDescriptor.DescriptorId = EducationOrganizationCategorySchool.EducationOrganizationCategoryDescriptorId
+LEFT JOIN MapReferenceDescriptor AS MapReferenceOrganizationCategorySchoolDescriptor
+    ON MapReferenceOrganizationCategorySchoolDescriptor.DescriptorId = OrganizationCategorySchoolDescriptor.DescriptorId
+        AND MapReferenceOrganizationCategorySchoolDescriptor.TableName = 'xref.LEAType'
+LEFT JOIN OrganizationAddress AS MailingAddress
+    ON School.SchoolId = MailingAddress.SchoolId
+        AND MailingAddress.AddressType = 'Address.Mailing'
+LEFT JOIN OrganizationAddress AS PhysicalAddress
+    ON School.SchoolId = PhysicalAddress.SchoolId
+        AND PhysicalAddress.AddressType = 'Address.Physical'
+LEFT JOIN OrganizationPhone
+    ON School.SchoolId = OrganizationPhone.SchoolId
+LEFT JOIN edfi.Descriptor AS SchoolOperationStatusDescriptor
+    ON EducationOrganizationSchool.OperationalStatusDescriptorId = SchoolOperationStatusDescriptor.DescriptorId
+LEFT JOIN MapReferenceDescriptor AS MapReferenceSchoolOperationStatusDescriptor
+    ON MapReferenceSchoolOperationStatusDescriptor.DescriptorId = SchoolOperationStatusDescriptor.DescriptorId
+        AND MapReferenceSchoolOperationStatusDescriptor.TableName = 'xref.OperationalStatus'
+LEFT JOIN edfi.Descriptor AS CharterSchoolStatusDescriptor
+    ON School.CharterStatusDescriptorId = CharterSchoolStatusDescriptor.DescriptorId
+LEFT JOIN edfi.EducationOrganization AS IeuOrganization
+    ON LocalEducationAgency.EducationServiceCenterId = IeuOrganization.EducationOrganizationId
+LEFT JOIN edfi.Descriptor AS AdministrativeFundingControlDescriptor
+    ON School.AdministrativeFundingControlDescriptorId = AdministrativeFundingControlDescriptor.DescriptorId;

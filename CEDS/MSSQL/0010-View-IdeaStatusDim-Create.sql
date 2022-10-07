@@ -71,7 +71,7 @@ SELECT ROW_NUMBER() OVER (
     , IdeaIndicatorDescription
     , IdeaIndicatorEdFactsCode
 FROM (
-    SELECT DISTINCT CONCAT (
+    SELECT CONCAT (
             COALESCE(ReferenceBasisOfExitDescriptor.EdFactsCode, '')
             , '-'
             , COALESCE(ReferenceBasisOfExitDescriptor.CodeValue, '')

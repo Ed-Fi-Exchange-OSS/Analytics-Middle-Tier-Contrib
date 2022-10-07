@@ -28,6 +28,8 @@ AS (
         , COALESCE(EducationOrganizationAddress.Latitude, '') AS Latitude
         , COALESCE(EducationOrganizationAddress.Longitude, '') AS Longitude
         , EducationOrganizationAddress.StateAbbreviationDescriptorId
+		, StateAbbreviationDescriptor.CodeValue AS StateAbbreviationCode
+		, StateAbbreviationDescriptor.Description StateAbbreviationDescription
     FROM edfi.LocalEducationAgency
     INNER JOIN edfi.EducationOrganizationAddress
         ON LocalEducationAgency.LocalEducationAgencyId = EducationOrganizationAddress.EducationOrganizationId
@@ -37,6 +39,8 @@ AS (
         ON Descriptor.DescriptorId = DescriptorMap.DescriptorId
     INNER JOIN analytics_config.DescriptorConstant
         ON DescriptorConstant.DescriptorConstantId = DescriptorMap.DescriptorConstantId
+	LEFT JOIN edfi.Descriptor AS StateAbbreviationDescriptor
+        ON StateAbbreviationDescriptor.DescriptorId = EducationOrganizationAddress.StateAbbreviationDescriptorId
     )
     , OrganizationPhone
 AS (
@@ -163,7 +167,7 @@ SELECT ROW_NUMBER() OVER (
     , Longitude
     , EffectiveDate
 FROM (
-    SELECT DISTINCT EducationOrganizationLEA.EducationOrganizationId AS LeaKey
+    SELECT EducationOrganizationLEA.EducationOrganizationId AS LeaKey
         , CAST(EducationOrganizationLEA.EducationOrganizationId AS VARCHAR) AS LocalEducationAgencyKey
         , '' AS OperationalStatusEffectiveDate
         , EducationOrganizationLEA.NameOfInstitution AS LeaName
@@ -174,8 +178,8 @@ FROM (
         , COALESCE(EducationOrganizationSEA.NameOfInstitution, '') AS SeaOrganizationName
         , COALESCE(CAST(LocalEducationAgency.StateEducationAgencyId AS VARCHAR), '') AS SeaIdentifierSea
         , '' AS StateAnsiCode
-        , COALESCE(StateAbbreviationDescriptor.CodeValue, '') AS StateAbbreviationCode
-        , COALESCE(StateAbbreviationDescriptor.Description, '') AS StateAbbreviationDescription
+        , COALESCE(PhysicalAddress.StateAbbreviationCode, '') AS StateAbbreviationCode
+        , COALESCE(PhysicalAddress.StateAbbreviationDescription, '') AS StateAbbreviationDescription
         , '' AS LeaSupervisoryUnionIdentificationNumber
         , '' AS ReportedFederally
         , COALESCE(LeaTypeDescriptor.CodeValue, '') AS LeaTypeCode
@@ -219,10 +223,6 @@ FROM (
         ON LocalEducationAgency.LocalEducationAgencyId = EducationOrganizationLEA.EducationOrganizationId
     LEFT JOIN edfi.EducationOrganization AS EducationOrganizationSEA
         ON LocalEducationAgency.StateEducationAgencyId = EducationOrganizationSEA.EducationOrganizationId
-    LEFT JOIN edfi.EducationOrganizationAddress
-        ON LocalEducationAgency.LocalEducationAgencyId = EducationOrganizationAddress.EducationOrganizationId
-    LEFT JOIN edfi.Descriptor AS StateAbbreviationDescriptor
-        ON EducationOrganizationAddress.StateAbbreviationDescriptorId = StateAbbreviationDescriptor.DescriptorId
     LEFT JOIN edfi.EducationOrganizationCategory
         ON LocalEducationAgency.LocalEducationAgencyId = EducationOrganizationCategory.EducationOrganizationId
     LEFT JOIN edfi.Descriptor AS LeaTypeDescriptor
