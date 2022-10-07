@@ -107,7 +107,7 @@ AS
             , '' AS RecordStartDateTime
             , '' AS RecordEndDateTime
             , CAST(StudentSchoolAssociation.SchoolId AS VARCHAR) AS SchoolKey
-            , StudentSchoolAssociation.ClassOfSchoolYear AS ClassOfSchoolYear
+            , CAST(StudentSchoolAssociation.ClassOfSchoolYear AS VARCHAR) AS ClassOfSchoolYear
             , CAST(CONVERT(VARCHAR(8), StudentSchoolAssociation.EntryDate, 112) AS INT) AS EntryDateKey
             , CAST(CONVERT(VARCHAR(8), StudentSchoolAssociation.ExitWithdrawDate, 112) AS INT) AS ExitWithdrawDateKey
             , COALESCE(StudentSchoolAssociation.EntryTypeDescriptorId, - 1) AS EntryTypeDescriptorId

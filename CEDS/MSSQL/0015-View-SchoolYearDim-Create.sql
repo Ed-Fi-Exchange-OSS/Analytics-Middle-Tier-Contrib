@@ -36,11 +36,11 @@ AS
             , SchoolYearDescription AS SchoolYearKey
             , SchoolYear
             , CONCAT (
-                '01-07-'
+                '07-01-'
                 , SUBSTRING(SchoolYearDescription, 1, 4)
                 ) AS SessionBeginDate
             , CONCAT (
-                '30-06-'
+                '06-30-'
                 , SUBSTRING(SchoolYearDescription, 6, 9)
                 ) AS SessionEndDate
             , CAST(CONCAT (
