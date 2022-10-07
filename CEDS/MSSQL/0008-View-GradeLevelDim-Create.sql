@@ -13,42 +13,53 @@ BEGIN
 END;
 GO
 
-CREATE OR ALTER VIEW analytics.ceds_GradeLevelDim
-AS 
+CREATE
+    OR
+
+ALTER VIEW analytics.ceds_GradeLevelDim
+AS
 WITH MapReferenceDescriptor
 AS (
-    SELECT 
-         Descriptor.DescriptorId
-        ,Descriptor.CodeValue
-        ,Descriptor.Description
-        ,ceds_TableReference.TableName
-        ,ceds_TableInformation.EdFactsCode
-        ,Descriptor.LastModifiedDate
-    FROM 
-        analytics_config.ceds_TableInformation
-    INNER JOIN 
-        analytics_config.ceds_TableReference
+    SELECT Descriptor.DescriptorId
+        , Descriptor.CodeValue
+        , Descriptor.Description
+        , ceds_TableReference.TableName
+        , ceds_TableInformation.EdFactsCode
+        , Descriptor.LastModifiedDate
+    FROM analytics_config.ceds_TableInformation
+    INNER JOIN analytics_config.ceds_TableReference
         ON ceds_TableInformation.TableId = ceds_TableReference.TableId
-    INNER JOIN 
-        edfi.Descriptor
+    INNER JOIN edfi.Descriptor
         ON Descriptor.DescriptorId = ceds_TableInformation.DescriptorId
-    INNER JOIN
-        edfi.GradeLevelDescriptor
+    INNER JOIN edfi.GradeLevelDescriptor
         ON GradeLevelDescriptor.GradeLevelDescriptorId = ceds_TableInformation.DescriptorId
     )
-SELECT DISTINCT 
-    CONCAT (
-            MapReferenceDescriptor.EdFactsCode, 
-            '-', 
-            MapReferenceDescriptor.CodeValue
+SELECT '-1' AS GradeLevelDimId
+    , '-1' AS GradeLevelKey
+    , '' AS GradeLevelCode
+    , '' AS GradeLevelDescription
+    , '' AS GradeLevelEdFactsCode
+    , '' AS LastModifiedDate
+
+UNION ALL
+
+SELECT ROW_NUMBER() OVER (
+        ORDER BY CONCAT (
+                MapReferenceDescriptor.EdFactsCode
+                , '-'
+                , MapReferenceDescriptor.CodeValue
+                )
+        ) AS GradeLevelDimId
+    , CONCAT (
+        MapReferenceDescriptor.EdFactsCode
+        , '-'
+        , MapReferenceDescriptor.CodeValue
         ) AS GradeLevelKey
-    ,COALESCE(MapReferenceDescriptor.CodeValue, '') AS GradeLevelCode
-    ,COALESCE(MapReferenceDescriptor.Description, '') AS GradeLevelDescription
-    ,COALESCE(MapReferenceDescriptor.EdFactsCode, '') AS GradeLevelEdFactsCode
-    ,COALESCE(MapReferenceDescriptor.LastModifiedDate, '') AS LastModifiedDate
-FROM 
-    edfi.GradeLevelDescriptor
-LEFT JOIN 
-    MapReferenceDescriptor
+    , COALESCE(MapReferenceDescriptor.CodeValue, '') AS GradeLevelCode
+    , COALESCE(MapReferenceDescriptor.Description, '') AS GradeLevelDescription
+    , COALESCE(MapReferenceDescriptor.EdFactsCode, '') AS GradeLevelEdFactsCode
+    , COALESCE(MapReferenceDescriptor.LastModifiedDate, '') AS LastModifiedDate
+FROM edfi.GradeLevelDescriptor
+INNER JOIN MapReferenceDescriptor
     ON GradeLevelDescriptor.GradeLevelDescriptorId = MapReferenceDescriptor.DescriptorId
-	AND MapReferenceDescriptor.TableName = 'xref.GradeLevels'
+        AND MapReferenceDescriptor.TableName = 'xref.GradeLevels';
