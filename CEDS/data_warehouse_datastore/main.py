@@ -22,6 +22,7 @@ from transfers.dim_K12enrollment_statuses import dim_K12enrollment_statuses
 from transfers.dim_k12program_types import dim_k12program_types
 from transfers.dim_K12demographics import dim_K12demographics
 from transfers.dim_races import dim_races
+from transfers.preparation_process import preparation_process
 
 # Fact views
 from transfers.factK12_program_participation import factK12_program_participation
@@ -42,7 +43,7 @@ if __name__ == "__main__":
 
         conn_target = pyodbc.connect(
             f'Driver={"SQL Server"};Server={config["CedsConfig"]["Server"]};Database={config["CedsConfig"]["Database"]};Trusted_Connection={config["CedsConfig"]["Trusted_Connection"]};')
-
+        preparation_process(conn_target)
         dataFrames["dim_schools_years"] = dim_schools_years(conn_source, conn_target)
         dataFrames["dim_data_collections"] = dim_data_collections(conn_source, conn_target)
         dataFrames["dim_seas"] = dim_seas(conn_source, conn_target)
