@@ -70,7 +70,7 @@ SELECT '-1' IeuDimId
     , '' MailingAddressStateAbbreviation
     , '' MailingAddressStreetNumberAndName
     , '' MailingAddressCountyAnsiCode
-    , '' OutOfStateIndicator
+    , 0 OutOfStateIndicator
     , '' OrganizationOperationalStatus
     , '' OperationalStatusEffectiveDate
     , '' PhysicalAddressCity

@@ -2,255 +2,246 @@
 -- Licensed to the Ed-Fi Alliance under one or more agreements.
 -- The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 -- See the LICENSE and NOTICES files in the project root for more information.
+DROP VIEW
 
-DROP VIEW IF EXISTS analytics.ceds_FactK12StudentEnrollment;
+IF EXISTS analytics.ceds_FactK12StudentEnrollment;
+    CREATE
+        OR REPLACE VIEW analytics.ceds_FactK12StudentEnrollment AS
+        WITH StudentEnrollmentAcrossSchools AS (
+                SELECT studentschoolassociation.StudentUSI
+                    , studentschoolassociation.SchoolId
+                    , Student.StudentUniqueId
+                    , COUNT(1) AS Count
+                FROM edfi.studentschoolassociation
+                INNER JOIN edfi.Student
+                    ON studentschoolassociation.StudentUSI = Student.StudentUSI
+                WHERE StudentSchoolAssociation.ExitWithdrawDate IS NULL
+                    OR StudentSchoolAssociation.ExitWithdrawDate >= NOW()
+                GROUP BY studentschoolassociation.StudentUSI
+                    , StudentUniqueId
+                    , SchoolId
+                )
+            , StudentDemographicBridge AS (
+                SELECT COALESCE(ceds_K12DemographicDim.K12DemographicKey, '-1') AS K12DemographicKey
+                    , COALESCE(ceds_K12DemographicDim.K12DemographicDimId, '-1') AS K12DemographicDimId
+                    , Student.StudentUniqueId AS StudentIdentifierState
+                    , CAST(StudentSchoolAssociation.SchoolId AS VARCHAR) AS SchoolKey
+                FROM edfi.Student
+                INNER JOIN edfi.StudentSchoolAssociation
+                    ON StudentSchoolAssociation.StudentUSI = Student.StudentUSI
+                INNER JOIN edfi.StudentEducationOrganizationAssociation
+                    ON StudentSchoolAssociation.StudentUSI = StudentEducationOrganizationAssociation.StudentUSI
+                        AND StudentSchoolAssociation.SchoolId = StudentEducationOrganizationAssociation.EducationOrganizationId
+                LEFT JOIN edfi.Descriptor SexDescriptor
+                    ON StudentEducationOrganizationAssociation.SexDescriptorId = SexDescriptor.DescriptorId
+                -- EconomicDisadvantage
+                LEFT JOIN edfi.StudentEducationOrganizationAssociationStudentCharacteristic EconomicDisadvantageCharacteristic
+                    ON StudentEducationOrganizationAssociation.StudentUSI = EconomicDisadvantageCharacteristic.StudentUSI
+                        AND StudentEducationOrganizationAssociation.EducationOrganizationId = EconomicDisadvantageCharacteristic.EducationOrganizationId
+                LEFT JOIN edfi.Descriptor EconomicDisadvantageDescriptor
+                    ON EconomicDisadvantageCharacteristic.StudentCharacteristicDescriptorId = EconomicDisadvantageDescriptor.DescriptorId
+                -- Homeless
+                LEFT JOIN edfi.StudentEducationOrganizationAssociationStudentCharacteristic HomelessnessCharacteristic
+                    ON StudentEducationOrganizationAssociation.StudentUSI = HomelessnessCharacteristic.StudentUSI
+                        AND StudentEducationOrganizationAssociation.EducationOrganizationId = HomelessnessCharacteristic.EducationOrganizationId
+                LEFT JOIN edfi.Descriptor HomelessnessCharacteristicDescriptor
+                    ON HomelessnessCharacteristic.StudentCharacteristicDescriptorId = HomelessnessCharacteristicDescriptor.DescriptorId
+                -- EnglishLearner
+                LEFT JOIN edfi.StudentEducationOrganizationAssociationStudentCharacteristic EnglishLearnerCharacteristic
+                    ON StudentEducationOrganizationAssociation.StudentUSI = EnglishLearnerCharacteristic.StudentUSI
+                        AND StudentEducationOrganizationAssociation.EducationOrganizationId = EnglishLearnerCharacteristic.EducationOrganizationId
+                LEFT JOIN edfi.Descriptor EnglishLearnerCharacteristicDescriptor
+                    ON EnglishLearnerCharacteristic.StudentCharacteristicDescriptorId = EnglishLearnerCharacteristicDescriptor.DescriptorId
+                -- Migrant
+                LEFT JOIN edfi.StudentEducationOrganizationAssociationStudentCharacteristic MigrantCharacteristic
+                    ON StudentEducationOrganizationAssociation.StudentUSI = MigrantCharacteristic.StudentUSI
+                        AND StudentEducationOrganizationAssociation.EducationOrganizationId = MigrantCharacteristic.EducationOrganizationId
+                LEFT JOIN edfi.Descriptor MigrantCharacteristicDescriptor
+                    ON MigrantCharacteristic.StudentCharacteristicDescriptorId = MigrantCharacteristicDescriptor.DescriptorId
+                -- MilitaryConnected
+                LEFT JOIN edfi.StudentEducationOrganizationAssociationStudentCharacteristic MilitaryConnectedCharacteristic
+                    ON StudentEducationOrganizationAssociation.StudentUSI = MilitaryConnectedCharacteristic.StudentUSI
+                        AND StudentEducationOrganizationAssociation.EducationOrganizationId = MilitaryConnectedCharacteristic.EducationOrganizationId
+                LEFT JOIN edfi.Descriptor MilitaryConnectedDescriptor
+                    ON MilitaryConnectedCharacteristic.StudentCharacteristicDescriptorId = MilitaryConnectedDescriptor.DescriptorId
+                -- HomelessPrimaryNighttimeResidence
+                LEFT JOIN edfi.StudentEducationOrganizationAssociationStudentCharacteristic HomelessPrimaryNighttimeResidenceCharacteristic
+                    ON StudentEducationOrganizationAssociation.StudentUSI = HomelessPrimaryNighttimeResidenceCharacteristic.StudentUSI
+                        AND StudentEducationOrganizationAssociation.EducationOrganizationId = HomelessPrimaryNighttimeResidenceCharacteristic.EducationOrganizationId
+                LEFT JOIN edfi.Descriptor HomelessPrimaryNighttimeResidenceCharacteristicDescriptor
+                    ON HomelessPrimaryNighttimeResidenceCharacteristic.StudentCharacteristicDescriptorId = HomelessPrimaryNighttimeResidenceCharacteristicDescriptor.DescriptorId
+                -- HomelessUnaccompaniedYouth
+                LEFT JOIN edfi.StudentEducationOrganizationAssociationStudentCharacteristic HomelessUnaccompaniedYouthCharacteristic
+                    ON StudentEducationOrganizationAssociation.StudentUSI = HomelessUnaccompaniedYouthCharacteristic.StudentUSI
+                        AND StudentEducationOrganizationAssociation.EducationOrganizationId = HomelessUnaccompaniedYouthCharacteristic.EducationOrganizationId
+                LEFT JOIN edfi.Descriptor HomelessUnaccompaniedYouthCharacteristicDescriptor
+                    ON HomelessUnaccompaniedYouthCharacteristic.StudentCharacteristicDescriptorId = HomelessUnaccompaniedYouthCharacteristicDescriptor.DescriptorId
+                LEFT JOIN analytics.ceds_K12DemographicDim
+                    ON SexDescriptor.CodeValue = ceds_K12DemographicDim.SexCode
+                        AND EconomicDisadvantageDescriptor.CodeValue = ceds_K12DemographicDim.EconomicDisadvantageStatusCode
+                        AND HomelessnessCharacteristicDescriptor.CodeValue = ceds_K12DemographicDim.HomelessnessStatusCode
+                        AND EnglishLearnerCharacteristicDescriptor.CodeValue = ceds_K12DemographicDim.EnglishLearnerStatusCode
+                        AND MigrantCharacteristicDescriptor.CodeValue = ceds_K12DemographicDim.MigrantStatusCode
+                        AND MilitaryConnectedDescriptor.CodeValue = ceds_K12DemographicDim.MilitaryConnectedStudentIndicatorCode
+                        AND HomelessPrimaryNighttimeResidenceCharacteristicDescriptor.CodeValue = ceds_K12DemographicDim.HomelessPrimaryNighttimeResidenceCode
+                        AND HomelessUnaccompaniedYouthCharacteristicDescriptor.CodeValue = ceds_K12DemographicDim.HomelessUnaccompaniedYouthStatusCode
+                )
+            , FactK12StudentEnrollments AS (
+                SELECT COALESCE(ceds_SchoolYearDim.SchoolYearKey, '-1') AS SchoolYearKey
+                    , COALESCE(ceds_SchoolYearDim.SchoolYearDimId, '-1') AS SchoolYearDimId
+                    , '' AS DataCollectionKey
+                    , COALESCE(ceds_IeuDim.IeuDimKey, '-1') AS IeuKey
+                    , COALESCE(ceds_IeuDim.IeuDimId, '-1') AS IeuDimId
+                    , COALESCE(ceds_SeaDim.SeaDimKey, '-1') AS SeaKey
+                    , COALESCE(ceds_SeaDim.SeaDimId, '-1') AS SeaDimId
+                    , COALESCE(ceds_LeaDim.LeaKey, '-1') AS LeaKey
+                    , COALESCE(ceds_LeaDim.LeaDimId, '-1') AS LeaDimId
+                    , COALESCE(K12SchoolKey, '-1') AS K12SchoolKey
+                    , COALESCE(K12SchoolDimId, '-1') AS K12SchoolDimId
+                    , COALESCE(ceds_K12StudentDim.K12StudentKey, '-1') AS K12StudentKey
+                    , COALESCE(ceds_K12StudentDim.K12StudentDimId, '-1') AS K12StudentDimId
+                    , COALESCE(ceds_K12EnrollmentStatusDim.K12EnrollmentStatusKey, '-1') AS K12EnrollmentStatusKey
+                    , COALESCE(ceds_K12EnrollmentStatusDim.K12EnrollmentStatusDimId, '-1') AS K12EnrollmentStatusDimId
+                    , COALESCE(ceds_GradeLevelDim.GradeLevelKey, '-1') AS EntryGradeLevelKey
+                    , COALESCE(ceds_GradeLevelDim.GradeLevelDimId, '-1') AS EntryGradeLevelDimId
+                    , COALESCE(ceds_GradeLevelDim.GradeLevelKey, '-1') AS ExitGradeLevelKey
+                    , COALESCE(ceds_GradeLevelDim.GradeLevelDimId, '-1') AS ExitGradeLevelDimId
+                    , ceds_SchoolYearDim.SchoolYearKey AS EnrollmentEntryDateKey
+                    , SchoolYearsDim_ExitWithdrawDate.SchoolYearKey AS EnrollmentExitDateKey
+                    , COALESCE(ceds_K12StudentDim.ClassOfSchoolYear, '-1') AS ProjectedGraduationDateKey
+                    , COALESCE(StudentDemographicBridge.K12DemographicKey, '-1') AS K12DemographicKey
+                    , COALESCE(StudentDemographicBridge.K12DemographicDimId, '-1') AS K12DemographicDimId
+                    , '-1' AS IdeaStatusKey
+                    , '-1' AS IdeaStatusDimId
+                FROM analytics.ceds_SchoolYearDim
+                INNER JOIN analytics.ceds_K12StudentDim
+                    ON ceds_K12StudentDim.EntryDateKey BETWEEN ceds_SchoolYearDim.SessionBeginDateKey
+                            AND ceds_SchoolYearDim.SessionEndDateKey
+                INNER JOIN analytics.ceds_K12SchoolDim
+                    ON ceds_K12StudentDim.SchoolKey = ceds_K12SchoolDim.SchoolKey
+                INNER JOIN StudentDemographicBridge
+                    ON StudentDemographicBridge.StudentIdentifierState = ceds_K12StudentDim.StudentIdentifierState
+                        AND StudentDemographicBridge.SchoolKey = ceds_K12StudentDim.SchoolKey
+                INNER JOIN analytics.ceds_IeuDim
+                    ON ceds_K12SchoolDim.IeuOrganizationIdentifierSea = ceds_IeuDim.IeuOrganizationIdentifierSea
+                INNER JOIN analytics.ceds_SeaDim
+                    ON ceds_K12SchoolDim.SeaIdentifierSea = ceds_SeaDim.SeaIdentifierSea
+                INNER JOIN analytics.ceds_LeaDim
+                    ON ceds_K12SchoolDim.LeaIdentifierSea = ceds_LeaDim.LeaIdentifierSea
+                LEFT JOIN edfi.Descriptor EntryTypeDescriptor
+                    ON ceds_K12StudentDim.EntryTypeDescriptorId = EntryTypeDescriptor.DescriptorId
+                LEFT JOIN edfi.Descriptor ExitWithdrawTypeDescriptor
+                    ON ceds_K12StudentDim.ExitWithdrawTypeDescriptorId = ExitWithdrawTypeDescriptor.DescriptorId
+                LEFT JOIN StudentEnrollmentAcrossSchools
+                    ON ceds_K12StudentDim.StudentIdentifierState = StudentEnrollmentAcrossSchools.StudentUniqueId
+                LEFT JOIN analytics.ceds_K12EnrollmentStatusDim
+                    ON ceds_K12EnrollmentStatusDim.EntryTypeCode = EntryTypeDescriptor.CodeValue
+                        AND ceds_K12EnrollmentStatusDim.ExitOrWithdrawalTypeCode = ExitWithdrawTypeDescriptor.CodeValue
+                        AND (
+                            CASE 
+                                WHEN StudentEnrollmentAcrossSchools.Count IS NOT NULL
+                                    AND StudentEnrollmentAcrossSchools.Count > 1
+                                    THEN '01810'
+                                WHEN CAST(TO_CHAR(NOW(), 'yyyymmdd') AS INT) BETWEEN EntryDateKey
+                                        AND ExitWithdrawDateKey
+                                    THEN '01811'
+                                WHEN CAST(TO_CHAR(NOW(), 'yyyymmdd') AS INT) <= ExitWithdrawDateKey
+                                    THEN '01812'
+                                WHEN ExitWithdrawDateKey IS NOT NULL
+                                    AND ExitWithdrawTypeDescriptor.CodeValue = 'Transferred'
+                                    THEN '01813'
+                                END
+                            ) = EnrollmentStatusCode
+                INNER JOIN edfi.Descriptor EntryGradeLevelDescriptor
+                    ON ceds_K12StudentDim.EntryGradeLevelDescriptorId = EntryGradeLevelDescriptor.DescriptorId
+                INNER JOIN analytics.ceds_GradeLevelDim
+                    ON EntryGradeLevelDescriptor.CodeValue = ceds_GradeLevelDim.GradeLevelCode
+                LEFT JOIN analytics.ceds_SchoolYearDim SchoolYearsDim_ExitWithdrawDate
+                    ON ceds_K12StudentDim.ExitWithdrawDateKey BETWEEN SchoolYearsDim_ExitWithdrawDate.SessionBeginDateKey
+                            AND SchoolYearsDim_ExitWithdrawDate.SessionEndDateKey
+                WHERE COALESCE(ceds_K12StudentDim.ClassOfSchoolYear, ceds_SchoolYearDim.SchoolYear) = ceds_SchoolYearDim.SchoolYear
+                )
 
-CREATE OR REPLACE VIEW analytics.ceds_FactK12StudentEnrollment
-AS 
-	WITH StudentEnrollmentAcrossSchools
-	AS (
-		SELECT
-			studentschoolassociation.StudentUSI,
-			studentschoolassociation.SchoolId,
-			COUNT(1) AS Count
-		FROM 
-			edfi.studentschoolassociation
-		WHERE
-            StudentSchoolAssociation.ExitWithdrawDate IS NULL
-            OR StudentSchoolAssociation.ExitWithdrawDate >= NOW()
-		GROUP BY StudentUSI,SchoolId
-	),
-	FactK12StudentEnrollments 
-	AS (
-		SELECT
-			ceds_SchoolYearDim.SchoolYearKey AS SchoolYearKey,
-			'' AS DataCollectionKey,
-			ceds_IeuDim.IeuDimKey AS IeuKey,
-            ceds_SeaDim.SeaDimKey AS SeaKey,
-            ceds_LeaDim.LeaKey AS LeaKey,
-            K12SchoolKey AS K12SchoolKey,
-			ceds_K12StudentDim.K12StudentKey AS K12StudentKey,
-			ceds_K12EnrollmentStatusDim.K12EnrollmentStatusKey AS K12EnrollmentStatusKey,
-			CASE
-				WHEN ceds_GradeLevelDim.GradeLevelKey IS NULL THEN '-1'
-				ELSE ceds_GradeLevelDim.GradeLevelKey
-			END AS EntryGradeLevelKey,
-			CASE
-				WHEN ceds_GradeLevelDim.GradeLevelKey IS NULL THEN '-1'
-				ELSE ceds_GradeLevelDim.GradeLevelKey
-			END AS ExitGradeLevelKey,
-			SchoolYearsDim_EntryDate.SchoolYearKey AS EnrollmentEntryDateKey,
-			SchoolYearsDim_ExitWithdrawDate.SchoolYearKey AS EnrollmentExitDateKey,
-			CASE
-				WHEN ceds_SchoolYearDim_SchoolYear.SchoolYearKey IS NULL THEN '-1'
-				ELSE ceds_SchoolYearDim_SchoolYear.SchoolYearKey
-			END AS ProjectedGraduationDateKey,
-			CASE
-				WHEN ceds_K12DemographicDim.K12DemographicKey IS NULL THEN '-1'
-				ELSE ceds_K12DemographicDim.K12DemographicKey
-			END AS K12DemographicKey,
-			'' AS IdeaStatusKey
-		FROM
-			analytics.ceds_SchoolYearDim
-		INNER JOIN 
-			edfi.StudentSchoolAssociation
-				ON StudentSchoolAssociation.EntryDate BETWEEN TO_DATE(ceds_SchoolYearDim.SessionBeginDate, 'MM-DD-YYYY') AND TO_DATE(ceds_SchoolYearDim.SessionEndDate, 'MM-DD-YYYY')
-		INNER JOIN
-			analytics.ceds_K12SchoolDim
-				ON edfi.StudentSchoolAssociation.SchoolId::TEXT = ceds_K12SchoolDim.SchoolIdentifierSea
-		INNER JOIN
-			analytics.ceds_IeuDim
-		ON
-			ceds_K12SchoolDim.IeuOrganizationIdentifierSea = ceds_IeuDim.IeuOrganizationIdentifierSea
-		INNER JOIN
-			analytics.ceds_SeaDim
-		ON
-			ceds_K12SchoolDim.SeaIdentifierSea = ceds_SeaDim.SeaIdentifierSea
-		INNER JOIN
-			analytics.ceds_LeaDim
-		ON
-			ceds_K12SchoolDim.LeaIdentifierSea = ceds_LeaDim.LeaIdentifierSea
-		INNER JOIN
-			edfi.Student
-				ON StudentSchoolAssociation.StudentUSI = Student.StudentUSI
-		INNER JOIN
-			analytics.ceds_K12StudentDim
-				ON Student.StudentUniqueId = ceds_K12StudentDim.StudentIdentifierState
-		LEFT JOIN
-			edfi.Descriptor EntryTypeDescriptor
-				ON StudentSchoolAssociation.EntryTypeDescriptorId = EntryTypeDescriptor.DescriptorId
-		LEFT JOIN
-			edfi.Descriptor ExitWithdrawTypeDescriptor
-				ON StudentSchoolAssociation.ExitWithdrawTypeDescriptorId = ExitWithdrawTypeDescriptor.DescriptorId
-		LEFT JOIN
-			StudentEnrollmentAcrossSchools
-				ON StudentSchoolAssociation.StudentUSI = StudentEnrollmentAcrossSchools.StudentUSI
-					AND StudentSchoolAssociation.SchoolId = StudentEnrollmentAcrossSchools.SchoolId
-		LEFT JOIN
-			analytics.ceds_K12EnrollmentStatusDim
-				ON ceds_K12EnrollmentStatusDim.EntryTypeCode = EntryTypeDescriptor.CodeValue
-					AND ceds_K12EnrollmentStatusDim.ExitOrWithdrawalTypeCode = ExitWithdrawTypeDescriptor.CodeValue
-					AND (
-						CASE
-							WHEN StudentEnrollmentAcrossSchools.Count IS NOT NULL AND StudentEnrollmentAcrossSchools.Count > 1
-								THEN '01810'
-							WHEN NOW() BETWEEN EntryDate AND ExitWithdrawDate
-								THEN '01811'
-							WHEN NOW() <= ExitWithdrawDate
-								THEN '01812'
-							WHEN ExitWithdrawDate IS NOT NULL AND ExitWithdrawTypeDescriptor.CodeValue = 'Transferred'
-								THEN '01813'
-						END
-					) = EnrollmentStatusCode
-		INNER JOIN
-			edfi.Descriptor EntryGradeLevelDescriptor
-				ON StudentSchoolAssociation.EntryGradeLevelDescriptorId = EntryGradeLevelDescriptor.DescriptorId
-		INNER JOIN
-			analytics.ceds_GradeLevelDim
-				ON EntryGradeLevelDescriptor.CodeValue = ceds_GradeLevelDim.GradeLevelCode
-		INNER JOIN
-			analytics.ceds_SchoolYearDim SchoolYearsDim_EntryDate
-				ON StudentSchoolAssociation.EntryDate BETWEEN TO_DATE(SchoolYearsDim_EntryDate.SessionBeginDate, 'MM-DD-YYYY') AND TO_DATE(SchoolYearsDim_EntryDate.SessionEndDate, 'MM-DD-YYYY')
-		INNER JOIN
-			analytics.ceds_SchoolYearDim SchoolYearsDim_ExitWithdrawDate
-				ON StudentSchoolAssociation.ExitWithdrawDate BETWEEN TO_DATE(SchoolYearsDim_ExitWithdrawDate.SessionBeginDate, 'MM-DD-YYYY') AND TO_DATE(SchoolYearsDim_ExitWithdrawDate.SessionEndDate, 'MM-DD-YYYY')
-		LEFT JOIN
-			analytics.ceds_SchoolYearDim ceds_SchoolYearDim_SchoolYear
-				ON StudentSchoolAssociation.ClassOfSchoolYear = ceds_SchoolYearDim_SchoolYear.SchoolYear
-		LEFT JOIN
-			edfi.StudentEducationOrganizationAssociation
-				ON StudentSchoolAssociation.StudentUSI = StudentEducationOrganizationAssociation.StudentUSI
-					AND StudentSchoolAssociation.SchoolId = StudentEducationOrganizationAssociation.EducationOrganizationId
-		LEFT JOIN
-			edfi.Descriptor SexDescriptor
-				ON StudentEducationOrganizationAssociation.SexDescriptorId = SexDescriptor.DescriptorId
-		-- EconomicDisadvantage
-		LEFT JOIN
-			edfi.StudentEducationOrganizationAssociationStudentCharacteristic EconomicDisadvantageCharacteristic
-				ON StudentEducationOrganizationAssociation.StudentUSI = EconomicDisadvantageCharacteristic.StudentUSI
-		LEFT JOIN
-			analytics_config.ceds_TableInformation EconomicDisadvantage
-				ON EconomicDisadvantageCharacteristic.StudentCharacteristicDescriptorId = EconomicDisadvantage.DescriptorId
-		LEFT JOIN
-			analytics.ceds_K12DemographicDim
-				ON EconomicDisadvantage.CodeValue = ceds_K12DemographicDim.EconomicDisadvantageStatusCode
-		-- Homeless
-		LEFT JOIN
-			edfi.StudentEducationOrganizationAssociationStudentCharacteristic HomelessnessCharacteristic
-				ON StudentEducationOrganizationAssociation.StudentUSI = HomelessnessCharacteristic.StudentUSI
-		LEFT JOIN
-			analytics_config.ceds_TableInformation Homelessness
-				ON HomelessnessCharacteristic.StudentCharacteristicDescriptorId = Homelessness.DescriptorId
-					AND ceds_K12DemographicDim.HomelessnessStatusCode = Homelessness.CodeValue
-		-- EnglishLearner
-		LEFT JOIN
-			edfi.StudentEducationOrganizationAssociationStudentCharacteristic EnglishLearnerCharacteristic
-				ON StudentEducationOrganizationAssociation.StudentUSI = EnglishLearnerCharacteristic.StudentUSI
-		LEFT JOIN
-			analytics_config.ceds_TableInformation EnglishLearner
-				ON EnglishLearnerCharacteristic.StudentCharacteristicDescriptorId = EnglishLearner.DescriptorId
-					AND ceds_K12DemographicDim.EnglishLearnerStatusCode = EnglishLearner.CodeValue
-		-- Migrant
-		LEFT JOIN
-			edfi.StudentEducationOrganizationAssociationStudentCharacteristic MigrantCharacteristic
-				ON StudentEducationOrganizationAssociation.StudentUSI = MigrantCharacteristic.StudentUSI
-		LEFT JOIN
-			analytics_config.ceds_TableInformation Migrant
-				ON MigrantCharacteristic.StudentCharacteristicDescriptorId = Migrant.DescriptorId
-					AND ceds_K12DemographicDim.MigrantStatusCode = Migrant.CodeValue
-		-- MilitaryConnected
-		LEFT JOIN
-			edfi.StudentEducationOrganizationAssociationStudentCharacteristic MilitaryConnectedCharacteristic
-				ON StudentEducationOrganizationAssociation.StudentUSI = MilitaryConnectedCharacteristic.StudentUSI
-		LEFT JOIN
-			analytics_config.ceds_TableInformation MilitaryConnected
-				ON MilitaryConnectedCharacteristic.StudentCharacteristicDescriptorId = MilitaryConnected.DescriptorId
-					AND ceds_K12DemographicDim.MilitaryConnectedStudentIndicatorCode = MilitaryConnected.CodeValue
-		-- HomelessPrimaryNighttimeResidence
-		LEFT JOIN
-			edfi.StudentEducationOrganizationAssociationStudentCharacteristic HomelessPrimaryNighttimeResidenceCharacteristic
-				ON StudentEducationOrganizationAssociation.StudentUSI = HomelessPrimaryNighttimeResidenceCharacteristic.StudentUSI
-		LEFT JOIN
-			analytics_config.ceds_TableInformation HomelessPrimaryNighttimeResidence
-				ON HomelessPrimaryNighttimeResidenceCharacteristic.StudentCharacteristicDescriptorId = HomelessPrimaryNighttimeResidence.DescriptorId
-					AND ceds_K12DemographicDim.HomelessPrimaryNighttimeResidenceCode = HomelessPrimaryNighttimeResidence.CodeValue
-		-- HomelessUnaccompaniedYouth
-		LEFT JOIN
-			edfi.StudentEducationOrganizationAssociationStudentCharacteristic HomelessUnaccompaniedYouthCharacteristic
-				ON StudentEducationOrganizationAssociation.StudentUSI = HomelessUnaccompaniedYouthCharacteristic.StudentUSI
-		LEFT JOIN
-			analytics_config.ceds_TableInformation HomelessUnaccompaniedYouth
-				ON HomelessUnaccompaniedYouthCharacteristic.StudentCharacteristicDescriptorId = HomelessUnaccompaniedYouth.DescriptorId
-					AND ceds_K12DemographicDim.HomelessUnaccompaniedYouthStatusCode = HomelessUnaccompaniedYouth.CodeValue
-		-- SexCode
-		LEFT JOIN
-			analytics_config.ceds_TableInformation SexCode
-				ON StudentEducationOrganizationAssociation.SexDescriptorId = SexCode.DescriptorId
-					AND ceds_K12DemographicDim.SexCode = SexCode.CodeValue
-		)
-	SELECT
-		CONCAT (
-			SchoolYearKey,
-			'-',
-			DataCollectionKey,
-			'-',
-			SeaKey,
-			'-',
-			IeuKey,
-			'-',
-			LeaKey,
-			'-',
-			K12SchoolKey,
-			'-',
-			K12StudentKey,
-			'-',
-			K12EnrollmentStatusKey,
-			'-',
-			EntryGradeLevelKey,
-			'-',
-			ExitGradeLevelKey,
-			'-',
-			EnrollmentEntryDateKey,
-			'-',
-			EnrollmentExitDateKey,
-			'-',
-			ProjectedGraduationDateKey,
-			'-',
-			K12DemographicKey,
-			'-',
-			IdeaStatusKey
-		) AS FactK12StudentEnrollmentKey,
-		SchoolYearKey,
-		DataCollectionKey,
-		SeaKey,
-		IeuKey,
-		LeaKey,
-		K12SchoolKey,
-		K12StudentKey,
-		K12EnrollmentStatusKey,
-		EntryGradeLevelKey,
-		ExitGradeLevelKey,
-		EnrollmentEntryDateKey,
-		EnrollmentExitDateKey,
-		ProjectedGraduationDateKey,
-		K12DemographicKey,
-		IdeaStatusKey,
-		COUNT (K12StudentKey) AS StudentCount
-	FROM
-		FactK12StudentEnrollments
-	GROUP BY
-		SchoolYearKey,
-		DataCollectionKey,
-		SeaKey,
-		IeuKey,
-		LeaKey,
-		K12SchoolKey,
-		K12StudentKey,
-		K12EnrollmentStatusKey,
-		EntryGradeLevelKey,
-		ExitGradeLevelKey,
-		EnrollmentEntryDateKey,
-		EnrollmentExitDateKey,
-		ProjectedGraduationDateKey,
-		K12DemographicKey,
-		IdeaStatusKey
+SELECT CONCAT (
+        SchoolYearKey
+        , '-'
+        , DataCollectionKey
+        , '-'
+        , SeaKey
+        , '-'
+        , IeuKey
+        , '-'
+        , LeaKey
+        , '-'
+        , K12SchoolKey
+        , '-'
+        , K12StudentKey
+        , '-'
+        , K12EnrollmentStatusKey
+        , '-'
+        , EntryGradeLevelKey
+        , '-'
+        , ExitGradeLevelKey
+        , '-'
+        , EnrollmentEntryDateKey
+        , '-'
+        , EnrollmentExitDateKey
+        , '-'
+        , ProjectedGraduationDateKey
+        , '-'
+        , K12DemographicKey
+        , '-'
+        , IdeaStatusKey
+        ) AS FactK12StudentEnrollmentKey
+    , SchoolYearKey
+    , DataCollectionKey
+    , SeaKey
+    , IeuKey
+    , LeaKey
+    , K12SchoolKey
+    , K12StudentKey
+    , K12EnrollmentStatusKey
+    , EntryGradeLevelKey
+    , ExitGradeLevelKey
+    , EnrollmentEntryDateKey
+    , EnrollmentExitDateKey
+    , ProjectedGraduationDateKey
+    , K12DemographicKey
+    , IdeaStatusKey
+    , SchoolYearDimId
+    , SeaDimId
+    , IeuDimId
+    , LeaDimId
+    , K12SchoolDimId
+    , K12StudentDimId
+    , K12EnrollmentStatusDimId
+    , EntryGradeLevelDimId
+    , K12DemographicDimId
+    , IdeaStatusDimId
+    , COUNT(K12StudentKey) AS StudentCount
+FROM FactK12StudentEnrollments
+GROUP BY SchoolYearKey
+    , DataCollectionKey
+    , SeaKey
+    , IeuKey
+    , LeaKey
+    , K12SchoolKey
+    , K12StudentKey
+    , K12EnrollmentStatusKey
+    , EntryGradeLevelKey
+    , ExitGradeLevelKey
+    , EnrollmentEntryDateKey
+    , EnrollmentExitDateKey
+    , ProjectedGraduationDateKey
+    , K12DemographicKey
+    , IdeaStatusKey
+    , SchoolYearDimId
+    , SeaDimId
+    , IeuDimId
+    , LeaDimId
+    , K12SchoolDimId
+    , K12StudentDimId
+    , K12EnrollmentStatusDimId
+    , EntryGradeLevelDimId
+    , K12DemographicDimId
+    , IdeaStatusDimId;

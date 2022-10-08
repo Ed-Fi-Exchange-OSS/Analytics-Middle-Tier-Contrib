@@ -8,8 +8,8 @@ IF EXISTS analytics.ceds_BridgeK12StudentEnrollmentRace;
     CREATE
         OR REPLACE VIEW analytics.ceds_BridgeK12StudentEnrollmentRace AS
 
-SELECT ceds_FactK12StudentEnrollment.FactK12StudentEnrollmentKey AS FactK12StudentEnrollmentKey,
-    Descriptor.Description AS RaceKey
+SELECT ceds_FactK12StudentEnrollment.FactK12StudentEnrollmentKey AS FactK12StudentEnrollmentKey
+    , Descriptor.Description AS RaceKey
 FROM edfi.Student
 INNER JOIN edfi.StudentSchoolAssociation
     ON Student.StudentUSI = StudentSchoolAssociation.StudentUSI
@@ -24,7 +24,7 @@ INNER JOIN edfi.StudentEducationOrganizationAssociationRace
     ON Student.StudentUSI = StudentEducationOrganizationAssociationRace.StudentUSI
         AND StudentSchoolAssociation.SchoolId = StudentEducationOrganizationAssociationRace.EducationOrganizationId
 INNER JOIN edfi.Descriptor
-    ON Descriptor.DescriptorId = StudentEducationOrganizationAssociationRace.RaceDescriptorId,
-        analytics.ceds_SchoolYearDim
+    ON Descriptor.DescriptorId = StudentEducationOrganizationAssociationRace.RaceDescriptorId
+        , analytics.ceds_SchoolYearDim
 WHERE StudentSchoolAssociation.EntryDate BETWEEN CAST(ceds_SchoolYearDim.SessionBeginDate AS DATE)
         AND CAST(ceds_SchoolYearDim.SessionEndDate AS DATE);

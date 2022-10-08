@@ -137,8 +137,8 @@ UNION ALL
 SELECT ROW_NUMBER() OVER (
         ORDER BY School.SchoolId
         ) AS K12SchoolDimId
-    , School.SchoolId AS K12SchoolKey
-    , EducationOrganizationSchool.EducationOrganizationId AS SchoolKey
+    , COALESCE(CAST(School.SchoolId AS VARCHAR),'') AS K12SchoolKey
+    , COALESCE(CAST(EducationOrganizationSchool.EducationOrganizationId AS VARCHAR),'') AS SchoolKey
     , COALESCE(EducationOrganizationLEA.NameOfInstitution, '') AS LeaName
     , '' AS LeaIdentifierNces
     , COALESCE(CAST(School.LocalEducationAgencyId AS VARCHAR), '') AS LeaIdentifierSea

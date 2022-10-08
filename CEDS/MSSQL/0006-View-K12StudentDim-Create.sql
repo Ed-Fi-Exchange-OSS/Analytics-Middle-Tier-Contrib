@@ -58,7 +58,7 @@ AS
         SELECT '-1' AS K12StudentDimId
             , '-1' AS K12StudentKey
             , '' AS StudentSchoolKey
-            , '' AS BirthDate
+            , '1900-01-01' AS BirthDate
             , NULL AS Cohort
             , '' AS FirstName
             , '' AS LastOrSurname

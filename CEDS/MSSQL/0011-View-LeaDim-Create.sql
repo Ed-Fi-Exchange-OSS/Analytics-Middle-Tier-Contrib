@@ -106,7 +106,7 @@ SELECT '-1' AS LeaDimId
     , '' AS RecordStartDateTime
     , '' AS RecordEndDateTime
     , '' AS LEAOperationalStatus
-    , '' AS LEAOperationalStatusEdFactsCode
+    , -1 AS LEAOperationalStatusEdFactsCode
     , '' AS CharterLEAStatus
     , '' AS ReconstitutedStatus
     , '' AS McKinneyVentoSubgrantRecipient

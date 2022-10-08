@@ -21,7 +21,7 @@ AS
 (
         SELECT '-1' AS SchoolYearDimId
             , '-1' AS SchoolYearKey
-            , '' AS SchoolYear
+            , '-1' AS SchoolYear
             , '' AS SessionBeginDate
             , '' AS SessionEndDate
             , 19000101 AS SessionBeginDateKey
@@ -34,7 +34,7 @@ AS
                 ORDER BY SchoolYearDescription
                 ) AS SchoolYearDimId
             , SchoolYearDescription AS SchoolYearKey
-            , SchoolYear
+            , CAST(SchoolYear AS VARCHAR) AS SchoolYear
             , CONCAT (
                 '07-01-'
                 , SUBSTRING(SchoolYearDescription, 1, 4)
