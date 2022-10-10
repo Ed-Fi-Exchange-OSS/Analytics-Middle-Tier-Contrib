@@ -4,7 +4,7 @@ studentschoolkey,text
 birthdate,date
 cohort,smallint
 firstname,character varying
-lastsurname,character varying
+lastorsurname,character varying
 middlename,character varying
 studentidentifierstate,character varying
 recordstartdatetime,text

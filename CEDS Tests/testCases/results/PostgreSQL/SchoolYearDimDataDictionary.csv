@@ -1,7 +1,0 @@
-columnname,datatype
-schoolyearkey,character varying
-schoolyear,smallint
-sessionbegindate,text
-sessionenddate,text
-lastmodifieddate,timestamp without time zone
-(5 rows)

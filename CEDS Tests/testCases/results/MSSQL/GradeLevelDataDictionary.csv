@@ -1,6 +1,0 @@
-"ColumnName","DataType"
-"GradeLevelKey","nvarchar"
-"GradeLevelCode","nvarchar"
-"GradeLevelDescription","nvarchar"
-"GradeLevelEdFactsCode","varchar"
-"LastModifiedDate","datetime2"

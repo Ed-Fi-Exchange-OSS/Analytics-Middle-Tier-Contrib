@@ -1,7 +1,0 @@
-columnname,datatype
-gradelevelkey,text
-gradelevelcode,character varying
-gradeleveldescription,character varying
-gradeleveledfactscode,character varying
-lastmodifieddate,text
-(5 rows)

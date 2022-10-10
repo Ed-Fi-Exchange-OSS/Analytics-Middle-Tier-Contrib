@@ -1,5 +1,0 @@
-<Test>
-  <Name>SchoolYearDim</Name>
-  <Query>select 1 AS viewexists from information_schema.tables where table_schema = 'analytics' and (table_name='ceds_schoolyeardim' OR table_name='ceds_schoolyeardim')</Query>
-  <ResultFile>ViewExists.csv</ResultFile>
-</Test>

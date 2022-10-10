@@ -1,6 +1,0 @@
-"ColumnName","DataType"
-"SchoolYearKey","nvarchar"
-"SchoolYear","smallint"
-"SessionBeginDate","nvarchar"
-"SessionEndDate","nvarchar"
-"LastModifiedDate","datetime2"
