@@ -46,7 +46,7 @@ if ($server -eq "SQLServer") {
     
     $connectionString = Get-ConnectionStringMSSQL
     
-    Install-CedsViews $connectionString "$PSScriptRoot\..\MSSQL\"
+    Install-CedsViews $connectionString "$PSScriptRoot\..\CEDS Views\MSSQL\"
     
     Write-Host "CEDS Collection has been installed for MSSQL" -ForegroundColor Cyan
 }
@@ -70,7 +70,7 @@ else {
     
     $connectionString = Get-ConnectionStringPostgreSQL
     
-    Install-CedsViews $connectionString "$PSScriptRoot\..\CEDS\PostgreSQL\"
+    Install-CedsViews $connectionString "$PSScriptRoot\..\CEDS\CEDS Views\PostgreSQL\"
     
     Write-Host "CEDS Collection has been installed for PostgreSQL" -ForegroundColor Cyan
 }

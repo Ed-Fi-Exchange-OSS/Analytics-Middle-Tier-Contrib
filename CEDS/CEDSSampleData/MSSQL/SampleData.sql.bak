@@ -13,13 +13,6 @@ SET
 WHERE
 	EducationServiceCenterId = 255950;
 
-UPDATE
-	edfi.LocalEducationAgency
-SET
-	StateEducationAgencyId = 1395665299 
-WHERE
-	LocalEducationAgencyId = 255901;
-
 -- Updating this field because SchoolId = 255901107 is ->  Grand Bend Elementary School. A Primary School.
 -- The value was previously NULL.
 UPDATE 
