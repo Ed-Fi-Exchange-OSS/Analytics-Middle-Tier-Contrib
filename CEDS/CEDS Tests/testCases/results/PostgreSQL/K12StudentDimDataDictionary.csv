@@ -1,0 +1,13 @@
+columnname,datatype
+k12studentkey,text
+studentschoolkey,text
+birthdate,date
+cohort,smallint
+firstname,character varying
+lastorsurname,character varying
+middlename,character varying
+studentidentifierstate,character varying
+recordstartdatetime,text
+recordenddatetime,text
+lastmodifieddate,timestamp without time zone
+(11 rows)
