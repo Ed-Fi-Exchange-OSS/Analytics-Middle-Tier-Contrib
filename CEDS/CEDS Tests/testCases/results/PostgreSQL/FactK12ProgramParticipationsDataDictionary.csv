@@ -1,0 +1,17 @@
+columnname,datatype
+factk12programparticipationkey,text
+schoolyearkey,character varying
+datekey,text
+datacollectionkey,text
+seakey,text
+ieukey,text
+leakey,text
+k12schoolkey,text
+k12programtypekey,text
+k12studentkey,text
+k12demographickey,text
+ideastatuskey,text
+programparticipationstartdatekey,date
+programparticipationexitdatekey,date
+studentcount,bigint
+(15 rows)
