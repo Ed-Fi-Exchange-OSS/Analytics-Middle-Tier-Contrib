@@ -1,0 +1,16 @@
+{
+    "OdsConfig": {
+        "Server": "",
+        "Database": "",
+        "Trusted_Connection": "",
+        "Username": "",
+        "Password": ""
+    },
+    "CedsConfig": {
+        "Server": "",
+        "Database": "",
+        "Trusted_Connection": "",
+        "Username": "",
+        "Password": ""
+    }
+}
